@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gradient-to-br from-blue-500 to-purple-600 overflow-hidden;
+    font-family: 'Arial', sans-serif;
+  }
+}
+
+@layer components {
+  .game-container {
+    @apply relative w-screen h-screen flex justify-center items-center;
+  }
+  
+  .game-canvas {
+    @apply border-2 border-gray-800 bg-sky-300 cursor-crosshair;
+  }
+  
+  .ui-overlay {
+    @apply absolute top-5 left-5 z-50;
+  }
+  
+  .toolbar {
+    @apply flex gap-2.5 mb-5;
+  }
+  
+  .tool-btn {
+    @apply px-5 py-2.5 bg-gray-600 text-white border-0 rounded cursor-pointer text-sm transition-colors duration-300 hover:bg-gray-700;
+  }
+  
+  .tool-btn.active {
+    @apply bg-blue-600;
+  }
+  
+  .panel {
+    @apply bg-black bg-opacity-80 text-white p-5 rounded-lg min-w-64 max-h-96 overflow-y-auto;
+  }
+  
+  
+  .furniture-item {
+    @apply p-2.5 my-1.5 bg-gray-700 rounded cursor-pointer transition-colors duration-300 flex items-center gap-2.5 hover:bg-gray-600;
+  }
+  
+  .furniture-item.selected {
+    @apply bg-blue-600;
+  }
+  
+  .minimap {
+    @apply absolute top-5 right-5 bg-black bg-opacity-80 rounded-lg p-2.5;
+  }
+  
+  .minimap-canvas {
+    @apply border border-gray-600 rounded;
+  }
+  
+  .controls {
+    @apply absolute bottom-5 right-5 bg-black bg-opacity-80 text-white p-4 rounded-lg text-xs;
+  }
+  
+  .controls h4 {
+    @apply mb-2.5 text-blue-400;
+  }
+  
+  .controls div {
+    @apply my-1;
+  }
+  
+  .chat-container {
+    @apply absolute bottom-5 left-5 bg-black bg-opacity-90 text-white p-4 rounded-lg w-80 max-h-48;
+  }
+  
+  .chat-messages {
+    @apply max-h-32 overflow-y-auto mb-2.5 text-xs;
+  }
+  
+  .chat-input {
+    @apply w-full p-1.5 border border-gray-600 rounded bg-gray-700 text-white;
+  }
+  
+  .player-info {
+    @apply absolute top-5 right-5 bg-black bg-opacity-80 text-white p-4 rounded-lg min-w-40;
+  }
+  
+  .player-info h4 {
+    @apply mb-2.5 text-blue-400;
+  }
+  
+  .current-player-name {
+    @apply font-bold mb-2.5 text-red-400;
+  }
+  
+  .context-menu {
+    @apply absolute bg-black bg-opacity-90 text-white p-2.5 rounded-lg border border-gray-600 z-50 min-w-32;
+  }
+  
+  .player-actions {
+    @apply flex flex-col gap-1.5;
+  }
+  
+  .player-actions button {
+    @apply px-3 py-2 bg-gray-600 text-white border-0 rounded cursor-pointer text-xs transition-colors duration-300 text-left hover:bg-gray-700;
+  }
+  
+  .player-actions button.active {
+    @apply bg-blue-600;
+  }
+}
