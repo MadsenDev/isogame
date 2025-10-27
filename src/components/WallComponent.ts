@@ -75,6 +75,7 @@ export class WallComponent {
     const shade = this.darkenColor(faceColor, 0.18)
     const edgeColor = this.darkenColor(faceColor, 0.4)
     const offset = this.wallBorderOffset
+    const seamOverlap = Math.max(1, this.zoom)
 
     const topLeft = this.coordinateUtils.worldToScreen(x - 0.5 - offset, y + 0.5 - offset)
     const topRight = this.coordinateUtils.worldToScreen(x + 0.5 - offset, y + 0.5 - offset)
@@ -82,10 +83,10 @@ export class WallComponent {
     const bottomRight = { x: topRight.x, y: topRight.y + wallHeight }
 
     this.ctx.beginPath()
-    this.ctx.moveTo(topLeft.x, topLeft.y)
-    this.ctx.lineTo(topRight.x, topRight.y)
-    this.ctx.lineTo(bottomRight.x, bottomRight.y)
-    this.ctx.lineTo(bottomLeft.x, bottomLeft.y)
+    this.ctx.moveTo(topLeft.x - seamOverlap, topLeft.y)
+    this.ctx.lineTo(topRight.x + seamOverlap, topRight.y)
+    this.ctx.lineTo(bottomRight.x + seamOverlap, bottomRight.y)
+    this.ctx.lineTo(bottomLeft.x - seamOverlap, bottomLeft.y)
     this.ctx.closePath()
     this.ctx.fillStyle = shade
     this.ctx.fill()
@@ -104,6 +105,7 @@ export class WallComponent {
     const shade = this.darkenColor(faceColor, 0.25)
     const edgeColor = this.darkenColor(faceColor, 0.4)
     const offset = this.wallBorderOffset
+    const seamOverlap = Math.max(1, this.zoom)
 
     const top = this.coordinateUtils.worldToScreen(x + 0.5 - offset, y - 0.5 - offset)
     const bottom = this.coordinateUtils.worldToScreen(x + 0.5 - offset, y + 0.5 - offset)
@@ -111,10 +113,10 @@ export class WallComponent {
     const lowerBottom = { x: bottom.x, y: bottom.y + wallHeight }
 
     this.ctx.beginPath()
-    this.ctx.moveTo(top.x, top.y)
-    this.ctx.lineTo(bottom.x, bottom.y)
-    this.ctx.lineTo(lowerBottom.x, lowerBottom.y)
-    this.ctx.lineTo(lowerTop.x, lowerTop.y)
+    this.ctx.moveTo(top.x, top.y - seamOverlap)
+    this.ctx.lineTo(bottom.x, bottom.y + seamOverlap)
+    this.ctx.lineTo(lowerBottom.x, lowerBottom.y + seamOverlap)
+    this.ctx.lineTo(lowerTop.x, lowerTop.y - seamOverlap)
     this.ctx.closePath()
     this.ctx.fillStyle = shade
     this.ctx.fill()
@@ -129,6 +131,7 @@ export class WallComponent {
 
 private drawDoorway(x: number, y: number, type: 'north-east' | 'north-west') {
   const offset = this.wallBorderOffset
+  const seamOverlap = Math.max(1, this.zoom)
   let screenPos
 
   if (type === 'north-east') {
@@ -138,6 +141,8 @@ private drawDoorway(x: number, y: number, type: 'north-east' | 'north-west') {
   }
   const w = this.tileWidth
   const h = this.tileHeight
+  const halfWidth = w / 2 + seamOverlap
+  const halfHeight = h / 2 + seamOverlap
 
   this.ctx.save()
   this.ctx.translate(screenPos.x, screenPos.y)
@@ -147,10 +152,10 @@ private drawDoorway(x: number, y: number, type: 'north-east' | 'north-west') {
   this.ctx.globalCompositeOperation = 'destination-out'
   this.ctx.fillStyle = 'rgba(0, 0, 0, 1)'
   this.ctx.beginPath()
-  this.ctx.moveTo(0, -h / 2)
-  this.ctx.lineTo(w / 2, 0)
-  this.ctx.lineTo(0, h / 2)
-  this.ctx.lineTo(-w / 2, 0)
+  this.ctx.moveTo(0, -halfHeight)
+  this.ctx.lineTo(halfWidth, 0)
+  this.ctx.lineTo(0, halfHeight)
+  this.ctx.lineTo(-halfWidth, 0)
   this.ctx.closePath()
   this.ctx.fill()
   this.ctx.restore()
@@ -158,10 +163,10 @@ private drawDoorway(x: number, y: number, type: 'north-east' | 'north-west') {
   // Draw doorway as a darker opening
   this.ctx.fillStyle = '#2F2F2F'
   this.ctx.beginPath()
-  this.ctx.moveTo(0, -h / 2)
-  this.ctx.lineTo(w / 2, 0)
-  this.ctx.lineTo(0, h / 2)
-  this.ctx.lineTo(-w / 2, 0)
+  this.ctx.moveTo(0, -halfHeight)
+  this.ctx.lineTo(halfWidth, 0)
+  this.ctx.lineTo(0, halfHeight)
+  this.ctx.lineTo(-halfWidth, 0)
   this.ctx.closePath()
   this.ctx.fill()
 
