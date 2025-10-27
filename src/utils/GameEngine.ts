@@ -257,24 +257,24 @@ this.wallComponent.drawRoomWalls(
 
   private isValidPlayerPosition(x: number, y: number, excludePlayerId: number = -1) {
     if (!this.state.currentRoom) return false
-    
+
+    // Allow movement through doorway even if it's outside the normal room bounds
+    if (this.state.currentRoom.doorway &&
+        this.state.currentRoom.doorway.x === x &&
+        this.state.currentRoom.doorway.y === y) {
+      return true
+    }
+
     // Check room bounds
     if (x < 0 || x >= this.state.currentRoom.width || y < 0 || y >= this.state.currentRoom.height) {
       return false
     }
-    
+
     // Check wall collision (but allow doorway)
     if (this.state.currentRoom.walls.some(wall => wall.x === x && wall.y === y)) {
       return false
     }
-    
-    // Allow movement through doorway
-    if (this.state.currentRoom.doorway && 
-        this.state.currentRoom.doorway.x === x && 
-        this.state.currentRoom.doorway.y === y) {
-      return true
-    }
-    
+
     // Check furniture collision
     if (this.state.currentRoom.furniture.some(f => f.x === x && f.y === y)) {
       return false
