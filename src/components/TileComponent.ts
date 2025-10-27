@@ -59,23 +59,28 @@ export class TileComponent {
       finalTextureCol = textureCoords.col
     }
     
-    // Try to draw texture first, fallback to solid color
-    if (this.tilesheet && this.tilesheet.complete) {
-      this.drawTexturedIsometricTile(width, height, finalTextureRow, finalTextureCol)
-    } else {
-      // Fallback to solid color
-      this.ctx.fillStyle = color
+    const drawDiamondPath = () => {
       this.ctx.beginPath()
       this.ctx.moveTo(0, -height / 2)
       this.ctx.lineTo(width / 2, 0)
       this.ctx.lineTo(0, height / 2)
       this.ctx.lineTo(-width / 2, 0)
       this.ctx.closePath()
+    }
+
+    // Try to draw texture first, fallback to solid color
+    if (this.tilesheet && this.tilesheet.complete) {
+      this.drawTexturedIsometricTile(width, height, finalTextureRow, finalTextureCol)
+    } else {
+      // Fallback to solid color
+      this.ctx.fillStyle = color
+      drawDiamondPath()
       this.ctx.fill()
     }
-    
+
     this.ctx.strokeStyle = '#333'
     this.ctx.lineWidth = 1
+    drawDiamondPath()
     this.ctx.stroke()
 
     this.ctx.restore()
@@ -83,35 +88,39 @@ export class TileComponent {
 
   private drawTexturedIsometricTile(width: number, height: number, textureRow: number, textureCol: number) {
     if (!this.tilesheet) return
-    
+
     // Tileset is 256x256, 8x8 tiles, so each tile is 32x32
     const tileSize = 32
     const sourceX = (textureCol - 1) * tileSize // Convert to 0-based index
     const sourceY = (textureRow - 1) * tileSize // Convert to 0-based index
-    
-    // Simple approach: draw the square texture and let the diamond shape clip it naturally
+
     this.ctx.save()
-    
-    // Create clipping path for isometric diamond shape
-    this.ctx.beginPath()
-    this.ctx.moveTo(0, -height / 2)
-    this.ctx.lineTo(width / 2, 0)
-    this.ctx.lineTo(0, height / 2)
-    this.ctx.lineTo(-width / 2, 0)
-    this.ctx.closePath()
-    this.ctx.clip()
-    
-    // Draw the square texture - stretch it vertically to fill the full diamond height
-    // The issue is that the texture needs to be stretched more vertically to fill the diamond
-    const stretchFactor = height / tileSize // How much to stretch vertically
-    const stretchedHeight = tileSize * stretchFactor
-    
+
+    // Transform the square texture so it appears as an isometric diamond
+    const scaleX = width / (2 * tileSize)
+    const scaleY = height / (2 * tileSize)
+
+    this.ctx.transform(
+      scaleX,
+      scaleY,
+      -scaleX,
+      scaleY,
+      0,
+      -height / 2
+    )
+
     this.ctx.drawImage(
       this.tilesheet,
-      sourceX, sourceY, tileSize, tileSize, // Source rectangle (32x32)
-      -width / 2, -height / 2, width, stretchedHeight // Destination rectangle - stretch vertically to fill diamond
+      sourceX,
+      sourceY,
+      tileSize,
+      tileSize,
+      0,
+      0,
+      tileSize,
+      tileSize
     )
-    
+
     this.ctx.restore()
   }
 
