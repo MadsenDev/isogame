@@ -1,0 +1,20 @@
+[
+  {
+    "id": "main-room",
+    "name": "Main Room",
+    "layout": [
+      "xxxxxxxxxxxxxxxx",
+      "xoooooooodooooox",
+      "xoooooooooooooox",
+      "xoooooooooooooox",
+      "xooooooxxoooooox",
+      "xooooooxxoooooox",
+      "xoooooooooooooox",
+      "xoooooooooooooox",
+      "xooooooosoooooox",
+      "xoooooooooooooox",
+      "xoooooooooooooox",
+      "xxxxxxxxxxxxxxxx"
+    ]
+  }
+]
