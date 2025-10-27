@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Room } from '../context/GameContext'
+import React, { useMemo, useState } from 'react'
+import { Room, serializeRoomLayout } from '../context/GameContext'
 
 interface RoomManagerProps {
   rooms: Room[]
@@ -24,6 +24,13 @@ export const RoomManager: React.FC<RoomManagerProps> = ({
   const [newRoomHeight, setNewRoomHeight] = useState(10)
   const [editingRoom, setEditingRoom] = useState<string | null>(null)
   const [editName, setEditName] = useState('')
+  const [showExport, setShowExport] = useState(false)
+  const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle')
+
+  const layoutJson = useMemo(() => {
+    if (!currentRoom) return ''
+    return JSON.stringify(serializeRoomLayout(currentRoom), null, 2)
+  }, [currentRoom])
 
   const handleCreateRoom = () => {
     if (newRoomName.trim()) {
@@ -53,17 +60,79 @@ export const RoomManager: React.FC<RoomManagerProps> = ({
     setEditName('')
   }
 
+  const handleCopyLayout = async () => {
+    if (!layoutJson) return
+
+    try {
+      if (!navigator?.clipboard) {
+        throw new Error('Clipboard API unavailable')
+      }
+
+      await navigator.clipboard.writeText(layoutJson)
+      setCopyStatus('copied')
+    } catch (error) {
+      console.error('Failed to copy layout to clipboard', error)
+      setCopyStatus('error')
+    }
+
+    window.setTimeout(() => setCopyStatus('idle'), 2000)
+  }
+
   return (
     <div className="bg-gray-800 text-white p-4 rounded-lg shadow-lg">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold">Room Manager</h3>
-        <button
-          onClick={() => setShowCreateForm(!showCreateForm)}
-          className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm"
-        >
-          {showCreateForm ? 'Cancel' : 'New Room'}
-        </button>
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => setShowExport(!showExport)}
+            className="bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded text-sm"
+          >
+            {showExport ? 'Hide Export' : 'Export Layout'}
+          </button>
+          <button
+            onClick={() => setShowCreateForm(!showCreateForm)}
+            className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm"
+          >
+            {showCreateForm ? 'Cancel' : 'New Room'}
+          </button>
+        </div>
       </div>
+
+      {showExport && (
+        <div className="mb-4 p-3 bg-gray-700 rounded">
+          <h4 className="text-md font-medium mb-2">Current Room Layout</h4>
+          {currentRoom ? (
+            <>
+              <textarea
+                value={layoutJson}
+                readOnly
+                rows={10}
+                className="w-full bg-gray-800 border border-gray-600 rounded text-sm p-2 font-mono resize-y"
+              />
+              <div className="flex items-center justify-between mt-2">
+                <span className="text-xs text-gray-400">
+                  Use <span className="font-semibold">o</span> for floor, <span className="font-semibold">x</span> for empty,
+                  <span className="font-semibold">d</span> for doors, <span className="font-semibold">s</span> for spawn.
+                </span>
+                <button
+                  onClick={handleCopyLayout}
+                  className="bg-purple-500 hover:bg-purple-600 px-3 py-1 rounded text-sm"
+                >
+                  Copy JSON
+                </button>
+              </div>
+              {copyStatus === 'copied' && (
+                <div className="text-xs text-green-400 mt-2">Layout copied to clipboard.</div>
+              )}
+              {copyStatus === 'error' && (
+                <div className="text-xs text-red-400 mt-2">Copy failed. Try again.</div>
+              )}
+            </>
+          ) : (
+            <div className="text-sm text-gray-300">Select a room to export its layout.</div>
+          )}
+        </div>
+      )}
 
       {/* Create Room Form */}
       {showCreateForm && (

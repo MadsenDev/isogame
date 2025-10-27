@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react'
+import roomLayoutDefinitions from '../assets/roomLayouts.json'
 
 // Types
 export interface Player {
@@ -38,6 +39,12 @@ export interface Room {
   walls: Array<{ x: number; y: number; type: 'north-east' | 'north-west' }>
   doorway?: { x: number; y: number; type: 'north-east' | 'north-west' }
   spawnPoint?: { x: number; y: number }
+}
+
+export interface RoomLayoutDefinition {
+  id?: string
+  name: string
+  layout: string[]
 }
 
 export type RoomLayoutUpdate = {
@@ -580,6 +587,133 @@ const defaultSpawnFromDoorway = (
   return { x: 0, y: clamp(doorway.y, 0, Math.max(height - 1, 0)) }
 }
 
+const sanitizeLayoutRow = (row: string) => row.replace(/\s+$/u, '')
+
+const determineDoorwayFromLayout = (
+  doorCandidate: { x: number; y: number; orientation: 'north-east' | 'north-west' } | undefined,
+  width: number,
+  height: number
+) => {
+  if (!doorCandidate) return undefined
+
+  if (doorCandidate.orientation === 'north-east') {
+    return normalizeDoorway(width, height, { x: doorCandidate.x, y: -1, type: 'north-east' })
+  }
+
+  return normalizeDoorway(width, height, { x: -1, y: doorCandidate.y, type: 'north-west' })
+}
+
+const layoutCharIsFloor = (char: string) => {
+  const normalized = char.toLowerCase()
+  return normalized === 'o' || normalized === 'd' || normalized === 's'
+}
+
+export const createRoomFromLayoutDefinition = (definition: RoomLayoutDefinition): Room => {
+  const rows = definition.layout.map(sanitizeLayoutRow)
+  const height = rows.length || 1
+  const width = rows.reduce((max, row) => Math.max(max, row.length), 0) || 1
+
+  const floorTiles: Array<{ x: number; y: number }> = []
+  let doorCandidate: { x: number; y: number; orientation: 'north-east' | 'north-west' } | undefined
+  let spawnCandidate: { x: number; y: number } | undefined
+
+  rows.forEach((row, y) => {
+    for (let x = 0; x < width; x++) {
+      const char = row[x] ?? 'x'
+      if (layoutCharIsFloor(char)) {
+        floorTiles.push({ x, y })
+      }
+
+      if ((char === 'd' || char === 'D') && !doorCandidate) {
+        const orientation: 'north-east' | 'north-west' = x === 0 ? 'north-west' : 'north-east'
+        doorCandidate = { x, y, orientation }
+      }
+
+      if ((char === 's' || char === 'S') && !spawnCandidate) {
+        spawnCandidate = { x, y }
+      }
+    }
+  })
+
+  const uniqueFloorTiles = Array.from(
+    new Map(floorTiles.map(tile => [`${tile.x},${tile.y}`, tile])).values()
+  )
+
+  const doorway = determineDoorwayFromLayout(doorCandidate, width, height)
+  const baseFloorTiles = uniqueFloorTiles.length > 0
+    ? uniqueFloorTiles
+    : createFullFloorTiles(width, height)
+  const adjustedDoorway = adjustDoorwayForFloorTiles(doorway, baseFloorTiles, width, height)
+
+  const spawnPoint = normalizeSpawnPoint(
+    width,
+    height,
+    spawnCandidate ?? defaultSpawnFromDoorway(width, height, adjustedDoorway)
+  )
+
+  const baseRoom: Room = {
+    id: definition.id ?? generateId('room-'),
+    name: definition.name,
+    width,
+    height,
+    floorTiles: baseFloorTiles,
+    furniture: [],
+    walls: [],
+    doorway: adjustedDoorway,
+    spawnPoint
+  }
+
+  return ensureRoomFloorTiles(baseRoom)
+}
+
+export const serializeRoomLayout = (room: Room): RoomLayoutDefinition => {
+  const grid = Array.from({ length: room.height }, () => Array.from({ length: room.width }, () => 'x'))
+  const floorTiles = room.floorTiles && room.floorTiles.length > 0
+    ? room.floorTiles
+    : createFullFloorTiles(room.width, room.height)
+
+  floorTiles.forEach(tile => {
+    if (tile.y >= 0 && tile.y < room.height && tile.x >= 0 && tile.x < room.width) {
+      grid[tile.y][tile.x] = 'o'
+    }
+  })
+
+  if (room.spawnPoint) {
+    const { x, y } = room.spawnPoint
+    if (y >= 0 && y < room.height && x >= 0 && x < room.width) {
+      grid[y][x] = 's'
+    }
+  }
+
+  if (room.doorway) {
+    if (room.doorway.type === 'north-east') {
+      const columnTiles = floorTiles.filter(tile => tile.x === room.doorway!.x)
+      if (columnTiles.length > 0) {
+        const minY = Math.min(...columnTiles.map(tile => tile.y))
+        if (minY >= 0 && minY < room.height && room.doorway!.x >= 0 && room.doorway!.x < room.width) {
+          grid[minY][room.doorway!.x] = 'd'
+        }
+      }
+    } else {
+      const rowTiles = floorTiles.filter(tile => tile.y === room.doorway!.y)
+      if (rowTiles.length > 0) {
+        const minX = Math.min(...rowTiles.map(tile => tile.x))
+        if (room.doorway!.y >= 0 && room.doorway!.y < room.height && minX >= 0 && minX < room.width) {
+          grid[room.doorway!.y][minX] = 'd'
+        }
+      }
+    }
+  }
+
+  const layout = grid.map(row => row.join(''))
+
+  return {
+    id: room.id,
+    name: room.name,
+    layout
+  }
+}
+
 // Helper function to create a new room
 const createRoom = (name: string, width: number, height: number): Room => {
   const doorway = normalizeDoorway(width, height, {
@@ -614,8 +748,32 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   // Initialize game with default room and players
   useEffect(() => {
-    // Create default room
-    const defaultRoom = createRoom('Main Room', 20, 15)
+    const layoutDefinitions = Array.isArray(roomLayoutDefinitions)
+      ? (roomLayoutDefinitions as RoomLayoutDefinition[])
+      : []
+
+    const validLayoutDefinitions = layoutDefinitions.filter(
+      (definition): definition is RoomLayoutDefinition =>
+        !!definition &&
+        typeof definition.name === 'string' &&
+        Array.isArray(definition.layout)
+    )
+
+    const predefinedRooms = validLayoutDefinitions.map(createRoomFromLayoutDefinition)
+    const roomsToLoad = predefinedRooms.length > 0
+      ? predefinedRooms
+      : [createRoom('Main Room', 20, 15)]
+
+    roomsToLoad.forEach(room => {
+      dispatch({ type: 'ADD_ROOM', payload: room })
+    })
+
+    const defaultRoom = roomsToLoad[0]
+    if (!defaultRoom) {
+      return
+    }
+
+    dispatch({ type: 'SET_CURRENT_ROOM', payload: defaultRoom })
 
     // Create players
     const players: Player[] = [
@@ -697,10 +855,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
       }
     ]
 
-    // Initialize game state
-    dispatch({ type: 'ADD_ROOM', payload: defaultRoom })
-    dispatch({ type: 'SET_CURRENT_ROOM', payload: defaultRoom })
-    
     // Add players to state (we'll need to add this action)
     players.forEach(player => {
       dispatch({ type: 'ADD_PLAYER', payload: player })
