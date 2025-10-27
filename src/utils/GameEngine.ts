@@ -79,7 +79,7 @@ export class GameEngine {
       const rect = this.canvas.getBoundingClientRect()
       const x = e.clientX - rect.left
       const y = e.clientY - rect.top
-      this.handleClick(x, y)
+      this.handleClick(x, y, e)
     })
 
     this.canvas.addEventListener('contextmenu', (e) => {
@@ -173,7 +173,8 @@ export class GameEngine {
     // Draw floor tiles
     this.state.currentRoom.floorTiles.forEach(tile => {
       const screenPos = this.coordinateUtils.worldToScreen(tile.x, tile.y)
-      this.tileComponent.drawIsometricTile(tile.x, tile.y, '#90EE90', 1, 2, 1, screenPos)
+      const texture = tile.texture || this.state.currentRoom?.floorTexture || 'default'
+      this.tileComponent.drawIsometricTile(tile.x, tile.y, '#90EE90', 1, 2, 1, screenPos, texture)
     })
 
     // Draw walls that follow the current floor layout
@@ -328,7 +329,7 @@ export class GameEngine {
     return true
   }
 
-  public handleClick(x: number, y: number) {
+  public handleClick(x: number, y: number, e?: MouseEvent) {
     const worldPos = this.coordinateUtils.screenToWorld(x, y)
     const gridX = Math.round(worldPos.x)
     const gridY = Math.round(worldPos.y)
@@ -387,29 +388,37 @@ export class GameEngine {
           payload: null
         })
       }
-    } else if (this.state.currentTool === 'room') {
-      if (!this.state.currentRoom) return
+     } else if (this.state.currentTool === 'room') {
+       if (!this.state.currentRoom) return
 
-      if (gridX < 0 || gridX >= this.state.currentRoom.width || gridY < 0 || gridY >= this.state.currentRoom.height) {
-        return
-      }
+       if (gridX < 0 || gridX >= this.state.currentRoom.width || gridY < 0 || gridY >= this.state.currentRoom.height) {
+         return
+       }
 
-      const hasTile = this.state.currentRoom.floorTiles.some(tile => tile.x === gridX && tile.y === gridY)
-      if (!hasTile) {
-        this.dispatch({ type: 'TOGGLE_FLOOR_TILE', payload: { x: gridX, y: gridY } })
-        return
-      }
+       const hasTile = this.state.currentRoom.floorTiles.some(tile => tile.x === gridX && tile.y === gridY)
+       if (!hasTile) {
+         this.dispatch({ type: 'TOGGLE_FLOOR_TILE', payload: { x: gridX, y: gridY } })
+         return
+       }
 
-      const hasFurniture = this.state.currentRoom.furniture.some(f => f.x === gridX && f.y === gridY)
-      const hasPlayer = this.state.players.some(player => Math.round(player.x) === gridX && Math.round(player.y) === gridY)
-      const isSpawnTile = this.state.currentRoom.spawnPoint
-        ? this.state.currentRoom.spawnPoint.x === gridX && this.state.currentRoom.spawnPoint.y === gridY
-        : false
+       const hasFurniture = this.state.currentRoom.furniture.some(f => f.x === gridX && f.y === gridY)
+       const hasPlayer = this.state.players.some(player => Math.round(player.x) === gridX && Math.round(player.y) === gridY)
+       const isSpawnTile = this.state.currentRoom.spawnPoint
+         ? this.state.currentRoom.spawnPoint.x === gridX && this.state.currentRoom.spawnPoint.y === gridY
+         : false
 
-      if (!(hasFurniture || hasPlayer || isSpawnTile)) {
-        this.dispatch({ type: 'TOGGLE_FLOOR_TILE', payload: { x: gridX, y: gridY } })
-      }
-    }
+       if (!(hasFurniture || hasPlayer || isSpawnTile)) {
+         // Check if we're painting texture (right-click or shift+click)
+         if (e?.shiftKey || e?.button === 2) {
+           // Paint texture on this tile
+           const currentTexture = this.state.currentRoom.floorTiles.find(tile => tile.x === gridX && tile.y === gridY)?.texture
+           const newTexture = currentTexture === 'wood' ? 'stone' : 'wood' // Toggle between wood and stone for now
+           this.dispatch({ type: 'SET_TILE_TEXTURE', payload: { roomId: this.state.currentRoom.id, x: gridX, y: gridY, texture: newTexture } })
+         } else {
+           this.dispatch({ type: 'TOGGLE_FLOOR_TILE', payload: { x: gridX, y: gridY } })
+         }
+       }
+     }
   }
 
   public handleRightClick(x: number, y: number) {

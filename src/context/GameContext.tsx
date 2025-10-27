@@ -34,11 +34,12 @@ export interface Room {
   name: string
   width: number
   height: number
-  floorTiles: Array<{ x: number; y: number }>
+  floorTiles: Array<{ x: number; y: number; texture?: string }>
   furniture: Furniture[]
   walls: Array<{ x: number; y: number; type: 'north-east' | 'north-west' }>
   doorway?: { x: number; y: number; type: 'north-east' | 'north-west' }
   spawnPoint?: { x: number; y: number }
+  floorTexture?: string
 }
 
 export interface RoomLayoutDefinition {
@@ -91,6 +92,8 @@ export type GameAction =
   | { type: 'TOGGLE_FLOOR_TILE'; payload: { x: number; y: number } }
   | { type: 'FILL_ROOM_FLOOR' }
   | { type: 'CLEAR_ROOM_FLOOR' }
+  | { type: 'SET_FLOOR_TEXTURE'; payload: { roomId: string; texture: string } }
+  | { type: 'SET_TILE_TEXTURE'; payload: { roomId: string; x: number; y: number; texture: string } }
   | { type: 'ADD_FURNITURE'; payload: Furniture }
   | { type: 'ADD_PLAYER'; payload: Player }
   | { type: 'SET_CURRENT_PLAYER'; payload: number }
@@ -314,54 +317,95 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       }
     }
 
-    case 'CLEAR_ROOM_FLOOR': {
-      if (!state.currentRoom) return state
+     case 'CLEAR_ROOM_FLOOR': {
+       if (!state.currentRoom) return state
 
-      const protectedTiles = new Set<string>()
+       const protectedTiles = new Set<string>()
 
-      state.currentRoom.furniture.forEach(f => {
-        protectedTiles.add(`${f.x},${f.y}`)
-      })
+       state.currentRoom.furniture.forEach(f => {
+         protectedTiles.add(`${f.x},${f.y}`)
+       })
 
-      if (state.currentRoom.spawnPoint) {
-        protectedTiles.add(`${state.currentRoom.spawnPoint.x},${state.currentRoom.spawnPoint.y}`)
-      }
+       if (state.currentRoom.spawnPoint) {
+         protectedTiles.add(`${state.currentRoom.spawnPoint.x},${state.currentRoom.spawnPoint.y}`)
+       }
 
-      state.players.forEach(player => {
-        const px = Math.round(player.x)
-        const py = Math.round(player.y)
-        if (px >= 0 && px < state.currentRoom!.width && py >= 0 && py < state.currentRoom!.height) {
-          protectedTiles.add(`${px},${py}`)
-        }
-      })
+       state.players.forEach(player => {
+         const px = Math.round(player.x)
+         const py = Math.round(player.y)
+         if (px >= 0 && px < state.currentRoom!.width && py >= 0 && py < state.currentRoom!.height) {
+           protectedTiles.add(`${px},${py}`)
+         }
+       })
 
-      const clearRoom = (room: Room) => {
-        if (room.id !== state.currentRoom!.id) return room
+       const clearRoom = (room: Room) => {
+         if (room.id !== state.currentRoom!.id) return room
 
-        const baseTiles = room.floorTiles && room.floorTiles.length > 0
-          ? room.floorTiles
-          : createFullFloorTiles(room.width, room.height)
+         const baseTiles = room.floorTiles && room.floorTiles.length > 0
+           ? room.floorTiles
+           : createFullFloorTiles(room.width, room.height)
 
-        const floorTiles = baseTiles.filter(tile => protectedTiles.has(`${tile.x},${tile.y}`))
+         const floorTiles = baseTiles.filter(tile => protectedTiles.has(`${tile.x},${tile.y}`))
 
-        const adjustedDoorway = adjustDoorwayForFloorTiles(room.doorway, floorTiles, room.width, room.height)
+         const adjustedDoorway = adjustDoorwayForFloorTiles(room.doorway, floorTiles, room.width, room.height)
 
-        return {
-          ...room,
-          floorTiles,
-          doorway: adjustedDoorway,
-          walls: buildRoomWalls(room.width, room.height, adjustedDoorway, floorTiles)
-        }
-      }
+         return {
+           ...room,
+           floorTiles,
+           doorway: adjustedDoorway,
+           walls: buildRoomWalls(room.width, room.height, adjustedDoorway, floorTiles)
+         }
+       }
 
-      const updatedRooms = state.rooms.map(clearRoom)
+       const updatedRooms = state.rooms.map(clearRoom)
 
-      return {
-        ...state,
-        rooms: updatedRooms,
-        currentRoom: clearRoom(state.currentRoom)
-      }
-    }
+       return {
+         ...state,
+         rooms: updatedRooms,
+         currentRoom: clearRoom(state.currentRoom)
+       }
+     }
+
+     case 'SET_FLOOR_TEXTURE': {
+       const { roomId, texture } = action.payload
+       
+       const updateRoomTexture = (room: Room) => {
+         if (room.id !== roomId) return room
+         return { ...room, floorTexture: texture }
+       }
+
+       return {
+         ...state,
+         rooms: state.rooms.map(updateRoomTexture),
+         currentRoom: state.currentRoom?.id === roomId
+           ? updateRoomTexture(state.currentRoom)
+           : state.currentRoom
+       }
+     }
+
+     case 'SET_TILE_TEXTURE': {
+       const { roomId, x, y, texture } = action.payload
+       
+       const updateTileTexture = (room: Room) => {
+         if (room.id !== roomId) return room
+         
+         const updatedFloorTiles = room.floorTiles.map(tile => 
+           tile.x === x && tile.y === y 
+             ? { ...tile, texture }
+             : tile
+         )
+         
+         return { ...room, floorTiles: updatedFloorTiles }
+       }
+
+       return {
+         ...state,
+         rooms: state.rooms.map(updateTileTexture),
+         currentRoom: state.currentRoom?.id === roomId
+           ? updateTileTexture(state.currentRoom)
+           : state.currentRoom
+       }
+     }
 
     case 'ADD_FURNITURE':
       if (!state.currentRoom) return state
@@ -449,11 +493,13 @@ const GameContext = createContext<{
   state: GameState
   dispatch: React.Dispatch<GameAction>
   roomManager: {
-    createRoom: (name: string, width: number, height: number) => Room
+    createRoom: (name: string, width: number, height: number, floorTexture?: string) => Room
     selectRoom: (room: Room) => void
     deleteRoom: (roomId: string) => void
     renameRoom: (roomId: string, newName: string) => void
     updateLayout: (roomId: string, layout: RoomLayoutUpdate) => void
+    setFloorTexture: (roomId: string, texture: string) => void
+    setTileTexture: (roomId: string, x: number, y: number, texture: string) => void
   }
 } | null>(null)
 
@@ -462,12 +508,12 @@ const generateId = (prefix: string = '') => `${prefix}${Date.now()}-${Math.rando
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
 
-const createFullFloorTiles = (width: number, height: number) => {
-  const tiles: Array<{ x: number; y: number }> = []
+const createFullFloorTiles = (width: number, height: number, texture?: string) => {
+  const tiles: Array<{ x: number; y: number; texture?: string }> = []
 
   for (let x = 0; x < width; x++) {
     for (let y = 0; y < height; y++) {
-      tiles.push({ x, y })
+      tiles.push({ x, y, texture })
     }
   }
 
@@ -715,7 +761,7 @@ export const serializeRoomLayout = (room: Room): RoomLayoutDefinition => {
 }
 
 // Helper function to create a new room
-const createRoom = (name: string, width: number, height: number): Room => {
+const createRoom = (name: string, width: number, height: number, floorTexture?: string): Room => {
   const doorway = normalizeDoorway(width, height, {
     x: Math.floor(width / 2),
     y: -1,
@@ -734,11 +780,12 @@ const createRoom = (name: string, width: number, height: number): Room => {
     name,
     width,
     height,
-    floorTiles: createFullFloorTiles(width, height),
+    floorTiles: createFullFloorTiles(width, height, floorTexture),
     furniture: [],
     walls: buildRoomWalls(width, height, adjustedDoorway),
     doorway: adjustedDoorway,
-    spawnPoint
+    spawnPoint,
+    floorTexture
   }
 }
 
@@ -862,25 +909,31 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [])
 
   // Room management functions
-  const roomManager = {
-    createRoom: (name: string, width: number, height: number) => {
-      const newRoom = createRoom(name, width, height)
-      dispatch({ type: 'ADD_ROOM', payload: newRoom })
-      return newRoom
-    },
-    selectRoom: (room: Room) => {
-      dispatch({ type: 'SET_CURRENT_ROOM', payload: room })
-    },
-    deleteRoom: (roomId: string) => {
-      dispatch({ type: 'DELETE_ROOM', payload: roomId })
-    },
-    renameRoom: (roomId: string, newName: string) => {
-      dispatch({ type: 'RENAME_ROOM', payload: { roomId, newName } })
-    },
-    updateLayout: (roomId: string, layout: RoomLayoutUpdate) => {
-      dispatch({ type: 'UPDATE_ROOM_LAYOUT', payload: { roomId, ...layout } })
+    const roomManager = {
+      createRoom: (name: string, width: number, height: number, floorTexture?: string) => {
+        const newRoom = createRoom(name, width, height, floorTexture)
+        dispatch({ type: 'ADD_ROOM', payload: newRoom })
+        return newRoom
+      },
+      selectRoom: (room: Room) => {
+        dispatch({ type: 'SET_CURRENT_ROOM', payload: room })
+      },
+      deleteRoom: (roomId: string) => {
+        dispatch({ type: 'DELETE_ROOM', payload: roomId })
+      },
+      renameRoom: (roomId: string, newName: string) => {
+        dispatch({ type: 'RENAME_ROOM', payload: { roomId, newName } })
+      },
+      updateLayout: (roomId: string, layout: RoomLayoutUpdate) => {
+        dispatch({ type: 'UPDATE_ROOM_LAYOUT', payload: { roomId, ...layout } })
+      },
+      setFloorTexture: (roomId: string, texture: string) => {
+        dispatch({ type: 'SET_FLOOR_TEXTURE', payload: { roomId, texture } })
+      },
+      setTileTexture: (roomId: string, x: number, y: number, texture: string) => {
+        dispatch({ type: 'SET_TILE_TEXTURE', payload: { roomId, x, y, texture } })
+      }
     }
-  }
 
   return (
     <GameContext.Provider value={{ state, dispatch, roomManager }}>

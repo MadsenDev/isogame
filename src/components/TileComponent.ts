@@ -24,16 +24,44 @@ export class TileComponent {
     }
   }
 
-  public drawIsometricTile(_x: number, _y: number, color: string, size: number = 1, textureRow: number = 1, textureCol: number = 3, screenPos: { x: number; y: number }) {
+  private getTextureCoordinates(texture: string): { row: number; col: number } {
+    // Map texture names to tileset coordinates
+    // Tileset is 8x8 grid, each tile is 32x32
+    const textureMap: Record<string, { row: number; col: number }> = {
+      'grass': { row: 1, col: 1 },
+      'stone': { row: 1, col: 2 },
+      'wood': { row: 1, col: 3 },
+      'marble': { row: 1, col: 4 },
+      'carpet': { row: 1, col: 5 },
+      'brick': { row: 1, col: 6 },
+      'sand': { row: 1, col: 7 },
+      'water': { row: 1, col: 8 },
+      'default': { row: 1, col: 3 } // Default to wood
+    }
+    
+    return textureMap[texture] || textureMap['default']
+  }
+
+  public drawIsometricTile(_x: number, _y: number, color: string, size: number = 1, textureRow: number = 1, textureCol: number = 3, screenPos: { x: number; y: number }, texture?: string) {
     const width = this.tileWidth * size
     const height = this.tileHeight * size
     
     this.ctx.save()
     this.ctx.translate(screenPos.x, screenPos.y)
     
+    // Determine texture coordinates based on texture name
+    let finalTextureRow = textureRow
+    let finalTextureCol = textureCol
+    
+    if (texture) {
+      const textureCoords = this.getTextureCoordinates(texture)
+      finalTextureRow = textureCoords.row
+      finalTextureCol = textureCoords.col
+    }
+    
     // Try to draw texture first, fallback to solid color
     if (this.tilesheet && this.tilesheet.complete) {
-      this.drawTexturedIsometricTile(width, height, textureRow, textureCol)
+      this.drawTexturedIsometricTile(width, height, finalTextureRow, finalTextureCol)
     } else {
       // Fallback to solid color
       this.ctx.fillStyle = color
