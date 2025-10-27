@@ -32,6 +32,7 @@ export interface Room {
   name: string
   width: number
   height: number
+  floorTiles: Array<{ x: number; y: number }>
   furniture: Furniture[]
   walls: Array<{ x: number; y: number; type: string }>
   doorway?: { x: number; y: number; type: 'north-east' | 'north-west' }
@@ -79,6 +80,9 @@ type GameAction =
       type: 'UPDATE_ROOM_LAYOUT'
       payload: { roomId: string } & RoomLayoutUpdate
     }
+  | { type: 'TOGGLE_FLOOR_TILE'; payload: { x: number; y: number } }
+  | { type: 'FILL_ROOM_FLOOR' }
+  | { type: 'CLEAR_ROOM_FLOOR' }
   | { type: 'ADD_FURNITURE'; payload: Furniture }
   | { type: 'ADD_PLAYER'; payload: Player }
   | { type: 'SET_CURRENT_PLAYER'; payload: number }
@@ -121,18 +125,18 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       return { ...state, isPlacing: action.payload }
     
     case 'ADD_ROOM':
-      return { ...state, rooms: [...state.rooms, action.payload] }
-    
+      return { ...state, rooms: [...state.rooms, ensureRoomFloorTiles(action.payload)] }
+
     case 'SET_CURRENT_ROOM':
-      return { ...state, currentRoom: action.payload }
+      return { ...state, currentRoom: ensureRoomFloorTiles(action.payload) }
     
     case 'DELETE_ROOM':
       const remainingRooms = state.rooms.filter(room => room.id !== action.payload)
-      const newCurrentRoom = state.currentRoom?.id === action.payload 
-        ? remainingRooms[0] || null 
-        : state.currentRoom
-      return { 
-        ...state, 
+      const newCurrentRoom = state.currentRoom?.id === action.payload
+        ? (remainingRooms[0] ? ensureRoomFloorTiles(remainingRooms[0]) : null)
+        : (state.currentRoom ? ensureRoomFloorTiles(state.currentRoom) : null)
+      return {
+        ...state,
         rooms: remainingRooms,
         currentRoom: newCurrentRoom
       }
@@ -171,10 +175,40 @@ function gameReducer(state: GameState, action: GameAction): GameState {
             furniture.y < height
         )
 
+        const existingFloorTiles = (room.floorTiles?.length ? room.floorTiles : createFullFloorTiles(room.width, room.height))
+          .filter(tile => tile.x >= 0 && tile.x < width && tile.y >= 0 && tile.y < height)
+
+        const tileSet = new Set(existingFloorTiles.map(tile => `${tile.x},${tile.y}`))
+
+        if (width > room.width || height > room.height) {
+          for (let x = 0; x < width; x++) {
+            for (let y = 0; y < height; y++) {
+              if ((x >= room.width || y >= room.height) && !tileSet.has(`${x},${y}`)) {
+                existingFloorTiles.push({ x, y })
+                tileSet.add(`${x},${y}`)
+              }
+            }
+          }
+        }
+
+        const ensureFloorTile = (x: number, y: number) => {
+          const key = `${x},${y}`
+          if (!tileSet.has(key)) {
+            existingFloorTiles.push({ x, y })
+            tileSet.add(key)
+          }
+        }
+
+        filteredFurniture.forEach(furniture => ensureFloorTile(furniture.x, furniture.y))
+        if (spawnPoint) {
+          ensureFloorTile(spawnPoint.x, spawnPoint.y)
+        }
+
         return {
           ...room,
           width,
           height,
+          floorTiles: existingFloorTiles,
           furniture: filteredFurniture,
           walls: buildRoomWalls(width, height, doorway),
           doorway,
@@ -190,6 +224,118 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         currentRoom: state.currentRoom?.id === roomId
           ? updateRoomLayout(state.currentRoom)
           : state.currentRoom
+      }
+    }
+
+    case 'TOGGLE_FLOOR_TILE': {
+      if (!state.currentRoom) return state
+
+      const { x, y } = action.payload
+      if (x < 0 || x >= state.currentRoom.width || y < 0 || y >= state.currentRoom.height) {
+        return state
+      }
+
+      const hasFurniture = state.currentRoom.furniture.some(f => f.x === x && f.y === y)
+      const hasPlayer = state.players.some(player => Math.round(player.x) === x && Math.round(player.y) === y)
+      const isSpawnTile = state.currentRoom.spawnPoint
+        ? state.currentRoom.spawnPoint.x === x && state.currentRoom.spawnPoint.y === y
+        : false
+
+      if (hasFurniture || hasPlayer || isSpawnTile) {
+        return state
+      }
+
+      const toggleFloor = (room: Room) => {
+        if (room.id !== state.currentRoom!.id) return room
+
+        const baseTiles = room.floorTiles && room.floorTiles.length > 0
+          ? room.floorTiles
+          : createFullFloorTiles(room.width, room.height)
+
+        const hasTile = baseTiles.some(tile => tile.x === x && tile.y === y)
+        const floorTiles = hasTile
+          ? baseTiles.filter(tile => !(tile.x === x && tile.y === y))
+          : [...baseTiles, { x, y }]
+
+        return {
+          ...room,
+          floorTiles
+        }
+      }
+
+      const updatedRooms = state.rooms.map(toggleFloor)
+
+      return {
+        ...state,
+        rooms: updatedRooms,
+        currentRoom: toggleFloor(state.currentRoom)
+      }
+    }
+
+    case 'FILL_ROOM_FLOOR': {
+      if (!state.currentRoom) return state
+
+      const fillRoom = (room: Room) => {
+        if (room.id !== state.currentRoom!.id) return room
+
+        const floorTiles = createFullFloorTiles(room.width, room.height)
+        return {
+          ...room,
+          floorTiles
+        }
+      }
+
+      const updatedRooms = state.rooms.map(fillRoom)
+
+      return {
+        ...state,
+        rooms: updatedRooms,
+        currentRoom: fillRoom(state.currentRoom)
+      }
+    }
+
+    case 'CLEAR_ROOM_FLOOR': {
+      if (!state.currentRoom) return state
+
+      const protectedTiles = new Set<string>()
+
+      state.currentRoom.furniture.forEach(f => {
+        protectedTiles.add(`${f.x},${f.y}`)
+      })
+
+      if (state.currentRoom.spawnPoint) {
+        protectedTiles.add(`${state.currentRoom.spawnPoint.x},${state.currentRoom.spawnPoint.y}`)
+      }
+
+      state.players.forEach(player => {
+        const px = Math.round(player.x)
+        const py = Math.round(player.y)
+        if (px >= 0 && px < state.currentRoom!.width && py >= 0 && py < state.currentRoom!.height) {
+          protectedTiles.add(`${px},${py}`)
+        }
+      })
+
+      const clearRoom = (room: Room) => {
+        if (room.id !== state.currentRoom!.id) return room
+
+        const baseTiles = room.floorTiles && room.floorTiles.length > 0
+          ? room.floorTiles
+          : createFullFloorTiles(room.width, room.height)
+
+        const floorTiles = baseTiles.filter(tile => protectedTiles.has(`${tile.x},${tile.y}`))
+
+        return {
+          ...room,
+          floorTiles
+        }
+      }
+
+      const updatedRooms = state.rooms.map(clearRoom)
+
+      return {
+        ...state,
+        rooms: updatedRooms,
+        currentRoom: clearRoom(state.currentRoom)
       }
     }
 
@@ -292,6 +438,29 @@ const generateId = (prefix: string = '') => `${prefix}${Date.now()}-${Math.rando
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
 
+const createFullFloorTiles = (width: number, height: number) => {
+  const tiles: Array<{ x: number; y: number }> = []
+
+  for (let x = 0; x < width; x++) {
+    for (let y = 0; y < height; y++) {
+      tiles.push({ x, y })
+    }
+  }
+
+  return tiles
+}
+
+const ensureRoomFloorTiles = (room: Room): Room => {
+  const floorTiles = room.floorTiles && room.floorTiles.length > 0
+    ? room.floorTiles
+    : createFullFloorTiles(room.width, room.height)
+
+  return {
+    ...room,
+    floorTiles
+  }
+}
+
 const normalizeDoorway = (
   width: number,
   height: number,
@@ -373,6 +542,7 @@ const createRoom = (name: string, width: number, height: number): Room => {
     name,
     width,
     height,
+    floorTiles: createFullFloorTiles(width, height),
     furniture: [],
     walls: buildRoomWalls(width, height, doorway),
     doorway,

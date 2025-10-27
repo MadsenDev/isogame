@@ -1,4 +1,4 @@
-import { GameState, Furniture } from '../context/GameContext'
+import { GameState } from '../context/GameContext'
 import { PlayerComponent } from '../components/PlayerComponent'
 import { TileComponent } from '../components/TileComponent'
 import { FurnitureComponent } from '../components/FurnitureComponent'
@@ -11,8 +11,6 @@ export class GameEngine {
   private ctx: CanvasRenderingContext2D
   private state: GameState
   private dispatch: any
-  private animationId: number | null = null
-  
   // Components
   private playerComponent: PlayerComponent
   private tileComponent: TileComponent
@@ -95,7 +93,7 @@ export class GameEngine {
     const gameLoop = () => {
       this.update()
       this.render()
-      this.animationId = requestAnimationFrame(gameLoop)
+      requestAnimationFrame(gameLoop)
     }
     gameLoop()
   }
@@ -164,12 +162,10 @@ export class GameEngine {
     if (!this.state.currentRoom) return
 
     // Draw floor tiles
-    for (let x = 0; x < this.state.currentRoom.width; x++) {
-      for (let y = 0; y < this.state.currentRoom.height; y++) {
-        const screenPos = this.coordinateUtils.worldToScreen(x, y)
-        this.tileComponent.drawIsometricTile(x, y, '#90EE90', 1, 2, 1, screenPos)
-      }
-    }
+    this.state.currentRoom.floorTiles.forEach(tile => {
+      const screenPos = this.coordinateUtils.worldToScreen(tile.x, tile.y)
+      this.tileComponent.drawIsometricTile(tile.x, tile.y, '#90EE90', 1, 2, 1, screenPos)
+    })
 
     // Draw walls as continuous strips (meets the north peak and floor edges exactly)
 this.wallComponent.drawRoomWalls(
@@ -189,12 +185,13 @@ this.wallComponent.drawRoomWalls(
       
       // Check if position is valid for furniture placement
       const isValid = this.furnitureComponent.isValidFurniturePosition(
-        this.state.previewFurniture.x, 
+        this.state.previewFurniture.x,
         this.state.previewFurniture.y,
         this.state.currentRoom.width,
         this.state.currentRoom.height,
         this.state.currentRoom.furniture,
-        this.state.players
+        this.state.players,
+        this.state.currentRoom.floorTiles
       )
       
       if (isValid) {
@@ -209,9 +206,9 @@ this.wallComponent.drawRoomWalls(
     }
 
     // Draw hover grid position
-    if ((this.state.currentTool === 'move' || this.state.currentTool === 'furniture') && this.state.hoverGridPos) {
+    if ((this.state.currentTool === 'move' || this.state.currentTool === 'furniture' || this.state.currentTool === 'room') && this.state.hoverGridPos) {
       const screenPos = this.coordinateUtils.worldToScreen(this.state.hoverGridPos.x, this.state.hoverGridPos.y)
-      
+
       // Use different validation based on current tool
       let isValid: boolean
       if (this.state.currentTool === 'furniture') {
@@ -221,8 +218,38 @@ this.wallComponent.drawRoomWalls(
           this.state.currentRoom.width,
           this.state.currentRoom.height,
           this.state.currentRoom.furniture,
-          this.state.players
+          this.state.players,
+          this.state.currentRoom.floorTiles
         )
+      } else if (this.state.currentTool === 'room') {
+        const withinBounds = (
+          this.state.hoverGridPos.x >= 0 &&
+          this.state.hoverGridPos.x < this.state.currentRoom.width &&
+          this.state.hoverGridPos.y >= 0 &&
+          this.state.hoverGridPos.y < this.state.currentRoom.height
+        )
+
+        if (!withinBounds) {
+          isValid = false
+        } else {
+          const hasTile = this.state.currentRoom.floorTiles.some(tile =>
+            tile.x === this.state.hoverGridPos!.x && tile.y === this.state.hoverGridPos!.y
+          )
+
+          if (!hasTile) {
+            isValid = true
+          } else {
+            const hasFurniture = this.state.currentRoom.furniture.some(f => f.x === this.state.hoverGridPos!.x && f.y === this.state.hoverGridPos!.y)
+            const hasPlayer = this.state.players.some(player =>
+              Math.round(player.x) === this.state.hoverGridPos!.x && Math.round(player.y) === this.state.hoverGridPos!.y
+            )
+            const isSpawnTile = this.state.currentRoom.spawnPoint
+              ? this.state.currentRoom.spawnPoint.x === this.state.hoverGridPos!.x && this.state.currentRoom.spawnPoint.y === this.state.hoverGridPos!.y
+              : false
+
+            isValid = !(hasFurniture || hasPlayer || isSpawnTile)
+          }
+        }
       } else {
         isValid = this.isValidPlayerPosition(this.state.hoverGridPos.x, this.state.hoverGridPos.y, this.state.currentPlayerId)
       }
@@ -267,6 +294,11 @@ this.wallComponent.drawRoomWalls(
 
     // Check room bounds
     if (x < 0 || x >= this.state.currentRoom.width || y < 0 || y >= this.state.currentRoom.height) {
+      return false
+    }
+
+    const hasFloorTile = this.state.currentRoom.floorTiles.some(tile => tile.x === x && tile.y === y)
+    if (!hasFloorTile) {
       return false
     }
 
@@ -317,12 +349,13 @@ this.wallComponent.drawRoomWalls(
     } else if (this.state.currentTool === 'furniture' && this.state.isPlacing && this.state.selectedFurniture) {
       // Handle furniture placement
       if (this.furnitureComponent.isValidFurniturePosition(
-        gridX, 
-        gridY, 
-        this.state.currentRoom!.width, 
-        this.state.currentRoom!.height, 
-        this.state.currentRoom!.furniture, 
-        this.state.players
+        gridX,
+        gridY,
+        this.state.currentRoom!.width,
+        this.state.currentRoom!.height,
+        this.state.currentRoom!.furniture,
+        this.state.players,
+        this.state.currentRoom!.floorTiles
       )) {
         const furniture = {
           id: `furniture-${Date.now()}`,
@@ -330,21 +363,43 @@ this.wallComponent.drawRoomWalls(
           y: gridY,
           type: this.state.selectedFurniture
         }
-        
-        this.dispatch({ 
-          type: 'ADD_FURNITURE', 
-          payload: furniture 
+
+        this.dispatch({
+          type: 'ADD_FURNITURE',
+          payload: furniture
         })
-        
+
         // Stop placing after successful placement
-        this.dispatch({ 
-          type: 'SET_PLACING', 
-          payload: false 
+        this.dispatch({
+          type: 'SET_PLACING',
+          payload: false
         })
-        this.dispatch({ 
-          type: 'SELECT_FURNITURE', 
-          payload: null 
+        this.dispatch({
+          type: 'SELECT_FURNITURE',
+          payload: null
         })
+      }
+    } else if (this.state.currentTool === 'room') {
+      if (!this.state.currentRoom) return
+
+      if (gridX < 0 || gridX >= this.state.currentRoom.width || gridY < 0 || gridY >= this.state.currentRoom.height) {
+        return
+      }
+
+      const hasTile = this.state.currentRoom.floorTiles.some(tile => tile.x === gridX && tile.y === gridY)
+      if (!hasTile) {
+        this.dispatch({ type: 'TOGGLE_FLOOR_TILE', payload: { x: gridX, y: gridY } })
+        return
+      }
+
+      const hasFurniture = this.state.currentRoom.furniture.some(f => f.x === gridX && f.y === gridY)
+      const hasPlayer = this.state.players.some(player => Math.round(player.x) === gridX && Math.round(player.y) === gridY)
+      const isSpawnTile = this.state.currentRoom.spawnPoint
+        ? this.state.currentRoom.spawnPoint.x === gridX && this.state.currentRoom.spawnPoint.y === gridY
+        : false
+
+      if (!(hasFurniture || hasPlayer || isSpawnTile)) {
+        this.dispatch({ type: 'TOGGLE_FLOOR_TILE', payload: { x: gridX, y: gridY } })
       }
     }
   }
@@ -378,14 +433,18 @@ this.wallComponent.drawRoomWalls(
       const gridX = Math.round(worldPos.x)
       const gridY = Math.round(worldPos.y)
       this.dispatch({ type: 'SET_HOVER_GRID', payload: { x: gridX, y: gridY } })
-      
+
       if (this.state.isPlacing && this.state.selectedFurniture) {
         // Always show preview, but with different styling for invalid positions
-        this.dispatch({ 
-          type: 'SET_PREVIEW_FURNITURE', 
-          payload: { x: gridX, y: gridY, type: this.state.selectedFurniture } 
+        this.dispatch({
+          type: 'SET_PREVIEW_FURNITURE',
+          payload: { x: gridX, y: gridY, type: this.state.selectedFurniture }
         })
       }
+    } else if (this.state.currentTool === 'room') {
+      const gridX = Math.round(worldPos.x)
+      const gridY = Math.round(worldPos.y)
+      this.dispatch({ type: 'SET_HOVER_GRID', payload: { x: gridX, y: gridY } })
     }
   }
 }
