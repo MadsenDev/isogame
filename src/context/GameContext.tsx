@@ -69,7 +69,7 @@ export interface GameState {
 }
 
 // Action types
-type GameAction =
+export type GameAction =
   | { type: 'SET_TOOL'; payload: 'move' | 'furniture' | 'room' }
   | { type: 'SELECT_FURNITURE'; payload: string | null }
   | { type: 'SET_PLACING'; payload: boolean }
@@ -88,7 +88,7 @@ type GameAction =
   | { type: 'ADD_PLAYER'; payload: Player }
   | { type: 'SET_CURRENT_PLAYER'; payload: number }
   | { type: 'MOVE_PLAYER'; payload: { playerId: number; x: number; y: number; path: Array<{ x: number; y: number }> } }
-  | { type: 'SET_PLAYER_ACTION'; payload: { playerId: number; action: string } }
+  | { type: 'SET_PLAYER_ACTION'; payload: { playerId: number; action: Player['action'] } }
   | { type: 'ADD_CHAT_MESSAGE'; payload: ChatMessage }
   | { type: 'SET_SHOW_CHAT'; payload: boolean }
   | { type: 'SHOW_CONTEXT_MENU'; payload: { x: number; y: number; player: Player } }
@@ -131,7 +131,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
     case 'SET_CURRENT_ROOM':
       return { ...state, currentRoom: ensureRoomFloorTiles(action.payload) }
     
-    case 'DELETE_ROOM':
+    case 'DELETE_ROOM': {
       const remainingRooms = state.rooms.filter(room => room.id !== action.payload)
       const newCurrentRoom = state.currentRoom?.id === action.payload
         ? (remainingRooms[0] ? ensureRoomFloorTiles(remainingRooms[0]) : null)
@@ -141,6 +141,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         rooms: remainingRooms,
         currentRoom: newCurrentRoom
       }
+    }
     
     case 'RENAME_ROOM':
       return {
@@ -381,7 +382,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         ...state,
         players: state.players.map(player =>
           player.id === action.payload.playerId
-            ? { ...player, action: action.payload.action as any, actionTimer: 0 }
+            ? { ...player, action: action.payload.action, actionTimer: 0 }
             : player
         )
       }
@@ -679,6 +680,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
 }
 
 // Hook
+// This hook intentionally lives alongside the provider for convenient imports.
+// eslint-disable-next-line react-refresh/only-export-components
 export function useGame() {
   const context = useContext(GameContext)
   if (!context) {

@@ -1,4 +1,5 @@
-import { GameState } from '../context/GameContext'
+import type { Dispatch } from 'react'
+import { GameState, GameAction } from '../context/GameContext'
 import { PlayerComponent } from '../components/PlayerComponent'
 import { TileComponent } from '../components/TileComponent'
 import { FurnitureComponent } from '../components/FurnitureComponent'
@@ -10,7 +11,7 @@ export class GameEngine {
   private canvas: HTMLCanvasElement
   private ctx: CanvasRenderingContext2D
   private state: GameState
-  private dispatch: any
+  private dispatch: Dispatch<GameAction>
   // Components
   private playerComponent: PlayerComponent
   private tileComponent: TileComponent
@@ -24,7 +25,7 @@ export class GameEngine {
   private readonly tileWidth = this.gridSize * 2
   private readonly tileHeight = this.gridSize
 
-  constructor(canvas: HTMLCanvasElement, state: GameState, dispatch: any) {
+  constructor(canvas: HTMLCanvasElement, state: GameState, dispatch: Dispatch<GameAction>) {
     this.canvas = canvas
     this.ctx = canvas.getContext('2d')!
     this.state = state
@@ -55,14 +56,22 @@ export class GameEngine {
 
   public updateState(newState: GameState) {
     this.state = newState
-    
+
     // Update coordinate utils with new room dimensions
     if (newState.currentRoom) {
       this.coordinateUtils.updateRoomSize(newState.currentRoom.width, newState.currentRoom.height)
     }
-    
+
     // Update coordinate utils with new canvas dimensions
     this.coordinateUtils.updateCanvasSize(this.canvas.width, this.canvas.height)
+  }
+
+  public worldToScreen(x: number, y: number) {
+    return this.coordinateUtils.worldToScreen(x, y)
+  }
+
+  public screenToWorld(x: number, y: number) {
+    return this.coordinateUtils.screenToWorld(x, y)
   }
 
   private setupEventListeners() {

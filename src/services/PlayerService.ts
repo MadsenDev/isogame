@@ -52,8 +52,10 @@ export class PlayerService {
     const player = this.players.get(playerId)
     if (!player) return
 
+    const timestamp = Date.now()
+
     switch (action.type) {
-      case 'MOVE':
+      case 'MOVE': {
         player.x = action.payload.x
         player.y = action.payload.y
         player.targetX = action.payload.x
@@ -61,43 +63,85 @@ export class PlayerService {
         player.path = action.payload.path
         player.pathIndex = 0
         player.isMoving = true
-        player.lastSeen = Date.now()
-        break
+        player.lastSeen = timestamp
+        this.emitEvent({
+          playerId,
+          type: 'move',
+          data: action.payload,
+          timestamp
+        })
+        return
+      }
 
-      case 'SET_ACTION':
-        player.action = action.payload.action as any
+      case 'SET_ACTION': {
+        player.action = action.payload.action
         player.actionTimer = 0
-        break
+        this.emitEvent({
+          playerId,
+          type: 'action',
+          data: { action: action.payload.action },
+          timestamp
+        })
+        return
+      }
 
-      case 'UPDATE_POSITION':
+      case 'UPDATE_POSITION': {
         player.x = action.payload.x
         player.y = action.payload.y
-        player.lastSeen = Date.now()
-        break
+        player.lastSeen = timestamp
+        this.emitEvent({
+          playerId,
+          type: 'position',
+          data: { x: action.payload.x, y: action.payload.y },
+          timestamp
+        })
+        return
+      }
 
-      case 'SET_TYPING':
+      case 'SET_TYPING': {
         player.isTyping = action.payload.isTyping
-        break
+        this.emitEvent({
+          playerId,
+          type: 'typing',
+          data: { isTyping: action.payload.isTyping },
+          timestamp
+        })
+        return
+      }
 
-      case 'SEND_MESSAGE':
+      case 'SEND_MESSAGE': {
         player.currentChatMessage = action.payload.message
-        break
+        this.emitEvent({
+          playerId,
+          type: 'message',
+          data: { message: action.payload.message },
+          timestamp
+        })
+        return
+      }
 
-      case 'JOIN_ROOM':
+      case 'JOIN_ROOM': {
         player.roomId = action.payload.roomId
-        break
+        this.emitEvent({
+          playerId,
+          type: 'room',
+          data: { roomId: action.payload.roomId },
+          timestamp
+        })
+        return
+      }
 
-      case 'LEAVE_ROOM':
-        player.roomId = ''
-        break
+      case 'LEAVE_ROOM': {
+        player.roomId = action.payload.roomId
+        this.emitEvent({
+          playerId,
+          type: 'room',
+          data: { roomId: action.payload.roomId },
+          timestamp
+        })
+        return
+      }
     }
-
-    this.emitEvent({
-      playerId,
-      type: action.type.toLowerCase() as any,
-      data: action.payload,
-      timestamp: Date.now()
-    })
   }
 
   // Get player by ID
