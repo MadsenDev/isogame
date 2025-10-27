@@ -85,26 +85,31 @@ export class GameEngine {
 
   private setupEventListeners() {
     this.canvas.addEventListener('click', (e) => {
-      const rect = this.canvas.getBoundingClientRect()
-      const x = e.clientX - rect.left
-      const y = e.clientY - rect.top
+      const { x, y } = this.getCanvasCoordinates(e)
       this.handleClick(x, y, e)
     })
 
     this.canvas.addEventListener('contextmenu', (e) => {
       e.preventDefault()
-      const rect = this.canvas.getBoundingClientRect()
-      const x = e.clientX - rect.left
-      const y = e.clientY - rect.top
+      const { x, y } = this.getCanvasCoordinates(e)
       this.handleRightClick(x, y)
     })
 
     this.canvas.addEventListener('mousemove', (e) => {
-      const rect = this.canvas.getBoundingClientRect()
-      const x = e.clientX - rect.left
-      const y = e.clientY - rect.top
+      const { x, y } = this.getCanvasCoordinates(e)
       this.handleMouseMove(x, y)
     })
+  }
+
+  private getCanvasCoordinates(event: MouseEvent): { x: number; y: number } {
+    const rect = this.canvas.getBoundingClientRect()
+    const scaleX = this.canvas.width / rect.width
+    const scaleY = this.canvas.height / rect.height
+
+    return {
+      x: (event.clientX - rect.left) * scaleX,
+      y: (event.clientY - rect.top) * scaleY
+    }
   }
 
   private startGameLoop() {
