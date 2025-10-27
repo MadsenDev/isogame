@@ -97,10 +97,6 @@ export const RoomCustomization: React.FC = () => {
     )
   }
 
-  const handleSetTileTexture = (x: number, y: number) => {
-    roomManager.setTileTexture(state.currentRoom!.id, x, y, selectedTexture)
-  }
-
   if (!state?.currentRoom || !roomManager) return null
 
   const handleSetFloorTexture = () => {

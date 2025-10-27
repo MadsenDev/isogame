@@ -8,8 +8,11 @@ export interface Wall {
 
 export class WallComponent {
   private ctx: CanvasRenderingContext2D
+  private baseTileWidth: number
+  private baseTileHeight: number
   private tileWidth: number
   private tileHeight: number
+  private zoom = 1
   private coordinateUtils: CoordinateUtils
 
   // Outward shift in grid cells (kept as 2 per your setup)
@@ -22,9 +25,17 @@ export class WallComponent {
     coordinateUtils: CoordinateUtils
   ) {
     this.ctx = ctx
+    this.baseTileWidth = tileWidth
+    this.baseTileHeight = tileHeight
     this.tileWidth = tileWidth
     this.tileHeight = tileHeight
     this.coordinateUtils = coordinateUtils
+  }
+
+  public setZoom(zoom: number) {
+    this.zoom = zoom
+    this.tileWidth = this.baseTileWidth * zoom
+    this.tileHeight = this.baseTileHeight * zoom
   }
 
   /** Draw dynamic wall segments that follow the current floor layout */
@@ -80,7 +91,7 @@ export class WallComponent {
     this.ctx.fill()
 
     this.ctx.strokeStyle = edgeColor
-    this.ctx.lineWidth = 2
+    this.ctx.lineWidth = Math.max(2, 2 * this.zoom)
     this.ctx.beginPath()
     this.ctx.moveTo(topLeft.x, topLeft.y)
     this.ctx.lineTo(topRight.x, topRight.y)
@@ -109,7 +120,7 @@ export class WallComponent {
     this.ctx.fill()
 
     this.ctx.strokeStyle = edgeColor
-    this.ctx.lineWidth = 2
+    this.ctx.lineWidth = Math.max(2, 2 * this.zoom)
     this.ctx.beginPath()
     this.ctx.moveTo(top.x, top.y)
     this.ctx.lineTo(bottom.x, bottom.y)
@@ -156,7 +167,7 @@ private drawDoorway(x: number, y: number, type: 'north-east' | 'north-west') {
 
   // Add doorway frame (slightly lighter on the west wall)
   this.ctx.strokeStyle = type === 'north-west' ? '#A0522D' : '#8B4513'
-  this.ctx.lineWidth = 3
+  this.ctx.lineWidth = Math.max(2, 3 * this.zoom)
   this.ctx.stroke()
 
   this.ctx.restore()

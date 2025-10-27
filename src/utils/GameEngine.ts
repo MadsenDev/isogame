@@ -22,8 +22,11 @@ export class GameEngine {
 
   // Game constants
   private readonly gridSize = 32
-  private readonly tileWidth = this.gridSize * 2
-  private readonly tileHeight = this.gridSize
+  private readonly baseTileWidth = this.gridSize * 2
+  private readonly baseTileHeight = this.gridSize
+  private zoom = 1
+  private readonly minZoom = 0.35
+  private readonly maxZoom = 2
 
   constructor(canvas: HTMLCanvasElement, state: GameState, dispatch: Dispatch<GameAction>) {
     this.canvas = canvas
@@ -33,19 +36,22 @@ export class GameEngine {
     
     // Initialize coordinate utils
     this.coordinateUtils = new CoordinateUtils(
-      this.tileWidth,
-      this.tileHeight,
+      this.baseTileWidth,
+      this.baseTileHeight,
       canvas.width,
       canvas.height,
       state.currentRoom?.width || 0,
-      state.currentRoom?.height || 0
+      state.currentRoom?.height || 0,
+      this.zoom
     )
-    
+
     // Initialize components
     this.playerComponent = new PlayerComponent(this.ctx, this.gridSize)
     this.tileComponent = new TileComponent(this.ctx, this.gridSize)
-    this.furnitureComponent = new FurnitureComponent(this.ctx, this.tileWidth, this.tileHeight, this.coordinateUtils)
-    this.wallComponent = new WallComponent(this.ctx, this.tileWidth, this.tileHeight, this.coordinateUtils)
+    this.furnitureComponent = new FurnitureComponent(this.ctx, this.baseTileWidth, this.baseTileHeight, this.coordinateUtils)
+    this.wallComponent = new WallComponent(this.ctx, this.baseTileWidth, this.baseTileHeight, this.coordinateUtils)
+
+    this.applyZoom(this.calculateZoom())
     
     // Initialize pathfinder with validation function
     this.pathfinder = new Pathfinder((x, y, excludePlayerId) => this.isValidPlayerPosition(x, y, excludePlayerId))
@@ -64,6 +70,8 @@ export class GameEngine {
 
     // Update coordinate utils with new canvas dimensions
     this.coordinateUtils.updateCanvasSize(this.canvas.width, this.canvas.height)
+
+    this.applyZoom(this.calculateZoom())
   }
 
   public worldToScreen(x: number, y: number) {
@@ -289,6 +297,51 @@ export class GameEngine {
         this.tileComponent.drawTargetIndicator(player.targetX, player.targetY, targetScreenPos)
       }
     })
+  }
+
+  private calculateZoom(): number {
+    if (!this.state.currentRoom) return this.zoom
+
+    const { width, height } = this.state.currentRoom
+
+    if (width === 0 || height === 0) {
+      return this.zoom
+    }
+
+    const marginRatio = 0.1
+    const availableWidth = this.canvas.width * (1 - marginRatio)
+    const availableHeight = this.canvas.height * (1 - marginRatio)
+
+    const roomPixelWidth = (width + height) * (this.baseTileWidth / 2)
+    const roomPixelHeight = (width + height) * (this.baseTileHeight / 2)
+
+    if (roomPixelWidth === 0 || roomPixelHeight === 0) {
+      return this.zoom
+    }
+
+    const widthScale = availableWidth / roomPixelWidth
+    const heightScale = availableHeight / roomPixelHeight
+
+    const desiredZoom = Math.min(widthScale, heightScale)
+
+    if (!isFinite(desiredZoom) || desiredZoom <= 0) {
+      return this.zoom
+    }
+
+    return Math.min(this.maxZoom, Math.max(this.minZoom, desiredZoom))
+  }
+
+  private applyZoom(zoom: number) {
+    if (zoom === this.zoom) {
+      return
+    }
+
+    this.zoom = zoom
+    this.coordinateUtils.updateZoom(this.zoom)
+    this.playerComponent.setZoom(this.zoom)
+    this.tileComponent.setZoom(this.zoom)
+    this.furnitureComponent.setZoom(this.zoom)
+    this.wallComponent.setZoom(this.zoom)
   }
 
   private isValidPlayerPosition(x: number, y: number, excludePlayerId: number = -1) {

@@ -23,15 +23,26 @@ export interface PreviewFurniture {
 
 export class FurnitureComponent {
   private ctx: CanvasRenderingContext2D
+  private baseTileWidth: number
+  private baseTileHeight: number
   private tileWidth: number
   private tileHeight: number
+  private zoom = 1
   private coordinateUtils: CoordinateUtils
 
   constructor(ctx: CanvasRenderingContext2D, tileWidth: number, tileHeight: number, coordinateUtils: CoordinateUtils) {
     this.ctx = ctx
+    this.baseTileWidth = tileWidth
+    this.baseTileHeight = tileHeight
     this.tileWidth = tileWidth
     this.tileHeight = tileHeight
     this.coordinateUtils = coordinateUtils
+  }
+
+  public setZoom(zoom: number) {
+    this.zoom = zoom
+    this.tileWidth = this.baseTileWidth * zoom
+    this.tileHeight = this.baseTileHeight * zoom
   }
 
   private getFurnitureType(type: string): FurnitureType | undefined {
@@ -64,7 +75,8 @@ export class FurnitureComponent {
     this.ctx.closePath()
     this.ctx.fill()
     
-    this.ctx.font = '20px Arial'
+    const fontSize = Math.max(12, 20 * this.zoom)
+    this.ctx.font = `${fontSize}px Arial`
     this.ctx.textAlign = 'center'
     this.ctx.fillStyle = '#000'
     this.ctx.fillText(type.emoji, 0, 5)
@@ -91,7 +103,8 @@ export class FurnitureComponent {
     this.ctx.closePath()
     this.ctx.fill()
     
-    this.ctx.font = '20px Arial'
+    const fontSize = Math.max(12, 20 * this.zoom)
+    this.ctx.font = `${fontSize}px Arial`
     this.ctx.textAlign = 'center'
     this.ctx.fillStyle = '#000'
     this.ctx.fillText(type.emoji, 0, 5)
