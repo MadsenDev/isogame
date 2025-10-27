@@ -4,12 +4,20 @@ export class PlayerComponent {
   private ctx: CanvasRenderingContext2D
   private characterSprites: Map<string, HTMLImageElement> = new Map()
   private characterAnimations: Map<string, HTMLImageElement[]> = new Map()
+  private baseGridSize: number
   private gridSize: number
+  private zoom = 1
 
   constructor(ctx: CanvasRenderingContext2D, gridSize: number) {
     this.ctx = ctx
+    this.baseGridSize = gridSize
     this.gridSize = gridSize
     this.loadCharacterSprites()
+  }
+
+  public setZoom(zoom: number) {
+    this.zoom = zoom
+    this.gridSize = this.baseGridSize * zoom
   }
 
   private loadCharacterSprites() {
@@ -117,7 +125,7 @@ export class PlayerComponent {
       
       if (isCurrentPlayer) {
         this.ctx.strokeStyle = '#FFD700'
-        this.ctx.lineWidth = 3
+        this.ctx.lineWidth = Math.max(2, 3 * this.zoom)
         this.ctx.setLineDash([5, 5])
         this.ctx.strokeRect(-spriteSize / 2, -spriteSize / 2 + offsetY, spriteSize, spriteSize)
         this.ctx.setLineDash([])
@@ -128,16 +136,17 @@ export class PlayerComponent {
       this.ctx.arc(0, 0, this.gridSize * player.size, 0, Math.PI * 2)
       this.ctx.fill()
       this.ctx.strokeStyle = '#333'
-      this.ctx.lineWidth = 2
+      this.ctx.lineWidth = Math.max(1, 2 * this.zoom)
       this.ctx.stroke()
       if (isCurrentPlayer) {
         this.ctx.strokeStyle = '#FFD700'
-        this.ctx.lineWidth = 3
+        this.ctx.lineWidth = Math.max(2, 3 * this.zoom)
         this.ctx.stroke()
       }
     }
     
-    this.ctx.font = '12px Arial'
+    const fontSize = Math.max(10, 12 * this.zoom)
+    this.ctx.font = `${fontSize}px Arial`
     this.ctx.textAlign = 'center'
     this.ctx.fillStyle = player.color
     this.ctx.fillText(player.name, 0, -this.gridSize * 2 - 10)

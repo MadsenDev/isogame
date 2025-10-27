@@ -1,16 +1,26 @@
 export class TileComponent {
   private ctx: CanvasRenderingContext2D
   private tilesheet: HTMLImageElement | null = null
+  private baseGridSize: number
   private gridSize: number
   private tileWidth: number
   private tileHeight: number
+  private zoom = 1
 
   constructor(ctx: CanvasRenderingContext2D, gridSize: number) {
     this.ctx = ctx
+    this.baseGridSize = gridSize
     this.gridSize = gridSize
     this.tileWidth = this.gridSize * 2
     this.tileHeight = this.gridSize
     this.loadTilesheet()
+  }
+
+  public setZoom(zoom: number) {
+    this.zoom = zoom
+    this.gridSize = this.baseGridSize * zoom
+    this.tileWidth = this.baseGridSize * 2 * zoom
+    this.tileHeight = this.baseGridSize * zoom
   }
 
   private loadTilesheet() {
@@ -79,7 +89,7 @@ export class TileComponent {
     }
 
     this.ctx.strokeStyle = '#333'
-    this.ctx.lineWidth = 1
+    this.ctx.lineWidth = Math.max(1, this.zoom)
     drawDiamondPath()
     this.ctx.stroke()
 
@@ -131,7 +141,7 @@ export class TileComponent {
     const color = isValid ? '#00FF00' : '#FF0000'
     
     this.ctx.strokeStyle = color
-    this.ctx.lineWidth = 2
+    this.ctx.lineWidth = 2 * this.zoom
     this.ctx.setLineDash([3, 3])
     this.ctx.beginPath()
     this.ctx.moveTo(0, -this.tileHeight / 2)
@@ -149,7 +159,7 @@ export class TileComponent {
     
     this.ctx.save()
     this.ctx.strokeStyle = '#00AAFF'
-    this.ctx.lineWidth = 3
+    this.ctx.lineWidth = 3 * this.zoom
     this.ctx.setLineDash([5, 5])
     
     for (let i = 0; i < path.length - 1; i++) {
@@ -170,14 +180,14 @@ export class TileComponent {
     this.ctx.translate(screenPos.x, screenPos.y)
     
     this.ctx.strokeStyle = '#FFD700'
-    this.ctx.lineWidth = 3
+    this.ctx.lineWidth = Math.max(2, 3 * this.zoom)
     this.ctx.setLineDash([5, 5])
     this.ctx.beginPath()
     this.ctx.arc(0, 0, this.gridSize * 0.8, 0, Math.PI * 2)
     this.ctx.stroke()
     
     this.ctx.strokeStyle = '#FFD700'
-    this.ctx.lineWidth = 2
+    this.ctx.lineWidth = Math.max(1, 2 * this.zoom)
     this.ctx.setLineDash([])
     this.ctx.beginPath()
     this.ctx.moveTo(-10, 0)
