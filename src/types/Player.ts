@@ -49,9 +49,11 @@ export interface PlayerState {
 }
 
 // Player action types for networking
-export type PlayerAction = 
-  | { type: 'MOVE'; payload: { x: number; y: number; path: Array<{ x: number; y: number }> } }
-  | { type: 'SET_ACTION'; payload: { action: string } }
+export type PlayerMovePayload = { x: number; y: number; path: Array<{ x: number; y: number }> }
+
+export type PlayerAction =
+  | { type: 'MOVE'; payload: PlayerMovePayload }
+  | { type: 'SET_ACTION'; payload: { action: PlayerState['action'] } }
   | { type: 'UPDATE_POSITION'; payload: { x: number; y: number } }
   | { type: 'SET_TYPING'; payload: { isTyping: boolean } }
   | { type: 'SEND_MESSAGE'; payload: { message: string } }
@@ -59,9 +61,12 @@ export type PlayerAction =
   | { type: 'LEAVE_ROOM'; payload: { roomId: string } }
 
 // Player event types
-export interface PlayerEvent {
-  playerId: number
-  type: 'join' | 'leave' | 'move' | 'action' | 'message' | 'typing'
-  data: any
-  timestamp: number
-}
+export type PlayerEvent =
+  | { playerId: number; type: 'join'; data: PlayerState; timestamp: number }
+  | { playerId: number; type: 'leave'; data: PlayerState; timestamp: number }
+  | { playerId: number; type: 'move'; data: PlayerMovePayload; timestamp: number }
+  | { playerId: number; type: 'action'; data: { action: PlayerState['action'] }; timestamp: number }
+  | { playerId: number; type: 'typing'; data: { isTyping: boolean }; timestamp: number }
+  | { playerId: number; type: 'message'; data: { message: string }; timestamp: number }
+  | { playerId: number; type: 'room'; data: { roomId: string }; timestamp: number }
+  | { playerId: number; type: 'position'; data: { x: number; y: number }; timestamp: number }

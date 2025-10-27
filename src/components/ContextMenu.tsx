@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react'
-import { useGame } from '../context/GameContext'
+import { useGame, Player } from '../context/GameContext'
 
 const ContextMenu: React.FC = () => {
   const { state, dispatch } = useGame()
 
-  const handleAction = (action: string) => {
+  const handleAction = (action: Player['action']) => {
     if (state.contextMenuTarget) {
       dispatch({
         type: 'SET_PLAYER_ACTION',

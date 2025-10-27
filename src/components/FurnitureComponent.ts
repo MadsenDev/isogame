@@ -1,4 +1,12 @@
 import { CoordinateUtils } from '../utils/CoordinateUtils'
+import type { Player } from '../context/GameContext'
+
+interface FurnitureType {
+  name: string
+  color: string
+  size: number
+  emoji: string
+}
 
 export interface Furniture {
   id: string
@@ -26,8 +34,8 @@ export class FurnitureComponent {
     this.coordinateUtils = coordinateUtils
   }
 
-  private getFurnitureType(type: string) {
-    const types: Record<string, any> = {
+  private getFurnitureType(type: string): FurnitureType | undefined {
+    const types: Record<string, FurnitureType> = {
       chair: { name: 'Chair', color: '#8B4513', size: 0.6, emoji: '🪑' },
       table: { name: 'Table', color: '#654321', size: 1.0, emoji: '🪑' },
       bed: { name: 'Bed', color: '#FF69B4', size: 1.2, emoji: '🛏️' },
@@ -97,7 +105,7 @@ export class FurnitureComponent {
     roomWidth: number,
     roomHeight: number,
     furniture: Furniture[],
-    players: any[],
+    players: Player[],
     floorTiles: Array<{ x: number; y: number }>
   ): boolean {
     // Check room bounds

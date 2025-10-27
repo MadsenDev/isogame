@@ -24,7 +24,7 @@ export class TileComponent {
     }
   }
 
-  public drawIsometricTile(x: number, y: number, color: string, size: number = 1, textureRow: number = 1, textureCol: number = 3, screenPos: { x: number; y: number }) {
+  public drawIsometricTile(_x: number, _y: number, color: string, size: number = 1, textureRow: number = 1, textureCol: number = 3, screenPos: { x: number; y: number }) {
     const width = this.tileWidth * size
     const height = this.tileHeight * size
     
@@ -87,7 +87,7 @@ export class TileComponent {
     this.ctx.restore()
   }
 
-  public drawHoverGrid(x: number, y: number, screenPos: { x: number; y: number }, isValid: boolean) {
+  public drawHoverGrid(_x: number, _y: number, screenPos: { x: number; y: number }, isValid: boolean) {
     this.ctx.save()
     this.ctx.translate(screenPos.x, screenPos.y)
     
@@ -128,7 +128,7 @@ export class TileComponent {
     this.ctx.restore()
   }
 
-  public drawTargetIndicator(x: number, y: number, screenPos: { x: number; y: number }) {
+  public drawTargetIndicator(_x: number, _y: number, screenPos: { x: number; y: number }) {
     this.ctx.save()
     this.ctx.translate(screenPos.x, screenPos.y)
     

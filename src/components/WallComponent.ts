@@ -197,10 +197,6 @@ private drawDoorway(x: number, y: number, type: 'north-east' | 'north-west') {
     return walls
   }
 
-  public drawWall(_wall: Wall) {
-    // not used in continuous mode
-  }
-
   private darkenColor(color: string, amount: number): string {
     const hex = color.replace('#', '')
     const r = Math.max(0, parseInt(hex.slice(0, 2), 16) - amount * 255)
