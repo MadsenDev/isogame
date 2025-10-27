@@ -38,6 +38,13 @@ export interface Room {
   spawnPoint?: { x: number; y: number }
 }
 
+export type RoomLayoutUpdate = {
+  width: number
+  height: number
+  doorway?: { x: number; y: number; type: 'north-east' | 'north-west' }
+  spawnPoint?: { x: number; y: number }
+}
+
 export interface ChatMessage {
   text: string
   timestamp: number
@@ -68,6 +75,10 @@ type GameAction =
   | { type: 'SET_CURRENT_ROOM'; payload: Room }
   | { type: 'DELETE_ROOM'; payload: string }
   | { type: 'RENAME_ROOM'; payload: { roomId: string; newName: string } }
+  | {
+      type: 'UPDATE_ROOM_LAYOUT'
+      payload: { roomId: string } & RoomLayoutUpdate
+    }
   | { type: 'ADD_FURNITURE'; payload: Furniture }
   | { type: 'ADD_PLAYER'; payload: Player }
   | { type: 'SET_CURRENT_PLAYER'; payload: number }
@@ -129,8 +140,8 @@ function gameReducer(state: GameState, action: GameAction): GameState {
     case 'RENAME_ROOM':
       return {
         ...state,
-        rooms: state.rooms.map(room => 
-          room.id === action.payload.roomId 
+        rooms: state.rooms.map(room =>
+          room.id === action.payload.roomId
             ? { ...room, name: action.payload.newName }
             : room
         ),
@@ -138,7 +149,50 @@ function gameReducer(state: GameState, action: GameAction): GameState {
           ? { ...state.currentRoom, name: action.payload.newName }
           : state.currentRoom
       }
-    
+
+    case 'UPDATE_ROOM_LAYOUT': {
+      const { roomId, width, height } = action.payload
+      const doorway = normalizeDoorway(width, height, action.payload.doorway)
+
+      const spawnPoint = normalizeSpawnPoint(
+        width,
+        height,
+        action.payload.spawnPoint ?? defaultSpawnFromDoorway(width, height, doorway)
+      )
+
+      const updateRoomLayout = (room: Room) => {
+        if (room.id !== roomId) return room
+
+        const filteredFurniture = room.furniture.filter(
+          furniture =>
+            furniture.x >= 0 &&
+            furniture.y >= 0 &&
+            furniture.x < width &&
+            furniture.y < height
+        )
+
+        return {
+          ...room,
+          width,
+          height,
+          furniture: filteredFurniture,
+          walls: buildRoomWalls(width, height, doorway),
+          doorway,
+          spawnPoint
+        }
+      }
+
+      const updatedRooms = state.rooms.map(updateRoomLayout)
+
+      return {
+        ...state,
+        rooms: updatedRooms,
+        currentRoom: state.currentRoom?.id === roomId
+          ? updateRoomLayout(state.currentRoom)
+          : state.currentRoom
+      }
+    }
+
     case 'ADD_FURNITURE':
       if (!state.currentRoom) return state
       return {
@@ -229,55 +283,98 @@ const GameContext = createContext<{
     selectRoom: (room: Room) => void
     deleteRoom: (roomId: string) => void
     renameRoom: (roomId: string, newName: string) => void
+    updateLayout: (roomId: string, layout: RoomLayoutUpdate) => void
   }
 } | null>(null)
 
 // Helper function to generate unique IDs
 const generateId = (prefix: string = '') => `${prefix}${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
 
+const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
+
+const normalizeDoorway = (
+  width: number,
+  height: number,
+  doorway?: { x: number; y: number; type: 'north-east' | 'north-west' }
+) => {
+  if (!doorway) return undefined
+
+  if (doorway.type === 'north-east') {
+    const x = clamp(Math.round(doorway.x), 0, Math.max(width - 1, 0))
+    return { x, y: -1, type: 'north-east' as const }
+  }
+
+  const y = clamp(Math.round(doorway.y), 0, Math.max(height - 1, 0))
+  return { x: -1, y, type: 'north-west' as const }
+}
+
+const normalizeSpawnPoint = (width: number, height: number, spawnPoint?: { x: number; y: number }) => {
+  if (!spawnPoint) return undefined
+
+  const x = clamp(Math.round(spawnPoint.x), 0, Math.max(width - 1, 0))
+  const y = clamp(Math.round(spawnPoint.y), 0, Math.max(height - 1, 0))
+
+  return { x, y }
+}
+
+const buildRoomWalls = (
+  width: number,
+  height: number,
+  doorway?: { x: number; y: number; type: 'north-east' | 'north-west' }
+) => {
+  const walls: Array<{ x: number; y: number; type: string }> = []
+
+  for (let x = 0; x < width; x++) {
+    if (!(doorway?.type === 'north-east' && doorway.x === x)) {
+      walls.push({ x, y: -1, type: 'north-east' })
+    }
+  }
+
+  for (let y = 0; y < height; y++) {
+    if (!(doorway?.type === 'north-west' && doorway.y === y)) {
+      walls.push({ x: -1, y, type: 'north-west' })
+    }
+  }
+
+  return walls
+}
+
+const defaultSpawnFromDoorway = (
+  width: number,
+  height: number,
+  doorway?: { x: number; y: number; type: 'north-east' | 'north-west' }
+) => {
+  if (!doorway) {
+    return { x: Math.floor(width / 2), y: Math.floor(height / 2) }
+  }
+
+  if (doorway.type === 'north-east') {
+    return { x: clamp(doorway.x, 0, Math.max(width - 1, 0)), y: 0 }
+  }
+
+  return { x: 0, y: clamp(doorway.y, 0, Math.max(height - 1, 0)) }
+}
+
 // Helper function to create a new room
 const createRoom = (name: string, width: number, height: number): Room => {
-  // Generate walls for the room borders
-  const walls: Array<{ x: number; y: number; type: string }> = []
-  
-  // Generate walls for north-east border (top-right edge)
-  for (let x = 0; x < width; x++) {
-    walls.push({
-      x: x,
-      y: -1, // One row above the room
-      type: 'north-east'
-    })
-  }
-  
-  // Generate walls for north-west border (top-left edge)
-  for (let y = 0; y < height; y++) {
-    walls.push({
-      x: -1, // One column to the left of the room
-      y: y,
-      type: 'north-west'
-    })
-  }
-  
-  // Create doorway in the middle of the north-east wall (top-right edge)
-  const doorwayX = Math.floor(width / 2)
-  const doorwayY = -1
-  const doorway = { x: doorwayX, y: doorwayY, type: 'north-east' as const }
-  
-  // Remove the wall tile where the doorway is
-  const wallsWithoutDoorway = walls.filter(wall => 
-    !(wall.x === doorwayX && wall.y === doorwayY)
-  )
-  
-  // Create spawn point just inside the doorway
-  const spawnPoint = { x: doorwayX, y: 0 }
-  
+  const doorway = normalizeDoorway(width, height, {
+    x: Math.floor(width / 2),
+    y: -1,
+    type: 'north-east'
+  })
+
+  const spawnPoint = normalizeSpawnPoint(width, height, {
+    x: doorway?.x ?? Math.floor(width / 2),
+    y: 0
+  })
+
   return {
     id: generateId('room-'),
     name,
     width,
     height,
     furniture: [],
-    walls: wallsWithoutDoorway,
+    walls: buildRoomWalls(width, height, doorway),
     doorway,
     spawnPoint
   }
@@ -393,6 +490,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
     },
     renameRoom: (roomId: string, newName: string) => {
       dispatch({ type: 'RENAME_ROOM', payload: { roomId, newName } })
+    },
+    updateLayout: (roomId: string, layout: RoomLayoutUpdate) => {
+      dispatch({ type: 'UPDATE_ROOM_LAYOUT', payload: { roomId, ...layout } })
     }
   }
 
