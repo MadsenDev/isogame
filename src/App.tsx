@@ -6,7 +6,6 @@ import ChatSystem from './components/ChatSystem'
 import PlayerInfo from './components/PlayerInfo'
 import ContextMenu from './components/ContextMenu'
 import { RoomManager } from './components/RoomManager'
-import RoomEditor from './components/RoomEditor'
 import { GameProvider, useGame } from './context/GameContext'
 
 function App() {
@@ -21,7 +20,6 @@ function App() {
         <PlayerInfo />
         <ContextMenu />
         <RoomManagerWrapper />
-        <RoomEditorWrapper />
       </div>
     </GameProvider>
   )
@@ -42,21 +40,6 @@ function RoomManagerWrapper() {
         onRoomCreate={roomManager.createRoom}
         onRoomDelete={roomManager.deleteRoom}
         onRoomRename={roomManager.renameRoom}
-      />
-    </div>
-  )
-}
-
-function RoomEditorWrapper() {
-  const { state, roomManager } = useGame()
-
-  if (!state || !roomManager) return null
-
-  return (
-    <div className="absolute bottom-4 right-4 z-50">
-      <RoomEditor
-        room={state.currentRoom}
-        onUpdateLayout={(roomId, layout) => roomManager.updateLayout(roomId, layout)}
       />
     </div>
   )

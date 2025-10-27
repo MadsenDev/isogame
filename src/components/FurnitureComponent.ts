@@ -91,12 +91,25 @@ export class FurnitureComponent {
     this.ctx.restore()
   }
 
-  public isValidFurniturePosition(x: number, y: number, roomWidth: number, roomHeight: number, furniture: Furniture[], players: any[]): boolean {
+  public isValidFurniturePosition(
+    x: number,
+    y: number,
+    roomWidth: number,
+    roomHeight: number,
+    furniture: Furniture[],
+    players: any[],
+    floorTiles: Array<{ x: number; y: number }>
+  ): boolean {
     // Check room bounds
     if (x < 0 || x >= roomWidth || y < 0 || y >= roomHeight) {
       return false
     }
-    
+
+    const hasFloorTile = floorTiles.some(tile => tile.x === x && tile.y === y)
+    if (!hasFloorTile) {
+      return false
+    }
+
     // Check if position is already occupied by furniture
     if (furniture.some(f => f.x === x && f.y === y)) {
       return false
