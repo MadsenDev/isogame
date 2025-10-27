@@ -45,8 +45,9 @@ const Minimap: React.FC = () => {
   }, [state])
 
   return (
-    <div className="absolute top-5 right-5 bg-black bg-opacity-80 rounded-lg p-2.5">
-      <canvas ref={canvasRef} width={200} height={150} className="border border-gray-600 rounded" />
+    <div className="habbo-floating-card habbo-floating-card--minimap">
+      <h4 className="habbo-floating-card__title">Atrium Map</h4>
+      <canvas ref={canvasRef} width={200} height={150} className="habbo-minimap" />
     </div>
   )
 }

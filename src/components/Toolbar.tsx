@@ -30,107 +30,120 @@ const Toolbar: React.FC = () => {
   }
 
   return (
-    <div className="absolute top-5 left-5 z-50">
-      <div className="flex gap-2.5 mb-5">
-        <button
-          className={`px-5 py-2.5 bg-gray-600 text-white border-0 rounded cursor-pointer text-sm transition-colors duration-300 hover:bg-gray-700 ${state.currentTool === 'move' ? 'bg-blue-600' : ''}`}
-          onClick={() => handleToolChange('move')}
-        >
-          Move
-        </button>
-        <button
-          className={`px-5 py-2.5 bg-gray-600 text-white border-0 rounded cursor-pointer text-sm transition-colors duration-300 hover:bg-gray-700 ${state.currentTool === 'furniture' ? 'bg-blue-600' : ''}`}
-          onClick={() => handleToolChange('furniture')}
-        >
-          Furniture
-        </button>
-        <button
-          className={`px-5 py-2.5 bg-gray-600 text-white border-0 rounded cursor-pointer text-sm transition-colors duration-300 hover:bg-gray-700 ${state.currentTool === 'room' ? 'bg-blue-600' : ''}`}
-          onClick={() => handleToolChange('room')}
-        >
-          Rooms
-        </button>
+    <div className="habbo-window habbo-toolbar">
+      <div className="habbo-window__header">
+        <h3 className="habbo-window__title">Tool Deck</h3>
+        <div className="habbo-pill-group" role="tablist">
+          <button
+            className={`habbo-pill ${state.currentTool === 'move' ? 'is-active' : ''}`}
+            onClick={() => handleToolChange('move')}
+          >
+            Move
+          </button>
+          <button
+            className={`habbo-pill ${state.currentTool === 'furniture' ? 'is-active' : ''}`}
+            onClick={() => handleToolChange('furniture')}
+          >
+            Furniture
+          </button>
+          <button
+            className={`habbo-pill ${state.currentTool === 'room' ? 'is-active' : ''}`}
+            onClick={() => handleToolChange('room')}
+          >
+            Rooms
+          </button>
+        </div>
       </div>
-      
+
+      {state.currentTool === 'move' && (
+        <div className="habbo-window__body">
+          <p className="habbo-window__muted">
+            Click anywhere on the floor to stroll around the resort. Hold shift to queue a path.
+          </p>
+        </div>
+      )}
+
       {state.currentTool === 'furniture' && (
-        <div className="bg-black bg-opacity-80 text-white p-5 rounded-lg min-w-64 max-h-96 overflow-y-auto">
-          <h3 className="text-blue-400 mb-4">Furniture</h3>
-          <div className="space-y-1">
+        <div className="habbo-window__body">
+          <h4 className="habbo-window__section-title">Quick Pieces</h4>
+          <div className="habbo-list habbo-list--compact">
             {[
-              { type: 'chair', emoji: '🪑', name: 'Chair' },
-              { type: 'table', emoji: '🪑', name: 'Table' },
-              { type: 'bed', emoji: '🛏️', name: 'Bed' },
-              { type: 'sofa', emoji: '🛋️', name: 'Sofa' },
-              { type: 'tv', emoji: '📺', name: 'TV' }
+              { type: 'chair', emoji: '🪑', name: 'Club Chair' },
+              { type: 'table', emoji: '🛎️', name: 'Lobby Table' },
+              { type: 'bed', emoji: '🛏️', name: 'Suite Bed' },
+              { type: 'sofa', emoji: '🛋️', name: 'Lounger' },
+              { type: 'tv', emoji: '📺', name: 'Retro TV' }
             ].map(item => (
-              <div
+              <button
                 key={item.type}
-                className={`p-2.5 my-1.5 bg-gray-700 rounded cursor-pointer transition-colors duration-300 flex items-center gap-2.5 hover:bg-gray-600 ${state.selectedFurniture === item.type ? 'bg-blue-600' : ''}`}
+                className={`habbo-list__item ${state.selectedFurniture === item.type ? 'is-selected' : ''}`}
                 onClick={() => dispatch({ type: 'SELECT_FURNITURE', payload: item.type })}
               >
-                <span>{item.emoji}</span>
+                <span className="habbo-list__icon">{item.emoji}</span>
                 <span>{item.name}</span>
-              </div>
+              </button>
             ))}
           </div>
         </div>
       )}
-      
+
       {state.currentTool === 'room' && (
-        <div className="bg-black bg-opacity-80 text-white p-5 rounded-lg min-w-72 max-w-xs shadow-xl">
-          <h3 className="text-blue-400 mb-2">Floor Editor</h3>
+        <div className="habbo-window__body">
+          <h4 className="habbo-window__section-title">Floor Concierge</h4>
           {state.currentRoom ? (
             <>
-              <p className="text-sm text-gray-300 leading-relaxed mb-4">
-                Left-click tiles in the room to place or remove floor pieces. Tiles with furniture, players, or the spawn point can&apos;t be removed.
+              <p className="habbo-window__muted">
+                Paint floor tiles to your liking. Tiles with guests, furniture or the spawn point stay protected.
               </p>
-              <div className="flex flex-col gap-2">
+              <div className="habbo-stack habbo-stack--gap-sm">
                 <button
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="habbo-button habbo-button--primary"
                   onClick={() => dispatch({ type: 'FILL_ROOM_FLOOR' })}
                 >
                   Fill Entire Room
                 </button>
                 <button
-                  className="w-full bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="habbo-button habbo-button--ghost"
                   onClick={() => dispatch({ type: 'CLEAR_ROOM_FLOOR' })}
                 >
-                  Clear Floor (Keep occupied tiles)
+                  Clear Empty Tiles
                 </button>
               </div>
-              <div className="mt-4 text-xs text-gray-400 space-y-1">
-                <div><span className="font-semibold text-gray-300">Room:</span> {state.currentRoom.name}</div>
+              <dl className="habbo-stats">
                 <div>
-                  <span className="font-semibold text-gray-300">Floor tiles:</span> {state.currentRoom.floorTiles.length}
+                  <dt>Room</dt>
+                  <dd>{state.currentRoom.name}</dd>
                 </div>
-              </div>
-              <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
-                <label className="flex flex-col gap-1">
-                  <span className="text-gray-400">Width</span>
+                <div>
+                  <dt>Floor tiles</dt>
+                  <dd>{state.currentRoom.floorTiles.length}</dd>
+                </div>
+              </dl>
+              <div className="habbo-grid">
+                <label className="habbo-field">
+                  <span>Width</span>
                   <input
                     type="number"
                     min={4}
                     max={40}
                     value={state.currentRoom.width}
                     onChange={(e) => handleResize('width', parseInt(e.target.value, 10) || state.currentRoom!.width)}
-                    className="bg-gray-800 border border-gray-700 rounded px-2 py-1 text-white"
                   />
                 </label>
-                <label className="flex flex-col gap-1">
-                  <span className="text-gray-400">Height</span>
+                <label className="habbo-field">
+                  <span>Height</span>
                   <input
                     type="number"
                     min={4}
                     max={40}
                     value={state.currentRoom.height}
                     onChange={(e) => handleResize('height', parseInt(e.target.value, 10) || state.currentRoom!.height)}
-                    className="bg-gray-800 border border-gray-700 rounded px-2 py-1 text-white"
                   />
                 </label>
               </div>
             </>
           ) : (
-            <p className="text-sm text-gray-300">Select a room to start editing its floor layout.</p>
+            <p className="habbo-window__muted">Select a room to begin sculpting its layout.</p>
           )}
         </div>
       )}

@@ -79,190 +79,137 @@ export const RoomManager: React.FC<RoomManagerProps> = ({
   }
 
   return (
-    <div className="bg-gray-800 text-white p-4 rounded-lg shadow-lg">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold">Room Manager</h3>
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={() => setShowExport(!showExport)}
-            className="bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded text-sm"
-          >
-            {showExport ? 'Hide Export' : 'Export Layout'}
+    <div className="habbo-window habbo-room-manager">
+      <div className="habbo-window__header">
+        <h3 className="habbo-window__title">Room Navigator</h3>
+        <div className="habbo-button-group">
+          <button onClick={() => setShowExport(!showExport)} className="habbo-button habbo-button--ghost">
+            {showExport ? 'Hide export' : 'Export layout'}
           </button>
-          <button
-            onClick={() => setShowCreateForm(!showCreateForm)}
-            className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm"
-          >
-            {showCreateForm ? 'Cancel' : 'New Room'}
+          <button onClick={() => setShowCreateForm(!showCreateForm)} className="habbo-button habbo-button--primary">
+            {showCreateForm ? 'Cancel' : 'New room'}
           </button>
         </div>
       </div>
 
-      {showExport && (
-        <div className="mb-4 p-3 bg-gray-700 rounded">
-          <h4 className="text-md font-medium mb-2">Current Room Layout</h4>
-          {currentRoom ? (
-            <>
-              <textarea
-                value={layoutJson}
-                readOnly
-                rows={10}
-                className="w-full bg-gray-800 border border-gray-600 rounded text-sm p-2 font-mono resize-y"
-              />
-              <div className="flex items-center justify-between mt-2">
-                <span className="text-xs text-gray-400">
-                  Use <span className="font-semibold">o</span> for floor, <span className="font-semibold">x</span> for empty,
-                  <span className="font-semibold">d</span> for doors, <span className="font-semibold">s</span> for spawn.
-                </span>
-                <button
-                  onClick={handleCopyLayout}
-                  className="bg-purple-500 hover:bg-purple-600 px-3 py-1 rounded text-sm"
-                >
-                  Copy JSON
-                </button>
-              </div>
-              {copyStatus === 'copied' && (
-                <div className="text-xs text-green-400 mt-2">Layout copied to clipboard.</div>
-              )}
-              {copyStatus === 'error' && (
-                <div className="text-xs text-red-400 mt-2">Copy failed. Try again.</div>
-              )}
-            </>
-          ) : (
-            <div className="text-sm text-gray-300">Select a room to export its layout.</div>
-          )}
-        </div>
-      )}
-
-      {/* Create Room Form */}
-      {showCreateForm && (
-        <div className="mb-4 p-3 bg-gray-700 rounded">
-          <h4 className="text-md font-medium mb-2">Create New Room</h4>
-          <div className="space-y-2">
-            <input
-              type="text"
-              placeholder="Room name"
-              value={newRoomName}
-              onChange={(e) => setNewRoomName(e.target.value)}
-              className="w-full px-2 py-1 bg-gray-600 border border-gray-500 rounded text-sm"
-            />
-            <div className="flex space-x-2">
-              <input
-                type="number"
-                placeholder="Width"
-                value={newRoomWidth}
-                onChange={(e) => setNewRoomWidth(parseInt(e.target.value) || 10)}
-                min="5"
-                max="20"
-                className="w-20 px-2 py-1 bg-gray-600 border border-gray-500 rounded text-sm"
-              />
-              <input
-                type="number"
-                placeholder="Height"
-                value={newRoomHeight}
-                onChange={(e) => setNewRoomHeight(parseInt(e.target.value) || 10)}
-                min="5"
-                max="20"
-                className="w-20 px-2 py-1 bg-gray-600 border border-gray-500 rounded text-sm"
-              />
-            </div>
-            <button
-              onClick={handleCreateRoom}
-              className="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm"
-            >
-              Create Room
-            </button>
+      <div className="habbo-window__body">
+        {showExport && (
+          <div className="habbo-room-card habbo-room-card--panel">
+            <h4 className="habbo-room-card__title">Current room layout</h4>
+            {currentRoom ? (
+              <>
+                <textarea value={layoutJson} readOnly rows={10} className="habbo-room-card__textarea" />
+                <div className="habbo-room-card__hint">
+                  <span>
+                    Use <strong>o</strong> for floor, <strong>x</strong> for empty, <strong>d</strong> for doors and <strong>s</strong> for
+                    spawn points.
+                  </span>
+                  <button onClick={handleCopyLayout} className="habbo-button habbo-button--accent">
+                    Copy JSON
+                  </button>
+                </div>
+                {copyStatus === 'copied' && <div className="habbo-room-card__status is-success">Layout copied to clipboard.</div>}
+                {copyStatus === 'error' && <div className="habbo-room-card__status is-danger">Copy failed. Try again.</div>}
+              </>
+            ) : (
+              <div className="habbo-room-card__empty">Select a room to export its layout.</div>
+            )}
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Room List */}
-      <div className="space-y-2">
-        {rooms.map((room) => (
-          <div
-            key={room.id}
-            className={`p-2 rounded border ${
-              currentRoom?.id === room.id
-                ? 'bg-blue-600 border-blue-500'
-                : 'bg-gray-700 border-gray-600 hover:bg-gray-600'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
+        {showCreateForm && (
+          <div className="habbo-room-card habbo-room-card--panel">
+            <h4 className="habbo-room-card__title">Create new room</h4>
+            <div className="habbo-stack">
+              <input
+                type="text"
+                placeholder="Room name"
+                value={newRoomName}
+                onChange={(e) => setNewRoomName(e.target.value)}
+                className="habbo-input"
+              />
+              <div className="habbo-grid habbo-grid--compact">
+                <input
+                  type="number"
+                  placeholder="Width"
+                  value={newRoomWidth}
+                  onChange={(e) => setNewRoomWidth(parseInt(e.target.value) || 10)}
+                  min="5"
+                  max="20"
+                  className="habbo-input"
+                />
+                <input
+                  type="number"
+                  placeholder="Height"
+                  value={newRoomHeight}
+                  onChange={(e) => setNewRoomHeight(parseInt(e.target.value) || 10)}
+                  min="5"
+                  max="20"
+                  className="habbo-input"
+                />
+              </div>
+              <button onClick={handleCreateRoom} className="habbo-button habbo-button--primary habbo-button--full">
+                Create room
+              </button>
+            </div>
+          </div>
+        )}
+
+        <div className="habbo-room-list">
+          {rooms.map((room) => (
+            <div
+              key={room.id}
+              className={`habbo-room-card ${currentRoom?.id === room.id ? 'is-active' : ''}`}
+            >
+              <div className="habbo-room-card__content">
                 {editingRoom === room.id ? (
-                  <div className="flex items-center space-x-2">
+                  <div className="habbo-room-card__edit">
                     <input
                       type="text"
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
-                      className="px-2 py-1 bg-gray-600 border border-gray-500 rounded text-sm"
+                      className="habbo-input"
                       autoFocus
                     />
-                    <button
-                      onClick={handleSaveRename}
-                      className="text-green-400 hover:text-green-300 text-sm"
-                    >
-                      ✓
-                    </button>
-                    <button
-                      onClick={handleCancelRename}
-                      className="text-red-400 hover:text-red-300 text-sm"
-                    >
-                      ✗
-                    </button>
+                    <div className="habbo-inline-actions">
+                      <button onClick={handleSaveRename} className="habbo-inline-actions__btn is-success" aria-label="Save name">
+                        ✓
+                      </button>
+                      <button onClick={handleCancelRename} className="habbo-inline-actions__btn is-danger" aria-label="Cancel rename">
+                        ✗
+                      </button>
+                    </div>
                   </div>
                 ) : (
-                  <div className="flex items-center space-x-2">
-                    <span className="font-medium">{room.name}</span>
-                    <span className="text-xs text-gray-400">
-                      {room.width}×{room.height}
-                    </span>
-                    <span className="text-xs text-gray-400">
-                      {room.furniture.length} items
-                    </span>
+                  <div className="habbo-room-card__meta">
+                    <span className="habbo-room-card__name">{room.name}</span>
+                    <span>{room.width}×{room.height}</span>
+                    <span>{room.furniture.length} items</span>
                   </div>
                 )}
               </div>
-              
-              <div className="flex items-center space-x-1">
-                {editingRoom !== room.id && (
-                  <>
-                    <button
-                      onClick={() => onRoomSelect(room)}
-                      className="text-blue-400 hover:text-blue-300 text-sm"
-                      title="Enter room"
-                    >
-                      →
-                    </button>
-                    <button
-                      onClick={() => handleRename(room.id, room.name)}
-                      className="text-yellow-400 hover:text-yellow-300 text-sm"
-                      title="Rename room"
-                    >
-                      ✏️
-                    </button>
-                    {rooms.length > 1 && (
-                      <button
-                        onClick={() => onRoomDelete(room.id)}
-                        className="text-red-400 hover:text-red-300 text-sm"
-                        title="Delete room"
-                      >
-                        🗑️
-                      </button>
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
 
-      {rooms.length === 0 && (
-        <div className="text-center text-gray-400 py-4">
-          No rooms yet. Create your first room!
+              {editingRoom !== room.id && (
+                <div className="habbo-room-card__actions">
+                  <button onClick={() => onRoomSelect(room)} className="habbo-inline-button" title="Enter room">
+                    Enter
+                  </button>
+                  <button onClick={() => handleRename(room.id, room.name)} className="habbo-inline-button" title="Rename room">
+                    Rename
+                  </button>
+                  {rooms.length > 1 && (
+                    <button onClick={() => onRoomDelete(room.id)} className="habbo-inline-button is-danger" title="Delete room">
+                      Delete
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
-      )}
+
+        {rooms.length === 0 && <div className="habbo-room-card__empty">No rooms yet. Create your first hangout!</div>}
+      </div>
     </div>
   )
 }
