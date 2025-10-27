@@ -27,130 +27,104 @@ export class WallComponent {
     this.coordinateUtils = coordinateUtils
   }
 
-  /** Draw both top walls as continuous strips (no per-tile gaps) */
+  /** Draw dynamic wall segments that follow the current floor layout */
   public drawRoomWalls(
-    roomWidth: number,
-    roomHeight: number,
+    walls: Wall[],
     doorway?: { x: number; y: number; type: 'north-east' | 'north-west' }
   ) {
-    const w = this.tileWidth
-    const h = this.tileHeight
-    const wallHeight = h * 2
-    const eps = 0.5
+    const neWalls = walls
+      .filter(wall => wall.type === 'north-east')
+      .sort((a, b) => (a.y === b.y ? a.x - b.x : a.y - b.y))
+    const nwWalls = walls
+      .filter(wall => wall.type === 'north-west')
+      .sort((a, b) => (a.x === b.x ? a.y - b.y : a.x - b.x))
 
-    const doorwaysToDraw: Array<{ x: number; y: number; type: 'north-east' | 'north-west' }> = []
-
-    const topCorner = (x: number, y: number) => {
-      const c = this.coordinateUtils.worldToScreen(x, y)
-      return { x: c.x, y: c.y - h / 2 - eps }
-    }
-    const rightCorner = (x: number, y: number) => {
-      const c = this.coordinateUtils.worldToScreen(x, y)
-      return { x: c.x + w / 2 - eps, y: c.y }
-    }
-    const leftCorner = (x: number, y: number) => {
-      const c = this.coordinateUtils.worldToScreen(x, y)
-      return { x: c.x - w / 2 + eps, y: c.y }
-    }
-    const down = (p: { x: number; y: number }) => ({ x: p.x, y: p.y + wallHeight })
-
-    const k = this.wallBorderOffset
-
-    // ---------- NORTH-EAST WALL (top border y = -k) ----------
-    {
-      const faceColor = '#A0522D'
-      const shade = this.darkenColor(faceColor, 0.18)
-      const edgeColor = this.darkenColor(faceColor, 0.4)
-
-      const topPath: { x: number; y: number }[] = []
-      topPath.push(topCorner(-k, -k)) // shared peak
-
-      // startX=-k, endX=roomWidth-1-k keeps (x - y) aligned with floor's east tip
-      const startX = -k
-      const endX = roomWidth - 1 - k
-
-      // Check if doorway is on north-east wall
-      const doorwayOnNE = doorway?.type === 'north-east'
-
-      for (let x = startX; x <= endX; x++) {
-        if (doorwayOnNE && x === doorway.x) {
-          // Remember to draw the doorway after the wall fill so it sits on top
-          doorwaysToDraw.push({ x, y: -k, type: 'north-east' })
-        }
-        topPath.push(rightCorner(x, -k))
+    neWalls.forEach(wall => {
+      if (doorway?.type === 'north-east' && doorway.x === wall.x && doorway.y === wall.y) {
+        return
       }
+      this.drawNorthEastSegment(wall.x, wall.y)
+    })
 
-      const bottomPath = [...topPath].reverse().map(down)
-
-      this.ctx.beginPath()
-      this.ctx.moveTo(topPath[0].x, topPath[0].y)
-      for (let i = 1; i < topPath.length; i++) this.ctx.lineTo(topPath[i].x, topPath[i].y)
-      for (let i = 0; i < bottomPath.length; i++) this.ctx.lineTo(bottomPath[i].x, bottomPath[i].y)
-      this.ctx.closePath()
-      this.ctx.fillStyle = shade
-      this.ctx.fill()
-
-      this.ctx.strokeStyle = edgeColor
-      this.ctx.lineWidth = 2
-      this.ctx.beginPath()
-      this.ctx.moveTo(topPath[0].x, topPath[0].y)
-      for (let i = 1; i < topPath.length; i++) this.ctx.lineTo(topPath[i].x, topPath[i].y)
-      this.ctx.stroke()
-
-      doorwaysToDraw
-        .filter(d => d.type === 'north-east')
-        .forEach(d => this.drawDoorway(d.x, d.y, d.type))
-    }
-
-    // ---------- NORTH-WEST WALL (left border x = -k) ----------
-    {
-      const faceColor = '#CD853F'
-      const shade = this.darkenColor(faceColor, 0.25)
-      const edgeColor = this.darkenColor(faceColor, 0.4)
-
-      const topPath: { x: number; y: number }[] = []
-      topPath.push(topCorner(-k, -k)) // shared peak
-
-      // startY=-k, endY=roomHeight-1-k keeps (x + y) aligned with floor's west tip
-      const startY = -k
-      const endY = roomHeight - 1 - k
-
-      // Check if doorway is on north-west wall
-      const doorwayOnNW = doorway?.type === 'north-west'
-
-      for (let y = startY; y <= endY; y++) {
-        if (doorwayOnNW && y === doorway.y) {
-          // Remember to draw the doorway after the wall fill so it sits on top
-          doorwaysToDraw.push({ x: -k, y, type: 'north-west' })
-        }
-        topPath.push(leftCorner(-k, y))
+    nwWalls.forEach(wall => {
+      if (doorway?.type === 'north-west' && doorway.x === wall.x && doorway.y === wall.y) {
+        return
       }
+      this.drawNorthWestSegment(wall.x, wall.y)
+    })
 
-      const bottomPath = [...topPath].reverse().map(down)
-
-      this.ctx.beginPath()
-      this.ctx.moveTo(topPath[0].x, topPath[0].y)
-      for (let i = 1; i < topPath.length; i++) this.ctx.lineTo(topPath[i].x, topPath[i].y)
-      for (let i = 0; i < bottomPath.length; i++) this.ctx.lineTo(bottomPath[i].x, bottomPath[i].y)
-      this.ctx.closePath()
-      this.ctx.fillStyle = shade
-      this.ctx.fill()
-
-      this.ctx.strokeStyle = edgeColor
-      this.ctx.lineWidth = 2
-      this.ctx.beginPath()
-      this.ctx.moveTo(topPath[0].x, topPath[0].y)
-      for (let i = 1; i < topPath.length; i++) this.ctx.lineTo(topPath[i].x, topPath[i].y)
-      this.ctx.stroke()
-
-      doorwaysToDraw
-        .filter(d => d.type === 'north-west')
-        .forEach(d => this.drawDoorway(d.x, d.y, d.type))
+    if (doorway) {
+      this.drawDoorway(doorway.x, doorway.y, doorway.type)
     }
   }
 
+  private drawNorthEastSegment(x: number, y: number) {
+    const wallHeight = this.tileHeight * 2
+    const faceColor = '#A0522D'
+    const shade = this.darkenColor(faceColor, 0.18)
+    const edgeColor = this.darkenColor(faceColor, 0.4)
+    const offset = this.wallBorderOffset
+
+    const topLeft = this.coordinateUtils.worldToScreen(x - 0.5 - offset, y + 0.5 - offset)
+    const topRight = this.coordinateUtils.worldToScreen(x + 0.5 - offset, y + 0.5 - offset)
+    const bottomLeft = { x: topLeft.x, y: topLeft.y + wallHeight }
+    const bottomRight = { x: topRight.x, y: topRight.y + wallHeight }
+
+    this.ctx.beginPath()
+    this.ctx.moveTo(topLeft.x, topLeft.y)
+    this.ctx.lineTo(topRight.x, topRight.y)
+    this.ctx.lineTo(bottomRight.x, bottomRight.y)
+    this.ctx.lineTo(bottomLeft.x, bottomLeft.y)
+    this.ctx.closePath()
+    this.ctx.fillStyle = shade
+    this.ctx.fill()
+
+    this.ctx.strokeStyle = edgeColor
+    this.ctx.lineWidth = 2
+    this.ctx.beginPath()
+    this.ctx.moveTo(topLeft.x, topLeft.y)
+    this.ctx.lineTo(topRight.x, topRight.y)
+    this.ctx.stroke()
+  }
+
+  private drawNorthWestSegment(x: number, y: number) {
+    const wallHeight = this.tileHeight * 2
+    const faceColor = '#CD853F'
+    const shade = this.darkenColor(faceColor, 0.25)
+    const edgeColor = this.darkenColor(faceColor, 0.4)
+    const offset = this.wallBorderOffset
+
+    const top = this.coordinateUtils.worldToScreen(x + 0.5 - offset, y - 0.5 - offset)
+    const bottom = this.coordinateUtils.worldToScreen(x + 0.5 - offset, y + 0.5 - offset)
+    const lowerTop = { x: top.x, y: top.y + wallHeight }
+    const lowerBottom = { x: bottom.x, y: bottom.y + wallHeight }
+
+    this.ctx.beginPath()
+    this.ctx.moveTo(top.x, top.y)
+    this.ctx.lineTo(bottom.x, bottom.y)
+    this.ctx.lineTo(lowerBottom.x, lowerBottom.y)
+    this.ctx.lineTo(lowerTop.x, lowerTop.y)
+    this.ctx.closePath()
+    this.ctx.fillStyle = shade
+    this.ctx.fill()
+
+    this.ctx.strokeStyle = edgeColor
+    this.ctx.lineWidth = 2
+    this.ctx.beginPath()
+    this.ctx.moveTo(top.x, top.y)
+    this.ctx.lineTo(bottom.x, bottom.y)
+    this.ctx.stroke()
+  }
+
 private drawDoorway(x: number, y: number, type: 'north-east' | 'north-west') {
-  const screenPos = this.coordinateUtils.worldToScreen(x, y)
+  const offset = this.wallBorderOffset
+  let screenPos
+
+  if (type === 'north-east') {
+    screenPos = this.coordinateUtils.worldToScreen(x - offset, y + 0.5 - offset)
+  } else {
+    screenPos = this.coordinateUtils.worldToScreen(x + 0.5 - offset, y - offset)
+  }
   const w = this.tileWidth
   const h = this.tileHeight
 

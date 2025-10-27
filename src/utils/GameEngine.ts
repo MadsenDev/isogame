@@ -176,12 +176,11 @@ export class GameEngine {
       this.tileComponent.drawIsometricTile(tile.x, tile.y, '#90EE90', 1, 2, 1, screenPos)
     })
 
-    // Draw walls as continuous strips (meets the north peak and floor edges exactly)
-this.wallComponent.drawRoomWalls(
-  this.state.currentRoom.width,
-  this.state.currentRoom.height,
-  this.state.currentRoom.doorway
-)
+    // Draw walls that follow the current floor layout
+    this.wallComponent.drawRoomWalls(
+      this.state.currentRoom.walls,
+      this.state.currentRoom.doorway
+    )
 
     // Draw furniture
     this.state.currentRoom.furniture.forEach(furniture => {
