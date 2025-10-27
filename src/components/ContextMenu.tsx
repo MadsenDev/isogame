@@ -36,31 +36,22 @@ const ContextMenu: React.FC = () => {
   if (!state.contextMenuVisible || !state.contextMenuTarget) return null
 
   return (
-    <div 
-      className="absolute bg-black bg-opacity-90 text-white p-2.5 rounded-lg border border-gray-600 z-50 min-w-32"
+    <div
+      className="habbo-context-menu"
       style={{
         left: '50%',
         top: '50%',
         transform: 'translate(-50%, -50%)'
       }}
     >
-      <div className="flex flex-col gap-1.5">
-        <button 
-          className="px-3 py-2 bg-gray-600 text-white border-0 rounded cursor-pointer text-xs transition-colors duration-300 text-left hover:bg-gray-700"
-          onClick={() => handleAction('sitting')}
-        >
+      <div className="habbo-context-menu__body">
+        <button className="habbo-context-menu__button" onClick={() => handleAction('sitting')}>
           Sit
         </button>
-        <button 
-          className="px-3 py-2 bg-gray-600 text-white border-0 rounded cursor-pointer text-xs transition-colors duration-300 text-left hover:bg-gray-700"
-          onClick={() => handleAction('dancing')}
-        >
+        <button className="habbo-context-menu__button" onClick={() => handleAction('dancing')}>
           Dance
         </button>
-        <button 
-          className="px-3 py-2 bg-gray-600 text-white border-0 rounded cursor-pointer text-xs transition-colors duration-300 text-left hover:bg-gray-700"
-          onClick={() => handleAction('waving')}
-        >
+        <button className="habbo-context-menu__button" onClick={() => handleAction('waving')}>
           Wave
         </button>
       </div>

@@ -29,11 +29,13 @@ const ChatSystem: React.FC = () => {
     }
   }
 
+  if (!state.showChat) return null
+
   return (
-    <div className={`absolute bottom-4 left-4 z-10 p-4 bg-gray-900 bg-opacity-90 text-white rounded-lg shadow-lg w-80 ${state.showChat ? '' : 'hidden'}`}>
-      <div ref={messagesRef} className="max-h-32 overflow-y-auto mb-2.5 text-xs">
+    <div className="habbo-chat">
+      <div ref={messagesRef} className="habbo-chat__messages">
         {state.chatMessages.slice(-10).map((msg, index) => (
-          <div key={index} className="mb-1">
+          <div key={index} className="habbo-chat__message">
             {msg.text}
           </div>
         ))}
@@ -41,7 +43,7 @@ const ChatSystem: React.FC = () => {
       <input
         ref={inputRef}
         type="text"
-        className="w-full p-1.5 border border-gray-600 rounded bg-gray-700 text-white"
+        className="habbo-chat__input"
         placeholder="Type a message..."
         onKeyPress={handleKeyPress}
       />

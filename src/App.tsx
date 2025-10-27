@@ -13,17 +13,48 @@ import { GameProvider, useGame } from './context/GameContext'
 function App() {
   return (
     <GameProvider>
-      <div className="game-container">
-        <GameCanvas />
-        <Toolbar />
-        <Minimap />
-        <Controls />
-        <ChatSystem />
-        <PlayerInfo />
-        <ContextMenu />
-        <RoomManagerWrapper />
-        <RoomCustomization />
-        <FurnitureSelector />
+      <div className="habbo-shell">
+        <header className="habbo-header">
+          <div className="habbo-header__logo">
+            Iso<span>Game</span> Plaza
+          </div>
+          <div className="habbo-header__status">
+            <span className="habbo-status-dot" />
+            <span className="habbo-header__status-text">Now welcoming guests</span>
+          </div>
+        </header>
+
+        <div className="habbo-main">
+          <aside className="habbo-side-panel">
+            <Toolbar />
+            <RoomCustomization />
+          </aside>
+
+          <div className="habbo-stage">
+            <div className="habbo-stage-inner">
+              <div className="habbo-room-frame">
+                <GameCanvas />
+              </div>
+              <ContextMenu />
+            </div>
+            <div className="habbo-stage-overlay">
+              <Minimap />
+              <div className="habbo-stage-overlay__stack">
+                <PlayerInfo />
+                <Controls />
+              </div>
+            </div>
+          </div>
+
+          <aside className="habbo-side-panel habbo-side-panel--right">
+            <RoomManagerWrapper />
+            <FurnitureSelector />
+          </aside>
+        </div>
+
+        <footer className="habbo-footer">
+          <ChatSystem />
+        </footer>
       </div>
     </GameProvider>
   )
@@ -32,20 +63,18 @@ function App() {
 // Wrapper component to use the room manager
 function RoomManagerWrapper() {
   const { state, roomManager } = useGame()
-  
+
   if (!state || !roomManager) return null
-  
+
   return (
-    <div className="absolute top-4 right-4 z-50">
-      <RoomManager
-        rooms={state.rooms}
-        currentRoom={state.currentRoom}
-        onRoomSelect={roomManager.selectRoom}
-        onRoomCreate={roomManager.createRoom}
-        onRoomDelete={roomManager.deleteRoom}
-        onRoomRename={roomManager.renameRoom}
-      />
-    </div>
+    <RoomManager
+      rooms={state.rooms}
+      currentRoom={state.currentRoom}
+      onRoomSelect={roomManager.selectRoom}
+      onRoomCreate={roomManager.createRoom}
+      onRoomDelete={roomManager.deleteRoom}
+      onRoomRename={roomManager.renameRoom}
+    />
   )
 }
 

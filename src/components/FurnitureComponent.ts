@@ -22,7 +22,7 @@ export class FurnitureComponent {
     this.coordinateUtils = coordinateUtils
   }
 
-  public setZoom(zoom: number) {
+  public setZoom(_zoom: number) {
     // Zoom is handled by coordinateUtils, no need to store it here
   }
 

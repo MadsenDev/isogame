@@ -15,7 +15,7 @@ const FLOOR_TEXTURES = [
 export const RoomCustomization: React.FC = () => {
   const { state, roomManager } = useGame()
   const [selectedTexture, setSelectedTexture] = useState<string>('wood')
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(true)
   const [tilesetImage, setTilesetImage] = useState<HTMLImageElement | null>(null)
 
   useEffect(() => {
@@ -77,8 +77,8 @@ export const RoomCustomization: React.FC = () => {
     
     if (previewUrl) {
       return (
-        <div 
-          className="w-8 h-8 rounded overflow-hidden"
+        <div
+          className="habbo-texture__preview"
           style={{
             backgroundImage: `url(${previewUrl})`,
             backgroundSize: 'cover',
@@ -91,7 +91,7 @@ export const RoomCustomization: React.FC = () => {
     // Fallback to color if tileset not loaded
     return (
       <div
-        className="w-8 h-8 rounded"
+        className="habbo-texture__preview"
         style={{ backgroundColor: texture.color }}
       />
     )
@@ -104,61 +104,64 @@ export const RoomCustomization: React.FC = () => {
   }
 
   return (
-    <div className="absolute top-4 left-4 z-50">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg shadow-lg mb-2"
-      >
-        🎨 Customize Room
-      </button>
+    <div className="habbo-window">
+      <div className="habbo-window__header">
+        <h3 className="habbo-window__title">Room Styling</h3>
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="habbo-window__toggle"
+          aria-expanded={isOpen}
+          aria-label="Toggle room styling"
+        >
+          {isOpen ? '–' : '+'}
+        </button>
+      </div>
 
       {isOpen && (
-        <div className="bg-gray-800 text-white p-4 rounded-lg shadow-lg w-80">
-          <h3 className="text-xl font-bold mb-4">Room Customization</h3>
-          
-          {/* Floor Texture Selection */}
-          <div className="mb-6">
-            <h4 className="font-semibold mb-3">Floor Textures</h4>
-            <div className="grid grid-cols-4 gap-2 mb-3">
-              {FLOOR_TEXTURES.map(texture => (
-                <button
-                  key={texture.id}
-                  onClick={() => setSelectedTexture(texture.id)}
-                  className={`p-2 rounded border-2 ${
-                    selectedTexture === texture.id
-                      ? 'border-blue-500 bg-blue-600'
-                      : 'border-gray-600 hover:border-gray-400'
-                  }`}
-                  title={texture.name}
-                >
-                  {renderTexturePreview(texture)}
-                </button>
-              ))}
-            </div>
-            
-            <div className="flex gap-2">
+        <div className="habbo-window__body">
+          <h4 className="habbo-window__section-title">Floor Textures</h4>
+          <div className="habbo-grid habbo-grid--textures">
+            {FLOOR_TEXTURES.map(texture => (
               <button
-                onClick={handleSetFloorTexture}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm"
+                key={texture.id}
+                onClick={() => setSelectedTexture(texture.id)}
+                className={`habbo-texture ${selectedTexture === texture.id ? 'is-active' : ''}`}
+                title={texture.name}
               >
-                Apply to All Floor
+                {renderTexturePreview(texture)}
+                <span>{texture.name}</span>
               </button>
+            ))}
+          </div>
+
+          <button onClick={handleSetFloorTexture} className="habbo-button habbo-button--primary habbo-button--full">
+            Apply to all tiles
+          </button>
+
+          <div className="habbo-window__divider" />
+
+          <div className="habbo-room-meta">
+            <div>
+              <span>Room</span>
+              <strong>{state.currentRoom.name}</strong>
+            </div>
+            <div>
+              <span>Size</span>
+              <strong>
+                {state.currentRoom.width} × {state.currentRoom.height}
+              </strong>
+            </div>
+            <div>
+              <span>Texture</span>
+              <strong>{state.currentRoom.floorTexture || 'Default'}</strong>
             </div>
           </div>
 
-          {/* Room Info */}
-          <div className="text-sm text-gray-400">
-            <p>Room: {state.currentRoom.name}</p>
-            <p>Size: {state.currentRoom.width} × {state.currentRoom.height}</p>
-            <p>Current Texture: {state.currentRoom.floorTexture || 'default'}</p>
-          </div>
-
-          {/* Instructions */}
-          <div className="mt-4 text-xs text-gray-500">
-            <p>• Select a texture and click "Apply to All Floor" to change the entire room</p>
-            <p>• Switch to Room tool and Shift+Click tiles to paint individual textures</p>
-            <p>• Preview shows actual tileset textures, not just colors</p>
-          </div>
+          <ul className="habbo-guidelines">
+            <li>Select a texture then tap the button above to recolour the room.</li>
+            <li>Use the Room tool with Shift+Click for precision painting.</li>
+            <li>Previews pull from the actual resort tileset for accuracy.</li>
+          </ul>
         </div>
       )}
     </div>

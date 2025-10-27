@@ -16,7 +16,7 @@ const GameCanvas: React.FC = () => {
       ref={canvasRef}
       width={1200}
       height={800}
-      className="border-2 border-gray-800 bg-sky-300 cursor-crosshair"
+      className="habbo-room-canvas"
     />
   )
 }
