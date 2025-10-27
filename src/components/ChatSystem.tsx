@@ -1,16 +1,22 @@
 import React, { useRef, useEffect } from 'react'
 import { useGame } from '../context/GameContext'
 
-const ChatSystem: React.FC = () => {
+interface ChatSystemProps {
+  visible?: boolean
+}
+
+const ChatSystem: React.FC<ChatSystemProps> = ({ visible }) => {
   const { state, dispatch } = useGame()
   const inputRef = useRef<HTMLInputElement>(null)
   const messagesRef = useRef<HTMLDivElement>(null)
+
+  const isVisible = visible ?? state.showChat
 
   useEffect(() => {
     if (messagesRef.current) {
       messagesRef.current.scrollTop = messagesRef.current.scrollHeight
     }
-  }, [state.chatMessages])
+  }, [state.chatMessages, isVisible])
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
@@ -29,7 +35,7 @@ const ChatSystem: React.FC = () => {
     }
   }
 
-  if (!state.showChat) return null
+  if (!isVisible) return null
 
   return (
     <div className="habbo-chat">

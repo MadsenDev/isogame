@@ -15,27 +15,23 @@ const Minimap: React.FC = () => {
     const scaleX = canvas.width / state.currentRoom.width
     const scaleY = canvas.height / state.currentRoom.height
 
-    // Draw room
-    ctx.fillStyle = '#2d3748'
+    ctx.fillStyle = '#141a2b'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-    // Draw walls
-    ctx.fillStyle = '#4a5568'
+    ctx.fillStyle = '#1f2a44'
     state.currentRoom.walls.forEach(wall => {
       ctx.fillRect(wall.x * scaleX, wall.y * scaleY, scaleX, scaleY)
     })
 
-    // Draw furniture
     ctx.fillStyle = '#8B4513'
     state.currentRoom.furniture.forEach(furniture => {
       ctx.fillRect(furniture.x * scaleX, furniture.y * scaleY, scaleX, scaleY)
     })
 
-    // Draw players
     state.players.forEach(player => {
       ctx.fillStyle = player.color
       ctx.fillRect(player.x * scaleX, player.y * scaleY, scaleX, scaleY)
-      
+
       if (player.id === state.currentPlayerId) {
         ctx.strokeStyle = '#FFD700'
         ctx.lineWidth = 2
@@ -45,9 +41,8 @@ const Minimap: React.FC = () => {
   }, [state])
 
   return (
-    <div className="habbo-floating-card habbo-floating-card--minimap">
-      <h4 className="habbo-floating-card__title">Atrium Map</h4>
-      <canvas ref={canvasRef} width={200} height={150} className="habbo-minimap" />
+    <div className="neo-minimap">
+      <canvas ref={canvasRef} width={200} height={150} className="neo-minimap__canvas" />
     </div>
   )
 }
