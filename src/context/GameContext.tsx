@@ -35,7 +35,7 @@ export interface Room {
   height: number
   floorTiles: Array<{ x: number; y: number }>
   furniture: Furniture[]
-  walls: Array<{ x: number; y: number; type: string }>
+  walls: Array<{ x: number; y: number; type: 'north-east' | 'north-west' }>
   doorway?: { x: number; y: number; type: 'north-east' | 'north-west' }
   spawnPoint?: { x: number; y: number }
 }
@@ -158,13 +158,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
 
     case 'UPDATE_ROOM_LAYOUT': {
       const { roomId, width, height } = action.payload
-      const doorway = normalizeDoorway(width, height, action.payload.doorway)
-
-      const spawnPoint = normalizeSpawnPoint(
-        width,
-        height,
-        action.payload.spawnPoint ?? defaultSpawnFromDoorway(width, height, doorway)
-      )
+      const normalizedDoorway = normalizeDoorway(width, height, action.payload.doorway)
 
       const updateRoomLayout = (room: Room) => {
         if (room.id !== roomId) return room
@@ -202,6 +196,16 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         }
 
         filteredFurniture.forEach(furniture => ensureFloorTile(furniture.x, furniture.y))
+
+        const targetDoorway = normalizedDoorway ?? room.doorway
+        const adjustedDoorway = adjustDoorwayForFloorTiles(targetDoorway, existingFloorTiles, width, height)
+
+        const spawnPoint = normalizeSpawnPoint(
+          width,
+          height,
+          action.payload.spawnPoint ?? defaultSpawnFromDoorway(width, height, adjustedDoorway)
+        )
+
         if (spawnPoint) {
           ensureFloorTile(spawnPoint.x, spawnPoint.y)
         }
@@ -212,8 +216,8 @@ function gameReducer(state: GameState, action: GameAction): GameState {
           height,
           floorTiles: existingFloorTiles,
           furniture: filteredFurniture,
-          walls: buildRoomWalls(width, height, doorway),
-          doorway,
+          walls: buildRoomWalls(width, height, adjustedDoorway, existingFloorTiles),
+          doorway: adjustedDoorway,
           spawnPoint
         }
       }
@@ -259,9 +263,13 @@ function gameReducer(state: GameState, action: GameAction): GameState {
           ? baseTiles.filter(tile => !(tile.x === x && tile.y === y))
           : [...baseTiles, { x, y }]
 
+        const adjustedDoorway = adjustDoorwayForFloorTiles(room.doorway, floorTiles, room.width, room.height)
+
         return {
           ...room,
-          floorTiles
+          floorTiles,
+          doorway: adjustedDoorway,
+          walls: buildRoomWalls(room.width, room.height, adjustedDoorway, floorTiles)
         }
       }
 
@@ -281,9 +289,12 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         if (room.id !== state.currentRoom!.id) return room
 
         const floorTiles = createFullFloorTiles(room.width, room.height)
+        const adjustedDoorway = adjustDoorwayForFloorTiles(room.doorway, floorTiles, room.width, room.height)
         return {
           ...room,
-          floorTiles
+          floorTiles,
+          doorway: adjustedDoorway,
+          walls: buildRoomWalls(room.width, room.height, adjustedDoorway, floorTiles)
         }
       }
 
@@ -326,9 +337,13 @@ function gameReducer(state: GameState, action: GameAction): GameState {
 
         const floorTiles = baseTiles.filter(tile => protectedTiles.has(`${tile.x},${tile.y}`))
 
+        const adjustedDoorway = adjustDoorwayForFloorTiles(room.doorway, floorTiles, room.width, room.height)
+
         return {
           ...room,
-          floorTiles
+          floorTiles,
+          doorway: adjustedDoorway,
+          walls: buildRoomWalls(room.width, room.height, adjustedDoorway, floorTiles)
         }
       }
 
@@ -452,14 +467,43 @@ const createFullFloorTiles = (width: number, height: number) => {
   return tiles
 }
 
+const adjustDoorwayForFloorTiles = (
+  doorway: { x: number; y: number; type: 'north-east' | 'north-west' } | undefined,
+  floorTiles: Array<{ x: number; y: number }> | undefined,
+  width: number,
+  height: number
+) => {
+  if (!doorway) return undefined
+
+  const effectiveFloorTiles = floorTiles && floorTiles.length > 0
+    ? floorTiles
+    : createFullFloorTiles(width, height)
+
+  if (doorway.type === 'north-east') {
+    const columnTiles = effectiveFloorTiles.filter(tile => tile.x === doorway.x)
+    if (columnTiles.length === 0) return undefined
+    const minY = Math.min(...columnTiles.map(tile => tile.y))
+    return { x: doorway.x, y: minY - 1, type: 'north-east' as const }
+  }
+
+  const rowTiles = effectiveFloorTiles.filter(tile => tile.y === doorway.y)
+  if (rowTiles.length === 0) return undefined
+  const minX = Math.min(...rowTiles.map(tile => tile.x))
+  return { x: minX - 1, y: doorway.y, type: 'north-west' as const }
+}
+
 const ensureRoomFloorTiles = (room: Room): Room => {
   const floorTiles = room.floorTiles && room.floorTiles.length > 0
     ? room.floorTiles
     : createFullFloorTiles(room.width, room.height)
 
+  const doorway = adjustDoorwayForFloorTiles(room.doorway, floorTiles, room.width, room.height)
+
   return {
     ...room,
-    floorTiles
+    floorTiles,
+    doorway,
+    walls: buildRoomWalls(room.width, room.height, doorway, floorTiles)
   }
 }
 
@@ -488,24 +532,34 @@ const normalizeSpawnPoint = (width: number, height: number, spawnPoint?: { x: nu
   return { x, y }
 }
 
-const buildRoomWalls = (
+function buildRoomWalls(
   width: number,
   height: number,
-  doorway?: { x: number; y: number; type: 'north-east' | 'north-west' }
-) => {
-  const walls: Array<{ x: number; y: number; type: string }> = []
+  doorway?: { x: number; y: number; type: 'north-east' | 'north-west' },
+  floorTiles?: Array<{ x: number; y: number }>
+) {
+  const effectiveFloorTiles = floorTiles && floorTiles.length > 0
+    ? floorTiles
+    : createFullFloorTiles(width, height)
 
-  for (let x = 0; x < width; x++) {
-    if (!(doorway?.type === 'north-east' && doorway.x === x)) {
-      walls.push({ x, y: -1, type: 'north-east' })
-    }
-  }
+  const tileSet = new Set(effectiveFloorTiles.map(tile => `${tile.x},${tile.y}`))
+  const walls: Array<{ x: number; y: number; type: 'north-east' | 'north-west' }> = []
 
-  for (let y = 0; y < height; y++) {
-    if (!(doorway?.type === 'north-west' && doorway.y === y)) {
-      walls.push({ x: -1, y, type: 'north-west' })
+  effectiveFloorTiles.forEach(tile => {
+    const northKey = `${tile.x},${tile.y - 1}`
+    if (!tileSet.has(northKey)) {
+      if (!(doorway?.type === 'north-east' && doorway.x === tile.x && doorway.y === tile.y - 1)) {
+        walls.push({ x: tile.x, y: tile.y - 1, type: 'north-east' })
+      }
     }
-  }
+
+    const westKey = `${tile.x - 1},${tile.y}`
+    if (!tileSet.has(westKey)) {
+      if (!(doorway?.type === 'north-west' && doorway.x === tile.x - 1 && doorway.y === tile.y)) {
+        walls.push({ x: tile.x - 1, y: tile.y, type: 'north-west' })
+      }
+    }
+  })
 
   return walls
 }
@@ -539,6 +593,8 @@ const createRoom = (name: string, width: number, height: number): Room => {
     y: 0
   })
 
+  const adjustedDoorway = adjustDoorwayForFloorTiles(doorway, undefined, width, height)
+
   return {
     id: generateId('room-'),
     name,
@@ -546,8 +602,8 @@ const createRoom = (name: string, width: number, height: number): Room => {
     height,
     floorTiles: createFullFloorTiles(width, height),
     furniture: [],
-    walls: buildRoomWalls(width, height, doorway),
-    doorway,
+    walls: buildRoomWalls(width, height, adjustedDoorway),
+    doorway: adjustedDoorway,
     spawnPoint
   }
 }
