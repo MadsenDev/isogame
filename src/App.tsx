@@ -7,6 +7,7 @@ import PlayerInfo from './components/PlayerInfo'
 import ContextMenu from './components/ContextMenu'
 import { RoomManager } from './components/RoomManager'
 import { RoomCustomization } from './components/RoomCustomization'
+import { FurnitureSelector } from './components/FurnitureSelector'
 import { GameProvider, useGame } from './context/GameContext'
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
         <ContextMenu />
         <RoomManagerWrapper />
         <RoomCustomization />
+        <FurnitureSelector />
       </div>
     </GameProvider>
   )

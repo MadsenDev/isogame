@@ -6,6 +6,7 @@ import { FurnitureComponent } from '../components/FurnitureComponent'
 import { WallComponent } from '../components/WallComponent'
 import { Pathfinder } from '../utils/Pathfinder'
 import { CoordinateUtils } from '../utils/CoordinateUtils'
+import { getFurnitureDefinition } from '../data/furnitureDefinitions'
 
 export class GameEngine {
   private canvas: HTMLCanvasElement
@@ -208,7 +209,8 @@ export class GameEngine {
         this.state.currentRoom.height,
         this.state.currentRoom.furniture,
         this.state.players,
-        this.state.currentRoom.floorTiles
+        this.state.currentRoom.floorTiles,
+        this.state.previewFurniture.type
       )
       
       if (isValid) {
@@ -236,7 +238,8 @@ export class GameEngine {
           this.state.currentRoom.height,
           this.state.currentRoom.furniture,
           this.state.players,
-          this.state.currentRoom.floorTiles
+          this.state.currentRoom.floorTiles,
+          this.state.selectedFurniture || 'chair' // Default to chair if no furniture selected
         )
       } else if (this.state.currentTool === 'room') {
         const withinBounds = (
@@ -382,6 +385,10 @@ export class GameEngine {
     return true
   }
 
+  private getFurnitureDefinition(type: string) {
+    return getFurnitureDefinition(type)
+  }
+
   public handleClick(x: number, y: number, e?: MouseEvent) {
     const worldPos = this.coordinateUtils.screenToWorld(x, y)
     const gridX = Math.round(worldPos.x)
@@ -417,61 +424,66 @@ export class GameEngine {
         this.state.currentRoom!.height,
         this.state.currentRoom!.furniture,
         this.state.players,
-        this.state.currentRoom!.floorTiles
+        this.state.currentRoom!.floorTiles,
+        this.state.selectedFurniture
       )) {
-        const furniture = {
-          id: `furniture-${Date.now()}`,
-          x: gridX,
-          y: gridY,
-          type: this.state.selectedFurniture
+        const furnitureDefinition = this.getFurnitureDefinition(this.state.selectedFurniture)
+        if (furnitureDefinition) {
+          const furniture = {
+            id: `furniture-${Date.now()}`,
+            x: gridX,
+            y: gridY,
+            type: this.state.selectedFurniture,
+            definition: furnitureDefinition
+          }
+
+          this.dispatch({
+            type: 'ADD_FURNITURE',
+            payload: furniture
+          })
+
+          // Stop placing after successful placement
+          this.dispatch({
+            type: 'SET_PLACING',
+            payload: false
+          })
+          this.dispatch({
+            type: 'SELECT_FURNITURE',
+            payload: null
+          })
         }
-
-        this.dispatch({
-          type: 'ADD_FURNITURE',
-          payload: furniture
-        })
-
-        // Stop placing after successful placement
-        this.dispatch({
-          type: 'SET_PLACING',
-          payload: false
-        })
-        this.dispatch({
-          type: 'SELECT_FURNITURE',
-          payload: null
-        })
       }
-     } else if (this.state.currentTool === 'room') {
-       if (!this.state.currentRoom) return
+    } else if (this.state.currentTool === 'room') {
+      if (!this.state.currentRoom) return
 
-       if (gridX < 0 || gridX >= this.state.currentRoom.width || gridY < 0 || gridY >= this.state.currentRoom.height) {
-         return
-       }
+      if (gridX < 0 || gridX >= this.state.currentRoom.width || gridY < 0 || gridY >= this.state.currentRoom.height) {
+        return
+      }
 
-       const hasTile = this.state.currentRoom.floorTiles.some(tile => tile.x === gridX && tile.y === gridY)
-       if (!hasTile) {
-         this.dispatch({ type: 'TOGGLE_FLOOR_TILE', payload: { x: gridX, y: gridY } })
-         return
-       }
+      const hasTile = this.state.currentRoom.floorTiles.some(tile => tile.x === gridX && tile.y === gridY)
+      if (!hasTile) {
+        this.dispatch({ type: 'TOGGLE_FLOOR_TILE', payload: { x: gridX, y: gridY } })
+        return
+      }
 
-       const hasFurniture = this.state.currentRoom.furniture.some(f => f.x === gridX && f.y === gridY)
-       const hasPlayer = this.state.players.some(player => Math.round(player.x) === gridX && Math.round(player.y) === gridY)
-       const isSpawnTile = this.state.currentRoom.spawnPoint
-         ? this.state.currentRoom.spawnPoint.x === gridX && this.state.currentRoom.spawnPoint.y === gridY
-         : false
+      const hasFurniture = this.state.currentRoom.furniture.some(f => f.x === gridX && f.y === gridY)
+      const hasPlayer = this.state.players.some(player => Math.round(player.x) === gridX && Math.round(player.y) === gridY)
+      const isSpawnTile = this.state.currentRoom.spawnPoint
+        ? this.state.currentRoom.spawnPoint.x === gridX && this.state.currentRoom.spawnPoint.y === gridY
+        : false
 
-       if (!(hasFurniture || hasPlayer || isSpawnTile)) {
-         // Check if we're painting texture (right-click or shift+click)
-         if (e?.shiftKey || e?.button === 2) {
-           // Paint texture on this tile
-           const currentTexture = this.state.currentRoom.floorTiles.find(tile => tile.x === gridX && tile.y === gridY)?.texture
-           const newTexture = currentTexture === 'wood' ? 'stone' : 'wood' // Toggle between wood and stone for now
-           this.dispatch({ type: 'SET_TILE_TEXTURE', payload: { roomId: this.state.currentRoom.id, x: gridX, y: gridY, texture: newTexture } })
-         } else {
-           this.dispatch({ type: 'TOGGLE_FLOOR_TILE', payload: { x: gridX, y: gridY } })
-         }
-       }
-     }
+      if (!(hasFurniture || hasPlayer || isSpawnTile)) {
+        // Check if we're painting texture (right-click or shift+click)
+        if (e?.shiftKey || e?.button === 2) {
+          // Paint texture on this tile
+          const currentTexture = this.state.currentRoom.floorTiles.find(tile => tile.x === gridX && tile.y === gridY)?.texture
+          const newTexture = currentTexture === 'wood' ? 'stone' : 'wood' // Toggle between wood and stone for now
+          this.dispatch({ type: 'SET_TILE_TEXTURE', payload: { roomId: this.state.currentRoom.id, x: gridX, y: gridY, texture: newTexture } })
+        } else {
+          this.dispatch({ type: 'TOGGLE_FLOOR_TILE', payload: { x: gridX, y: gridY } })
+        }
+      }
+    }
   }
 
   public handleRightClick(x: number, y: number) {

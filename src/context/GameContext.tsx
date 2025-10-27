@@ -27,6 +27,44 @@ export interface Furniture {
   x: number
   y: number
   type: string
+  definition: FurnitureDefinition
+}
+
+export interface FurnitureDefinition {
+  id: string
+  name: string
+  sprite: string
+  width: number
+  height: number
+  interactions: FurnitureInteraction[]
+  collision: FurnitureCollision
+  walkable: boolean
+  stackable: boolean
+  rotatable: boolean
+  category: 'seating' | 'decoration' | 'functional' | 'flooring' | 'wall'
+}
+
+export interface FurnitureInteraction {
+  type: 'sit' | 'lay' | 'stand' | 'use' | 'dance' | 'sleep'
+  positions: FurniturePosition[]
+  animation?: string
+  duration?: number
+}
+
+export interface FurniturePosition {
+  x: number
+  y: number
+  direction: 'north' | 'south' | 'east' | 'west' | 'north-east' | 'north-west' | 'south-east' | 'south-west'
+  offsetX?: number
+  offsetY?: number
+}
+
+export interface FurnitureCollision {
+  blocksMovement: boolean
+  blocksVision: boolean
+  height: number // Height in tiles (0 = floor level, 1 = 1 tile high, etc.)
+  shape: 'rectangle' | 'circle' | 'custom'
+  customShape?: Array<{ x: number; y: number }>
 }
 
 export interface Room {
