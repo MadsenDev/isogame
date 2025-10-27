@@ -35,7 +35,7 @@ export const FurnitureSelector: React.FC = () => {
       'flooring': '#CD853F',
       'wall': '#A0522D'
     }
-    
+
     return (
       <div
         className="habbo-furniture__preview"
@@ -47,13 +47,8 @@ export const FurnitureSelector: React.FC = () => {
   }
 
   return (
-    <div className="habbo-window habbo-furniture">
-      <div className="habbo-window__header">
-        <h3 className="habbo-window__title">Furniture Catalog</h3>
-        <span className="habbo-window__badge">{getFilteredFurniture().length} items</span>
-      </div>
-
-      <div className="habbo-window__body">
+    <div className="panel-content">
+      <div className="panel-section">
         <div className="habbo-segmented">
           {categories.map(category => (
             <button
@@ -66,9 +61,9 @@ export const FurnitureSelector: React.FC = () => {
             </button>
           ))}
         </div>
+      </div>
 
-        <div className="habbo-window__divider" />
-
+      <div className="panel-section">
         <div className="habbo-furniture__grid">
           {getFilteredFurniture().map(furniture => (
             <button
@@ -82,8 +77,10 @@ export const FurnitureSelector: React.FC = () => {
             </button>
           ))}
         </div>
+      </div>
 
-        {state.selectedFurniture && (
+      {state.selectedFurniture && (
+        <div className="panel-section">
           <div className="habbo-furniture__selection">
             <div className="habbo-furniture__selection-title">
               Selected: <strong>{state.selectedFurniture}</strong>
@@ -99,8 +96,10 @@ export const FurnitureSelector: React.FC = () => {
               Cancel placement
             </button>
           </div>
-        )}
+        </div>
+      )}
 
+      <div className="panel-section">
         <ul className="habbo-guidelines">
           <li>Choose a category to focus the catalog.</li>
           <li>Click an item to start placing it in the room.</li>

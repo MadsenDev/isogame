@@ -8,9 +8,9 @@ const PlayerInfo: React.FC = () => {
   if (!currentPlayer) return null
 
   return (
-    <div className="habbo-floating-card">
-      <h4 className="habbo-floating-card__title">Current Guest</h4>
-      <div className="habbo-floating-card__badge" style={{ color: currentPlayer.color }}>
+    <div className="neo-guide__card">
+      <span className="neo-guide__label">Current guest</span>
+      <div className="neo-guide__badge" style={{ color: currentPlayer.color }}>
         {currentPlayer.name}
       </div>
     </div>

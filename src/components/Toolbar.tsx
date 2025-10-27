@@ -5,7 +5,7 @@ const Toolbar: React.FC = () => {
   const { state, dispatch, roomManager } = useGame()
 
   const handleResize = (dimension: 'width' | 'height', value: number) => {
-    if (!state.currentRoom) return
+    if (!state.currentRoom || !roomManager) return
 
     const current = state.currentRoom
     const clamped = Math.max(4, Math.min(40, value))
@@ -30,9 +30,8 @@ const Toolbar: React.FC = () => {
   }
 
   return (
-    <div className="habbo-window habbo-toolbar">
-      <div className="habbo-window__header">
-        <h3 className="habbo-window__title">Tool Deck</h3>
+    <div className="panel-content">
+      <div className="panel-section">
         <div className="habbo-pill-group" role="tablist">
           <button
             className={`habbo-pill ${state.currentTool === 'move' ? 'is-active' : ''}`}
@@ -56,7 +55,7 @@ const Toolbar: React.FC = () => {
       </div>
 
       {state.currentTool === 'move' && (
-        <div className="habbo-window__body">
+        <div className="panel-section">
           <p className="habbo-window__muted">
             Click anywhere on the floor to stroll around the resort. Hold shift to queue a path.
           </p>
@@ -64,8 +63,8 @@ const Toolbar: React.FC = () => {
       )}
 
       {state.currentTool === 'furniture' && (
-        <div className="habbo-window__body">
-          <h4 className="habbo-window__section-title">Quick Pieces</h4>
+        <div className="panel-section">
+          <h4 className="panel-subtitle">Quick pieces</h4>
           <div className="habbo-list habbo-list--compact">
             {[
               { type: 'chair', emoji: '🪑', name: 'Club Chair' },
@@ -88,8 +87,8 @@ const Toolbar: React.FC = () => {
       )}
 
       {state.currentTool === 'room' && (
-        <div className="habbo-window__body">
-          <h4 className="habbo-window__section-title">Floor Concierge</h4>
+        <div className="panel-section">
+          <h4 className="panel-subtitle">Floor concierge</h4>
           {state.currentRoom ? (
             <>
               <p className="habbo-window__muted">
@@ -100,13 +99,13 @@ const Toolbar: React.FC = () => {
                   className="habbo-button habbo-button--primary"
                   onClick={() => dispatch({ type: 'FILL_ROOM_FLOOR' })}
                 >
-                  Fill Entire Room
+                  Fill entire room
                 </button>
                 <button
                   className="habbo-button habbo-button--ghost"
                   onClick={() => dispatch({ type: 'CLEAR_ROOM_FLOOR' })}
                 >
-                  Clear Empty Tiles
+                  Clear empty tiles
                 </button>
               </div>
               <dl className="habbo-stats">

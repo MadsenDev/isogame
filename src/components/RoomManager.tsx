@@ -79,21 +79,18 @@ export const RoomManager: React.FC<RoomManagerProps> = ({
   }
 
   return (
-    <div className="habbo-window habbo-room-manager">
-      <div className="habbo-window__header">
-        <h3 className="habbo-window__title">Room Navigator</h3>
-        <div className="habbo-button-group">
-          <button onClick={() => setShowExport(!showExport)} className="habbo-button habbo-button--ghost">
-            {showExport ? 'Hide export' : 'Export layout'}
-          </button>
-          <button onClick={() => setShowCreateForm(!showCreateForm)} className="habbo-button habbo-button--primary">
-            {showCreateForm ? 'Cancel' : 'New room'}
-          </button>
-        </div>
+    <div className="panel-content">
+      <div className="panel-section panel-section--toolbar">
+        <button onClick={() => setShowExport(!showExport)} className="habbo-button habbo-button--ghost">
+          {showExport ? 'Hide export' : 'Export layout'}
+        </button>
+        <button onClick={() => setShowCreateForm(!showCreateForm)} className="habbo-button habbo-button--primary">
+          {showCreateForm ? 'Cancel' : 'New room'}
+        </button>
       </div>
 
-      <div className="habbo-window__body">
-        {showExport && (
+      {showExport && (
+        <div className="panel-section">
           <div className="habbo-room-card habbo-room-card--panel">
             <h4 className="habbo-room-card__title">Current room layout</h4>
             {currentRoom ? (
@@ -115,9 +112,11 @@ export const RoomManager: React.FC<RoomManagerProps> = ({
               <div className="habbo-room-card__empty">Select a room to export its layout.</div>
             )}
           </div>
-        )}
+        </div>
+      )}
 
-        {showCreateForm && (
+      {showCreateForm && (
+        <div className="panel-section">
           <div className="habbo-room-card habbo-room-card--panel">
             <h4 className="habbo-room-card__title">Create new room</h4>
             <div className="habbo-stack">
@@ -153,8 +152,10 @@ export const RoomManager: React.FC<RoomManagerProps> = ({
               </button>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
+      <div className="panel-section">
         <div className="habbo-room-list">
           {rooms.map((room) => (
             <div

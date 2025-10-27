@@ -19,7 +19,6 @@ export const RoomCustomization: React.FC = () => {
   const [tilesetImage, setTilesetImage] = useState<HTMLImageElement | null>(null)
 
   useEffect(() => {
-    // Load the tileset image for texture previews
     const img = new Image()
     img.src = '/src/assets/tileset.jpg'
     img.onload = () => {
@@ -42,23 +41,22 @@ export const RoomCustomization: React.FC = () => {
     return textureMap[texture] || textureMap['default']
   }
 
-  // Memoize texture preview URLs to avoid recreating them on every render
   const texturePreviews = useMemo(() => {
     if (!tilesetImage) return {}
-    
+
     const previews: Record<string, string> = {}
     const tileSize = 32
-    
+
     FLOOR_TEXTURES.forEach(texture => {
       const coords = getTextureCoordinates(texture.id)
       const sourceX = (coords.col - 1) * tileSize
       const sourceY = (coords.row - 1) * tileSize
-      
+
       const canvas = document.createElement('canvas')
       canvas.width = 32
       canvas.height = 32
       const ctx = canvas.getContext('2d')
-      
+
       if (ctx) {
         ctx.drawImage(
           tilesetImage,
@@ -68,13 +66,13 @@ export const RoomCustomization: React.FC = () => {
         previews[texture.id] = canvas.toDataURL()
       }
     })
-    
+
     return previews
   }, [tilesetImage])
 
   const renderTexturePreview = (texture: { id: string; name: string; color: string }) => {
     const previewUrl = texturePreviews[texture.id]
-    
+
     if (previewUrl) {
       return (
         <div
@@ -87,8 +85,7 @@ export const RoomCustomization: React.FC = () => {
         />
       )
     }
-    
-    // Fallback to color if tileset not loaded
+
     return (
       <div
         className="habbo-texture__preview"
@@ -104,22 +101,21 @@ export const RoomCustomization: React.FC = () => {
   }
 
   return (
-    <div className="habbo-window">
-      <div className="habbo-window__header">
-        <h3 className="habbo-window__title">Room Styling</h3>
+    <div className="panel-content">
+      <div className="panel-section panel-section--split">
+        <h4 className="panel-subtitle">Floor textures</h4>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="habbo-window__toggle"
+          className="habbo-button habbo-button--ghost"
           aria-expanded={isOpen}
           aria-label="Toggle room styling"
         >
-          {isOpen ? '–' : '+'}
+          {isOpen ? 'Hide' : 'Show'}
         </button>
       </div>
 
       {isOpen && (
-        <div className="habbo-window__body">
-          <h4 className="habbo-window__section-title">Floor Textures</h4>
+        <div className="panel-section">
           <div className="habbo-grid habbo-grid--textures">
             {FLOOR_TEXTURES.map(texture => (
               <button
@@ -138,7 +134,7 @@ export const RoomCustomization: React.FC = () => {
             Apply to all tiles
           </button>
 
-          <div className="habbo-window__divider" />
+          <div className="panel-divider" />
 
           <div className="habbo-room-meta">
             <div>
