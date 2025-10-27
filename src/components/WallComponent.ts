@@ -112,11 +112,17 @@ export class WallComponent {
     const lowerTop = { x: top.x, y: top.y + wallHeight }
     const lowerBottom = { x: bottom.x, y: bottom.y + wallHeight }
 
+    const edgeDx = bottom.x - top.x
+    const edgeDy = bottom.y - top.y
+    const edgeLength = Math.hypot(edgeDx, edgeDy) || 1
+    const extendX = (edgeDx / edgeLength) * seamOverlap
+    const extendY = (edgeDy / edgeLength) * seamOverlap
+
     this.ctx.beginPath()
-    this.ctx.moveTo(top.x, top.y - seamOverlap)
-    this.ctx.lineTo(bottom.x, bottom.y + seamOverlap)
-    this.ctx.lineTo(lowerBottom.x, lowerBottom.y + seamOverlap)
-    this.ctx.lineTo(lowerTop.x, lowerTop.y - seamOverlap)
+    this.ctx.moveTo(top.x - extendX, top.y - extendY)
+    this.ctx.lineTo(bottom.x + extendX, bottom.y + extendY)
+    this.ctx.lineTo(lowerBottom.x + extendX, lowerBottom.y + extendY)
+    this.ctx.lineTo(lowerTop.x - extendX, lowerTop.y - extendY)
     this.ctx.closePath()
     this.ctx.fillStyle = shade
     this.ctx.fill()
