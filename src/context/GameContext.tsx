@@ -18,6 +18,7 @@ export interface Player {
   pathIndex: number
   action: 'idle' | 'sitting' | 'dancing' | 'waving'
   actionTimer: number
+  lastDirection: string
 }
 
 export interface Furniture {
@@ -577,7 +578,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
         path: [],
         pathIndex: 0,
         action: 'idle',
-        actionTimer: 0
+        actionTimer: 0,
+        lastDirection: 'south'
       },
       {
         id: 1,
@@ -595,7 +597,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
         path: [],
         pathIndex: 0,
         action: 'idle',
-        actionTimer: 0
+        actionTimer: 0,
+        lastDirection: 'south'
       },
       {
         id: 2,
@@ -613,7 +616,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
         path: [],
         pathIndex: 0,
         action: 'idle',
-        actionTimer: 0
+        actionTimer: 0,
+        lastDirection: 'south'
       },
       {
         id: 3,
@@ -631,7 +635,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
         path: [],
         pathIndex: 0,
         action: 'idle',
-        actionTimer: 0
+        actionTimer: 0,
+        lastDirection: 'south'
       }
     ]
 

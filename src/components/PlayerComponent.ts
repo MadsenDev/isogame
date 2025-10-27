@@ -5,7 +5,6 @@ export class PlayerComponent {
   private characterSprites: Map<string, HTMLImageElement> = new Map()
   private characterAnimations: Map<string, HTMLImageElement[]> = new Map()
   private gridSize: number
-  private lastDirection: string = 'south' // cache last facing dir
 
   constructor(ctx: CanvasRenderingContext2D, gridSize: number) {
     this.ctx = ctx
@@ -74,12 +73,13 @@ export class PlayerComponent {
       };
 
       const key = `${dx},${dy}`;
-      const direction = dirMap[key] ?? this.lastDirection;
-      this.lastDirection = direction;
+      const direction = dirMap[key] ?? player.lastDirection;
+      // Update the player's lastDirection
+      player.lastDirection = direction;
       return direction;
     }
 
-    return this.lastDirection;
+    return player.lastDirection;
   }
 
   public drawPlayer(player: Player, screenPos: { x: number; y: number }, isCurrentPlayer: boolean) {
