@@ -12,7 +12,10 @@
  */
 
 import * as THREE from 'three'
-import { Direction, DIRECTION_CYCLE, Vec3 } from './model'
+import { Vec3 } from './model'
+import { Direction, directionVector } from './directions'
+
+export { rotateDirection } from './directions'
 
 export interface Footprint {
   width: number
@@ -44,31 +47,11 @@ export function rotateTile(tile: Tile, footprint: Footprint, index: number): Til
   return current
 }
 
-/** Which way a compass direction points after `index` quarter turns. */
-export function rotateDirection(direction: Direction, index: number): Direction {
-  const from = DIRECTION_CYCLE.indexOf(direction)
-  return DIRECTION_CYCLE[(from + index + DIRECTION_CYCLE.length * 4) % DIRECTION_CYCLE.length]
-}
-
-/** A model-space point after `index` quarter turns about +Y. */
-export function rotatePoint(point: Vec3, index: number): THREE.Vector3 {
+/** A model-space point after `index` rotation steps about +Y. */
+export function rotatePoint(point: Vec3, index: number, angle = Math.PI / 2): THREE.Vector3 {
   const vector = new THREE.Vector3(point[0], point[1], point[2])
-  vector.applyAxisAngle(new THREE.Vector3(0, 1, 0), (index * Math.PI) / 2)
+  vector.applyAxisAngle(new THREE.Vector3(0, 1, 0), index * angle)
   return vector
-}
-
-/** Unit vector, in world XZ, that a compass direction points along. */
-export function directionVector(direction: Direction): THREE.Vector3 {
-  switch (direction) {
-    case 'south':
-      return new THREE.Vector3(1, 0, 0)
-    case 'north':
-      return new THREE.Vector3(-1, 0, 0)
-    case 'east':
-      return new THREE.Vector3(0, 0, 1)
-    case 'west':
-      return new THREE.Vector3(0, 0, -1)
-  }
 }
 
 /**

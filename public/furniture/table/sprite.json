@@ -86,13 +86,20 @@
             }
           ]
         }
-      ]
+      ],
+      "shadow": {
+        "file": "south-shadow.png",
+        "width": 125,
+        "height": 59,
+        "anchorX": 51,
+        "anchorY": 14
+      }
     },
     "west": {
       "file": "west.png",
       "index": 1,
       "width": 116,
-      "height": 82,
+      "height": 63,
       "anchorX": 58,
       "anchorY": 40,
       "footprint": {
@@ -139,13 +146,20 @@
             }
           ]
         }
-      ]
+      ],
+      "shadow": {
+        "file": "west-shadow.png",
+        "width": 125,
+        "height": 59,
+        "anchorX": 51,
+        "anchorY": 14
+      }
     },
     "north": {
       "file": "north.png",
       "index": 2,
       "width": 116,
-      "height": 82,
+      "height": 63,
       "anchorX": 58,
       "anchorY": 40,
       "footprint": {
@@ -192,13 +206,20 @@
             }
           ]
         }
-      ]
+      ],
+      "shadow": {
+        "file": "north-shadow.png",
+        "width": 125,
+        "height": 59,
+        "anchorX": 51,
+        "anchorY": 14
+      }
     },
     "east": {
       "file": "east.png",
       "index": 3,
       "width": 116,
-      "height": 82,
+      "height": 63,
       "anchorX": 58,
       "anchorY": 40,
       "footprint": {
@@ -245,7 +266,14 @@
             }
           ]
         }
-      ]
+      ],
+      "shadow": {
+        "file": "east-shadow.png",
+        "width": 125,
+        "height": 59,
+        "anchorX": 51,
+        "anchorY": 14
+      }
     }
   },
   "sheet": {
@@ -273,7 +301,7 @@
         "x": 117,
         "y": 0,
         "width": 116,
-        "height": 82,
+        "height": 63,
         "anchorX": 58,
         "anchorY": 40,
         "footprint": {
@@ -287,7 +315,7 @@
         "x": 234,
         "y": 0,
         "width": 116,
-        "height": 82,
+        "height": 63,
         "anchorX": 58,
         "anchorY": 40,
         "footprint": {
@@ -301,7 +329,7 @@
         "x": 351,
         "y": 0,
         "width": 116,
-        "height": 82,
+        "height": 63,
         "anchorX": 58,
         "anchorY": 40,
         "footprint": {

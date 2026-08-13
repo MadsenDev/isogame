@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react'
 import roomLayoutDefinitions from '../assets/roomLayouts.json'
+import type { WallEdge } from '../data/structureSprites'
 
 // Types
 export interface Player {
@@ -44,6 +45,16 @@ export type FurniturePlacement = 'floor' | 'wall' | 'ceiling'
  * sprite, which is what lets a 78px-tall bookshelf and a flat rug both be drawn
  * from the same tile coordinate without per-item fudge factors.
  */
+/** A contact shadow, anchored to the same tile as the sprite it belongs to. */
+export interface SpriteShadow {
+  url: string
+  file: string
+  width: number
+  height: number
+  anchorX: number
+  anchorY: number
+}
+
 export interface FurnitureSprite {
   url: string
   file: string
@@ -54,6 +65,7 @@ export interface FurnitureSprite {
   anchorY: number
   footprint: { width: number; height: number }
   interactions: FurnitureInteraction[]
+  shadow?: SpriteShadow
 }
 
 export interface FurnitureDefinition {
@@ -114,7 +126,14 @@ export interface Room {
   height: number
   floorTiles: Array<{ x: number; y: number; texture?: string }>
   furniture: Furniture[]
-  walls: Array<{ x: number; y: number; type: 'north-east' | 'north-west' }>
+  /**
+   * Wall panels, each on the edge of a floor tile it belongs to.
+   *
+   * Previously walls were stored on the empty tile *outside* the floor and then
+   * drawn back two tiles with a magic offset. Anchoring them to the tile they
+   * enclose means the sprite's own anchor positions them, with no fudge.
+   */
+  walls: Array<{ x: number; y: number; edge: WallEdge }>
   doorway?: { x: number; y: number; type: 'north-east' | 'north-west' }
   spawnPoint?: { x: number; y: number }
   floorTexture?: string
@@ -151,7 +170,9 @@ export interface GameState {
   contextMenuVisible: boolean
   contextMenuTarget: Player | null
   hoverGridPos: { x: number; y: number } | null
-  previewFurniture: { x: number; y: number; type: string } | null
+  previewFurniture: { x: number; y: number; type: string; direction?: FurnitureDirection } | null
+  /** Orientation the next placed piece will use. Null means its default. */
+  placementDirection: FurnitureDirection | null
 }
 
 // Action types
@@ -173,6 +194,7 @@ export type GameAction =
   | { type: 'SET_FLOOR_TEXTURE'; payload: { roomId: string; texture: string } }
   | { type: 'SET_TILE_TEXTURE'; payload: { roomId: string; x: number; y: number; texture: string } }
   | { type: 'ADD_FURNITURE'; payload: Furniture }
+  | { type: 'SET_PLACEMENT_DIRECTION'; payload: FurnitureDirection }
   | { type: 'ADD_PLAYER'; payload: Player }
   | { type: 'SET_CURRENT_PLAYER'; payload: number }
   | { type: 'MOVE_PLAYER'; payload: { playerId: number; x: number; y: number; path: Array<{ x: number; y: number }> } }
@@ -182,7 +204,7 @@ export type GameAction =
   | { type: 'SHOW_CONTEXT_MENU'; payload: { x: number; y: number; player: Player } }
   | { type: 'HIDE_CONTEXT_MENU' }
   | { type: 'SET_HOVER_GRID'; payload: { x: number; y: number } | null }
-  | { type: 'SET_PREVIEW_FURNITURE'; payload: { x: number; y: number; type: string } | null }
+  | { type: 'SET_PREVIEW_FURNITURE'; payload: { x: number; y: number; type: string; direction?: FurnitureDirection } | null }
 
 // Initial state
 const initialState: GameState = {
@@ -199,6 +221,7 @@ const initialState: GameState = {
   contextMenuTarget: null,
   hoverGridPos: null,
   previewFurniture: null,
+  placementDirection: null,
 }
 
 // Reducer
@@ -208,7 +231,12 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       return { ...state, currentTool: action.payload }
     
     case 'SELECT_FURNITURE':
-      return { ...state, selectedFurniture: action.payload, isPlacing: !!action.payload }
+      return {
+        ...state,
+        selectedFurniture: action.payload,
+        isPlacing: !!action.payload,
+        placementDirection: null
+      }
     
     case 'SET_PLACING':
       return { ...state, isPlacing: action.payload }
@@ -485,6 +513,9 @@ function gameReducer(state: GameState, action: GameAction): GameState {
        }
      }
 
+    case 'SET_PLACEMENT_DIRECTION':
+      return { ...state, placementDirection: action.payload }
+
     case 'ADD_FURNITURE':
       if (!state.currentRoom) return state
       return {
@@ -674,20 +705,22 @@ function buildRoomWalls(
     : createFullFloorTiles(width, height)
 
   const tileSet = new Set(effectiveFloorTiles.map(tile => `${tile.x},${tile.y}`))
-  const walls: Array<{ x: number; y: number; type: 'north-east' | 'north-west' }> = []
+  const walls: Array<{ x: number; y: number; edge: WallEdge }> = []
 
   effectiveFloorTiles.forEach(tile => {
-    const northKey = `${tile.x},${tile.y - 1}`
-    if (!tileSet.has(northKey)) {
+    // A tile with no floor to its -y gets a panel on that edge, and so on. The
+    // doorway is simply a segment we skip.
+    const westKey = `${tile.x},${tile.y - 1}`
+    if (!tileSet.has(westKey)) {
       if (!(doorway?.type === 'north-east' && doorway.x === tile.x && doorway.y === tile.y - 1)) {
-        walls.push({ x: tile.x, y: tile.y - 1, type: 'north-east' })
+        walls.push({ x: tile.x, y: tile.y, edge: 'west' })
       }
     }
 
-    const westKey = `${tile.x - 1},${tile.y}`
-    if (!tileSet.has(westKey)) {
+    const northKey = `${tile.x - 1},${tile.y}`
+    if (!tileSet.has(northKey)) {
       if (!(doorway?.type === 'north-west' && doorway.x === tile.x - 1 && doorway.y === tile.y)) {
-        walls.push({ x: tile.x - 1, y: tile.y, type: 'north-west' })
+        walls.push({ x: tile.x, y: tile.y, edge: 'north' })
       }
     }
   })
@@ -870,6 +903,15 @@ const createRoom = (name: string, width: number, height: number, floorTexture?: 
 // Provider
 export function GameProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(gameReducer, initialState)
+
+  // Dev-only inspection hook. Reading the live room and player state from the
+  // console (or a browser test) beats inferring it from canvas pixels.
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      const debugWindow = window as unknown as { __isogame?: GameState }
+      debugWindow.__isogame = state
+    }
+  }, [state])
 
   // Initialize game with default room and players
   useEffect(() => {

@@ -51,7 +51,7 @@
             "type": "sit",
             "animation": "sit",
             "duration": 0,
-            "spots": [
+            "positions": [
               {
                 "x": 0,
                 "y": 0,
@@ -63,15 +63,23 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "south-shadow.png",
+          "width": 42,
+          "height": 17,
+          "anchorX": 13,
+          "anchorY": 9,
+          "url": "/furniture/wooden_chair/south-shadow.png"
+        },
         "url": "/furniture/wooden_chair/south.png"
       },
       "west": {
         "file": "west.png",
         "index": 1,
-        "width": 34,
-        "height": 49,
-        "anchorX": 17,
-        "anchorY": 42,
+        "width": 1,
+        "height": 1,
+        "anchorX": 19,
+        "anchorY": 51,
         "footprint": {
           "width": 1,
           "height": 1
@@ -81,7 +89,7 @@
             "type": "sit",
             "animation": "sit",
             "duration": 0,
-            "spots": [
+            "positions": [
               {
                 "x": 0,
                 "y": 0,
@@ -93,15 +101,23 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "west-shadow.png",
+          "width": 42,
+          "height": 17,
+          "anchorX": 13,
+          "anchorY": 9,
+          "url": "/furniture/wooden_chair/west-shadow.png"
+        },
         "url": "/furniture/wooden_chair/west.png"
       },
       "north": {
         "file": "north.png",
         "index": 2,
-        "width": 34,
-        "height": 49,
-        "anchorX": 17,
-        "anchorY": 42,
+        "width": 1,
+        "height": 1,
+        "anchorX": 19,
+        "anchorY": 51,
         "footprint": {
           "width": 1,
           "height": 1
@@ -111,7 +127,7 @@
             "type": "sit",
             "animation": "sit",
             "duration": 0,
-            "spots": [
+            "positions": [
               {
                 "x": 0,
                 "y": 0,
@@ -123,15 +139,23 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "north-shadow.png",
+          "width": 53,
+          "height": 17,
+          "anchorX": 13,
+          "anchorY": 9,
+          "url": "/furniture/wooden_chair/north-shadow.png"
+        },
         "url": "/furniture/wooden_chair/north.png"
       },
       "east": {
         "file": "east.png",
         "index": 3,
-        "width": 34,
-        "height": 55,
-        "anchorX": 17,
-        "anchorY": 48,
+        "width": 1,
+        "height": 1,
+        "anchorX": 19,
+        "anchorY": 51,
         "footprint": {
           "width": 1,
           "height": 1
@@ -141,7 +165,7 @@
             "type": "sit",
             "animation": "sit",
             "duration": 0,
-            "spots": [
+            "positions": [
               {
                 "x": 0,
                 "y": 0,
@@ -153,6 +177,14 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "east-shadow.png",
+          "width": 53,
+          "height": 17,
+          "anchorX": 13,
+          "anchorY": 9,
+          "url": "/furniture/wooden_chair/east-shadow.png"
+        },
         "url": "/furniture/wooden_chair/east.png"
       }
     },
@@ -226,7 +258,7 @@
             "type": "sit",
             "animation": "sit",
             "duration": 0,
-            "spots": [
+            "positions": [
               {
                 "x": 0,
                 "y": 0,
@@ -246,15 +278,23 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "east-shadow.png",
+          "width": 102,
+          "height": 44,
+          "anchorX": 26,
+          "anchorY": 14,
+          "url": "/furniture/club_sofa/east-shadow.png"
+        },
         "url": "/furniture/club_sofa/east.png"
       },
       "south": {
         "file": "south.png",
         "index": 1,
-        "width": 87,
-        "height": 73,
-        "anchorX": 59,
-        "anchorY": 43,
+        "width": 86,
+        "height": 55,
+        "anchorX": 58,
+        "anchorY": 25,
         "footprint": {
           "width": 1,
           "height": 2
@@ -264,7 +304,7 @@
             "type": "sit",
             "animation": "sit",
             "duration": 0,
-            "spots": [
+            "positions": [
               {
                 "x": 0,
                 "y": 1,
@@ -284,15 +324,23 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "south-shadow.png",
+          "width": 98,
+          "height": 44,
+          "anchorX": 57,
+          "anchorY": 14,
+          "url": "/furniture/club_sofa/south-shadow.png"
+        },
         "url": "/furniture/club_sofa/south.png"
       },
       "west": {
         "file": "west.png",
         "index": 2,
-        "width": 87,
-        "height": 66,
-        "anchorX": 27,
-        "anchorY": 37,
+        "width": 86,
+        "height": 54,
+        "anchorX": 26,
+        "anchorY": 25,
         "footprint": {
           "width": 2,
           "height": 1
@@ -302,7 +350,7 @@
             "type": "sit",
             "animation": "sit",
             "duration": 0,
-            "spots": [
+            "positions": [
               {
                 "x": 1,
                 "y": 0,
@@ -322,15 +370,23 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "west-shadow.png",
+          "width": 98,
+          "height": 44,
+          "anchorX": 25,
+          "anchorY": 15,
+          "url": "/furniture/club_sofa/west-shadow.png"
+        },
         "url": "/furniture/club_sofa/west.png"
       },
       "north": {
         "file": "north.png",
         "index": 3,
-        "width": 87,
-        "height": 66,
+        "width": 86,
+        "height": 54,
         "anchorX": 60,
-        "anchorY": 37,
+        "anchorY": 25,
         "footprint": {
           "width": 1,
           "height": 2
@@ -340,7 +396,7 @@
             "type": "sit",
             "animation": "sit",
             "duration": 0,
-            "spots": [
+            "positions": [
               {
                 "x": 0,
                 "y": 0,
@@ -360,6 +416,14 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "north-shadow.png",
+          "width": 102,
+          "height": 44,
+          "anchorX": 58,
+          "anchorY": 15,
+          "url": "/furniture/club_sofa/north-shadow.png"
+        },
         "url": "/furniture/club_sofa/north.png"
       }
     },
@@ -452,7 +516,7 @@
             "type": "lay",
             "animation": "lay",
             "duration": 0,
-            "spots": [
+            "positions": [
               {
                 "x": 0,
                 "y": 0,
@@ -475,7 +539,7 @@
             "type": "sleep",
             "animation": "sleep",
             "duration": 30000,
-            "spots": [
+            "positions": [
               {
                 "x": 0,
                 "y": 0,
@@ -487,14 +551,22 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "south-shadow.png",
+          "width": 97,
+          "height": 45,
+          "anchorX": 28,
+          "anchorY": 15,
+          "url": "/furniture/bed/south-shadow.png"
+        },
         "url": "/furniture/bed/south.png"
       },
       "west": {
         "file": "west.png",
         "index": 1,
-        "width": 91,
-        "height": 63,
-        "anchorX": 62,
+        "width": 84,
+        "height": 52,
+        "anchorX": 57,
         "anchorY": 33,
         "footprint": {
           "width": 1,
@@ -505,7 +577,7 @@
             "type": "lay",
             "animation": "lay",
             "duration": 0,
-            "spots": [
+            "positions": [
               {
                 "x": 0,
                 "y": 1,
@@ -528,7 +600,7 @@
             "type": "sleep",
             "animation": "sleep",
             "duration": 30000,
-            "spots": [
+            "positions": [
               {
                 "x": 0,
                 "y": 1,
@@ -540,14 +612,22 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "west-shadow.png",
+          "width": 98,
+          "height": 46,
+          "anchorX": 60,
+          "anchorY": 15,
+          "url": "/furniture/bed/west-shadow.png"
+        },
         "url": "/furniture/bed/west.png"
       },
       "north": {
         "file": "north.png",
         "index": 2,
-        "width": 91,
-        "height": 63,
-        "anchorX": 29,
+        "width": 84,
+        "height": 52,
+        "anchorX": 27,
         "anchorY": 33,
         "footprint": {
           "width": 2,
@@ -558,7 +638,7 @@
             "type": "lay",
             "animation": "lay",
             "duration": 0,
-            "spots": [
+            "positions": [
               {
                 "x": 1,
                 "y": 0,
@@ -581,7 +661,7 @@
             "type": "sleep",
             "animation": "sleep",
             "duration": 30000,
-            "spots": [
+            "positions": [
               {
                 "x": 1,
                 "y": 0,
@@ -593,15 +673,23 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "north-shadow.png",
+          "width": 103,
+          "height": 46,
+          "anchorX": 28,
+          "anchorY": 15,
+          "url": "/furniture/bed/north-shadow.png"
+        },
         "url": "/furniture/bed/north.png"
       },
       "east": {
         "file": "east.png",
         "index": 3,
-        "width": 91,
-        "height": 68,
-        "anchorX": 61,
-        "anchorY": 38,
+        "width": 84,
+        "height": 50,
+        "anchorX": 59,
+        "anchorY": 30,
         "footprint": {
           "width": 1,
           "height": 2
@@ -611,7 +699,7 @@
             "type": "lay",
             "animation": "lay",
             "duration": 0,
-            "spots": [
+            "positions": [
               {
                 "x": 0,
                 "y": 0,
@@ -634,7 +722,7 @@
             "type": "sleep",
             "animation": "sleep",
             "duration": 30000,
-            "spots": [
+            "positions": [
               {
                 "x": 0,
                 "y": 0,
@@ -646,6 +734,14 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "east-shadow.png",
+          "width": 103,
+          "height": 45,
+          "anchorX": 60,
+          "anchorY": 15,
+          "url": "/furniture/bed/east-shadow.png"
+        },
         "url": "/furniture/bed/east.png"
       }
     },
@@ -743,7 +839,7 @@
             "type": "use",
             "animation": "use",
             "duration": 5000,
-            "spots": [
+            "positions": [
               {
                 "x": 0,
                 "y": 0,
@@ -779,13 +875,21 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "south-shadow.png",
+          "width": 125,
+          "height": 59,
+          "anchorX": 51,
+          "anchorY": 14,
+          "url": "/furniture/table/south-shadow.png"
+        },
         "url": "/furniture/table/south.png"
       },
       "west": {
         "file": "west.png",
         "index": 1,
         "width": 116,
-        "height": 82,
+        "height": 63,
         "anchorX": 58,
         "anchorY": 40,
         "footprint": {
@@ -797,7 +901,7 @@
             "type": "use",
             "animation": "use",
             "duration": 5000,
-            "spots": [
+            "positions": [
               {
                 "x": 0,
                 "y": 1,
@@ -833,13 +937,21 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "west-shadow.png",
+          "width": 125,
+          "height": 59,
+          "anchorX": 51,
+          "anchorY": 14,
+          "url": "/furniture/table/west-shadow.png"
+        },
         "url": "/furniture/table/west.png"
       },
       "north": {
         "file": "north.png",
         "index": 2,
         "width": 116,
-        "height": 82,
+        "height": 63,
         "anchorX": 58,
         "anchorY": 40,
         "footprint": {
@@ -851,7 +963,7 @@
             "type": "use",
             "animation": "use",
             "duration": 5000,
-            "spots": [
+            "positions": [
               {
                 "x": 1,
                 "y": 1,
@@ -887,13 +999,21 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "north-shadow.png",
+          "width": 125,
+          "height": 59,
+          "anchorX": 51,
+          "anchorY": 14,
+          "url": "/furniture/table/north-shadow.png"
+        },
         "url": "/furniture/table/north.png"
       },
       "east": {
         "file": "east.png",
         "index": 3,
         "width": 116,
-        "height": 82,
+        "height": 63,
         "anchorX": 58,
         "anchorY": 40,
         "footprint": {
@@ -905,7 +1025,7 @@
             "type": "use",
             "animation": "use",
             "duration": 5000,
-            "spots": [
+            "positions": [
               {
                 "x": 1,
                 "y": 0,
@@ -941,6 +1061,14 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "east-shadow.png",
+          "width": 125,
+          "height": 59,
+          "anchorX": 51,
+          "anchorY": 14,
+          "url": "/furniture/table/east-shadow.png"
+        },
         "url": "/furniture/table/east.png"
       }
     },
@@ -1015,7 +1143,7 @@
             "type": "dance",
             "animation": "dance",
             "duration": 10000,
-            "spots": [
+            "positions": [
               {
                 "x": 1,
                 "y": 0,
@@ -1035,6 +1163,14 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "south-shadow.png",
+          "width": 153,
+          "height": 78,
+          "anchorX": 60,
+          "anchorY": 15,
+          "url": "/furniture/rug/south-shadow.png"
+        },
         "url": "/furniture/rug/south.png"
       },
       "west": {
@@ -1053,7 +1189,7 @@
             "type": "dance",
             "animation": "dance",
             "duration": 10000,
-            "spots": [
+            "positions": [
               {
                 "x": 0,
                 "y": 1,
@@ -1073,6 +1209,14 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "west-shadow.png",
+          "width": 153,
+          "height": 78,
+          "anchorX": 92,
+          "anchorY": 15,
+          "url": "/furniture/rug/west-shadow.png"
+        },
         "url": "/furniture/rug/west.png"
       },
       "north": {
@@ -1091,7 +1235,7 @@
             "type": "dance",
             "animation": "dance",
             "duration": 10000,
-            "spots": [
+            "positions": [
               {
                 "x": 1,
                 "y": 1,
@@ -1111,6 +1255,14 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "north-shadow.png",
+          "width": 153,
+          "height": 78,
+          "anchorX": 60,
+          "anchorY": 15,
+          "url": "/furniture/rug/north-shadow.png"
+        },
         "url": "/furniture/rug/north.png"
       },
       "east": {
@@ -1129,7 +1281,7 @@
             "type": "dance",
             "animation": "dance",
             "duration": 10000,
-            "spots": [
+            "positions": [
               {
                 "x": 1,
                 "y": 1,
@@ -1149,6 +1301,14 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "east-shadow.png",
+          "width": 153,
+          "height": 78,
+          "anchorX": 92,
+          "anchorY": 15,
+          "url": "/furniture/rug/east-shadow.png"
+        },
         "url": "/furniture/rug/east.png"
       }
     },
@@ -1192,48 +1352,80 @@
           "height": 1
         },
         "interactions": [],
+        "shadow": {
+          "file": "south-shadow.png",
+          "width": 39,
+          "height": 17,
+          "anchorX": 7,
+          "anchorY": 9,
+          "url": "/furniture/plant/south-shadow.png"
+        },
         "url": "/furniture/plant/south.png"
       },
       "west": {
         "file": "west.png",
         "index": 1,
-        "width": 33,
-        "height": 47,
-        "anchorX": 16,
-        "anchorY": 43,
+        "width": 28,
+        "height": 29,
+        "anchorX": 11,
+        "anchorY": 37,
         "footprint": {
           "width": 1,
           "height": 1
         },
         "interactions": [],
+        "shadow": {
+          "file": "west-shadow.png",
+          "width": 41,
+          "height": 13,
+          "anchorX": 7,
+          "anchorY": 7,
+          "url": "/furniture/plant/west-shadow.png"
+        },
         "url": "/furniture/plant/west.png"
       },
       "north": {
         "file": "north.png",
         "index": 2,
-        "width": 26,
-        "height": 47,
-        "anchorX": 13,
-        "anchorY": 43,
+        "width": 22,
+        "height": 31,
+        "anchorX": 11,
+        "anchorY": 39,
         "footprint": {
           "width": 1,
           "height": 1
         },
         "interactions": [],
+        "shadow": {
+          "file": "north-shadow.png",
+          "width": 39,
+          "height": 16,
+          "anchorX": 7,
+          "anchorY": 9,
+          "url": "/furniture/plant/north-shadow.png"
+        },
         "url": "/furniture/plant/north.png"
       },
       "east": {
         "file": "east.png",
         "index": 3,
-        "width": 33,
-        "height": 47,
+        "width": 28,
+        "height": 26,
         "anchorX": 17,
-        "anchorY": 43,
+        "anchorY": 34,
         "footprint": {
           "width": 1,
           "height": 1
         },
         "interactions": [],
+        "shadow": {
+          "file": "east-shadow.png",
+          "width": 41,
+          "height": 13,
+          "anchorX": 7,
+          "anchorY": 7,
+          "url": "/furniture/plant/east-shadow.png"
+        },
         "url": "/furniture/plant/east.png"
       }
     },
@@ -1308,7 +1500,7 @@
             "type": "use",
             "animation": "use",
             "duration": 2000,
-            "spots": [
+            "positions": [
               {
                 "x": 0,
                 "y": 0,
@@ -1320,6 +1512,14 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "south-shadow.png",
+          "width": 48,
+          "height": 12,
+          "anchorX": 10,
+          "anchorY": 7,
+          "url": "/furniture/lamp/south-shadow.png"
+        },
         "url": "/furniture/lamp/south.png"
       },
       "west": {
@@ -1338,7 +1538,7 @@
             "type": "use",
             "animation": "use",
             "duration": 2000,
-            "spots": [
+            "positions": [
               {
                 "x": 0,
                 "y": 0,
@@ -1350,6 +1550,14 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "west-shadow.png",
+          "width": 48,
+          "height": 12,
+          "anchorX": 10,
+          "anchorY": 7,
+          "url": "/furniture/lamp/west-shadow.png"
+        },
         "url": "/furniture/lamp/west.png"
       },
       "north": {
@@ -1368,7 +1576,7 @@
             "type": "use",
             "animation": "use",
             "duration": 2000,
-            "spots": [
+            "positions": [
               {
                 "x": 0,
                 "y": 0,
@@ -1380,6 +1588,14 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "north-shadow.png",
+          "width": 48,
+          "height": 12,
+          "anchorX": 10,
+          "anchorY": 7,
+          "url": "/furniture/lamp/north-shadow.png"
+        },
         "url": "/furniture/lamp/north.png"
       },
       "east": {
@@ -1398,7 +1614,7 @@
             "type": "use",
             "animation": "use",
             "duration": 2000,
-            "spots": [
+            "positions": [
               {
                 "x": 0,
                 "y": 0,
@@ -1410,6 +1626,14 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "east-shadow.png",
+          "width": 48,
+          "height": 12,
+          "anchorX": 10,
+          "anchorY": 7,
+          "url": "/furniture/lamp/east-shadow.png"
+        },
         "url": "/furniture/lamp/east.png"
       }
     },
@@ -1476,7 +1700,7 @@
             "type": "use",
             "animation": "use",
             "duration": 3000,
-            "spots": [
+            "positions": [
               {
                 "x": 0,
                 "y": 0,
@@ -1488,6 +1712,14 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "south-shadow.png",
+          "width": 72,
+          "height": 21,
+          "anchorX": 18,
+          "anchorY": 11,
+          "url": "/furniture/bookshelf/south-shadow.png"
+        },
         "url": "/furniture/bookshelf/south.png"
       },
       "west": {
@@ -1506,7 +1738,7 @@
             "type": "use",
             "animation": "use",
             "duration": 3000,
-            "spots": [
+            "positions": [
               {
                 "x": 0,
                 "y": 0,
@@ -1518,6 +1750,14 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "west-shadow.png",
+          "width": 72,
+          "height": 21,
+          "anchorX": 18,
+          "anchorY": 11,
+          "url": "/furniture/bookshelf/west-shadow.png"
+        },
         "url": "/furniture/bookshelf/west.png"
       },
       "north": {
@@ -1536,7 +1776,7 @@
             "type": "use",
             "animation": "use",
             "duration": 3000,
-            "spots": [
+            "positions": [
               {
                 "x": 0,
                 "y": 0,
@@ -1548,6 +1788,14 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "north-shadow.png",
+          "width": 72,
+          "height": 21,
+          "anchorX": 18,
+          "anchorY": 11,
+          "url": "/furniture/bookshelf/north-shadow.png"
+        },
         "url": "/furniture/bookshelf/north.png"
       },
       "east": {
@@ -1566,7 +1814,7 @@
             "type": "use",
             "animation": "use",
             "duration": 3000,
-            "spots": [
+            "positions": [
               {
                 "x": 0,
                 "y": 0,
@@ -1578,6 +1826,14 @@
             ]
           }
         ],
+        "shadow": {
+          "file": "east-shadow.png",
+          "width": 72,
+          "height": 21,
+          "anchorX": 18,
+          "anchorY": 11,
+          "url": "/furniture/bookshelf/east-shadow.png"
+        },
         "url": "/furniture/bookshelf/east.png"
       }
     },
@@ -1594,8 +1850,7 @@
       "#cbaf90",
       "#f0ede6",
       "#c19e69",
-      "#bf8865",
-      "#b07a42"
+      "#bf8865"
     ]
   },
   "wall_lamp": {
@@ -1650,7 +1905,7 @@
             "type": "use",
             "animation": "use",
             "duration": 2000,
-            "spots": [
+            "positions": [
               {
                 "x": 0,
                 "y": 0,
@@ -1680,7 +1935,7 @@
             "type": "use",
             "animation": "use",
             "duration": 2000,
-            "spots": [
+            "positions": [
               {
                 "x": 0,
                 "y": 0,
@@ -1736,6 +1991,14 @@
           "height": 1
         },
         "interactions": [],
+        "shadow": {
+          "file": "south-shadow.png",
+          "width": 27,
+          "height": 13,
+          "anchorX": -10,
+          "anchorY": 7,
+          "url": "/furniture/ceiling_lamp/south-shadow.png"
+        },
         "url": "/furniture/ceiling_lamp/south.png"
       },
       "west": {
@@ -1750,6 +2013,14 @@
           "height": 1
         },
         "interactions": [],
+        "shadow": {
+          "file": "west-shadow.png",
+          "width": 27,
+          "height": 13,
+          "anchorX": -10,
+          "anchorY": 7,
+          "url": "/furniture/ceiling_lamp/west-shadow.png"
+        },
         "url": "/furniture/ceiling_lamp/west.png"
       },
       "north": {
@@ -1764,6 +2035,14 @@
           "height": 1
         },
         "interactions": [],
+        "shadow": {
+          "file": "north-shadow.png",
+          "width": 27,
+          "height": 13,
+          "anchorX": -10,
+          "anchorY": 7,
+          "url": "/furniture/ceiling_lamp/north-shadow.png"
+        },
         "url": "/furniture/ceiling_lamp/north.png"
       },
       "east": {
@@ -1778,6 +2057,14 @@
           "height": 1
         },
         "interactions": [],
+        "shadow": {
+          "file": "east-shadow.png",
+          "width": 27,
+          "height": 13,
+          "anchorX": -10,
+          "anchorY": 7,
+          "url": "/furniture/ceiling_lamp/east-shadow.png"
+        },
         "url": "/furniture/ceiling_lamp/east.png"
       }
     },

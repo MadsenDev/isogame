@@ -81,35 +81,35 @@ export const RoomManager: React.FC<RoomManagerProps> = ({
   return (
     <div className="panel-content">
       <div className="panel-section panel-section--toolbar">
-        <button onClick={() => setShowExport(!showExport)} className="habbo-button habbo-button--ghost">
+        <button onClick={() => setShowExport(!showExport)} className="iso-button iso-button--ghost">
           {showExport ? 'Hide export' : 'Export layout'}
         </button>
-        <button onClick={() => setShowCreateForm(!showCreateForm)} className="habbo-button habbo-button--primary">
+        <button onClick={() => setShowCreateForm(!showCreateForm)} className="iso-button iso-button--primary">
           {showCreateForm ? 'Cancel' : 'New room'}
         </button>
       </div>
 
       {showExport && (
         <div className="panel-section">
-          <div className="habbo-room-card habbo-room-card--panel">
-            <h4 className="habbo-room-card__title">Current room layout</h4>
+          <div className="iso-room-card iso-room-card--panel">
+            <h4 className="iso-room-card__title">Current room layout</h4>
             {currentRoom ? (
               <>
-                <textarea value={layoutJson} readOnly rows={10} className="habbo-room-card__textarea" />
-                <div className="habbo-room-card__hint">
+                <textarea value={layoutJson} readOnly rows={10} className="iso-room-card__textarea" />
+                <div className="iso-room-card__hint">
                   <span>
                     Use <strong>o</strong> for floor, <strong>x</strong> for empty, <strong>d</strong> for doors and <strong>s</strong> for
                     spawn points.
                   </span>
-                  <button onClick={handleCopyLayout} className="habbo-button habbo-button--accent">
+                  <button onClick={handleCopyLayout} className="iso-button iso-button--accent">
                     Copy JSON
                   </button>
                 </div>
-                {copyStatus === 'copied' && <div className="habbo-room-card__status is-success">Layout copied to clipboard.</div>}
-                {copyStatus === 'error' && <div className="habbo-room-card__status is-danger">Copy failed. Try again.</div>}
+                {copyStatus === 'copied' && <div className="iso-room-card__status is-success">Layout copied to clipboard.</div>}
+                {copyStatus === 'error' && <div className="iso-room-card__status is-danger">Copy failed. Try again.</div>}
               </>
             ) : (
-              <div className="habbo-room-card__empty">Select a room to export its layout.</div>
+              <div className="iso-room-card__empty">Select a room to export its layout.</div>
             )}
           </div>
         </div>
@@ -117,17 +117,17 @@ export const RoomManager: React.FC<RoomManagerProps> = ({
 
       {showCreateForm && (
         <div className="panel-section">
-          <div className="habbo-room-card habbo-room-card--panel">
-            <h4 className="habbo-room-card__title">Create new room</h4>
-            <div className="habbo-stack">
+          <div className="iso-room-card iso-room-card--panel">
+            <h4 className="iso-room-card__title">Create new room</h4>
+            <div className="iso-stack">
               <input
                 type="text"
                 placeholder="Room name"
                 value={newRoomName}
                 onChange={(e) => setNewRoomName(e.target.value)}
-                className="habbo-input"
+                className="iso-input"
               />
-              <div className="habbo-grid habbo-grid--compact">
+              <div className="iso-grid iso-grid--compact">
                 <input
                   type="number"
                   placeholder="Width"
@@ -135,7 +135,7 @@ export const RoomManager: React.FC<RoomManagerProps> = ({
                   onChange={(e) => setNewRoomWidth(parseInt(e.target.value) || 10)}
                   min="5"
                   max="20"
-                  className="habbo-input"
+                  className="iso-input"
                 />
                 <input
                   type="number"
@@ -144,10 +144,10 @@ export const RoomManager: React.FC<RoomManagerProps> = ({
                   onChange={(e) => setNewRoomHeight(parseInt(e.target.value) || 10)}
                   min="5"
                   max="20"
-                  className="habbo-input"
+                  className="iso-input"
                 />
               </div>
-              <button onClick={handleCreateRoom} className="habbo-button habbo-button--primary habbo-button--full">
+              <button onClick={handleCreateRoom} className="iso-button iso-button--primary iso-button--full">
                 Create room
               </button>
             </div>
@@ -156,34 +156,34 @@ export const RoomManager: React.FC<RoomManagerProps> = ({
       )}
 
       <div className="panel-section">
-        <div className="habbo-room-list">
+        <div className="iso-room-list">
           {rooms.map((room) => (
             <div
               key={room.id}
-              className={`habbo-room-card ${currentRoom?.id === room.id ? 'is-active' : ''}`}
+              className={`iso-room-card ${currentRoom?.id === room.id ? 'is-active' : ''}`}
             >
-              <div className="habbo-room-card__content">
+              <div className="iso-room-card__content">
                 {editingRoom === room.id ? (
-                  <div className="habbo-room-card__edit">
+                  <div className="iso-room-card__edit">
                     <input
                       type="text"
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
-                      className="habbo-input"
+                      className="iso-input"
                       autoFocus
                     />
-                    <div className="habbo-inline-actions">
-                      <button onClick={handleSaveRename} className="habbo-inline-actions__btn is-success" aria-label="Save name">
+                    <div className="iso-inline-actions">
+                      <button onClick={handleSaveRename} className="iso-inline-actions__btn is-success" aria-label="Save name">
                         ✓
                       </button>
-                      <button onClick={handleCancelRename} className="habbo-inline-actions__btn is-danger" aria-label="Cancel rename">
+                      <button onClick={handleCancelRename} className="iso-inline-actions__btn is-danger" aria-label="Cancel rename">
                         ✗
                       </button>
                     </div>
                   </div>
                 ) : (
-                  <div className="habbo-room-card__meta">
-                    <span className="habbo-room-card__name">{room.name}</span>
+                  <div className="iso-room-card__meta">
+                    <span className="iso-room-card__name">{room.name}</span>
                     <span>{room.width}×{room.height}</span>
                     <span>{room.furniture.length} items</span>
                   </div>
@@ -191,15 +191,15 @@ export const RoomManager: React.FC<RoomManagerProps> = ({
               </div>
 
               {editingRoom !== room.id && (
-                <div className="habbo-room-card__actions">
-                  <button onClick={() => onRoomSelect(room)} className="habbo-inline-button" title="Enter room">
+                <div className="iso-room-card__actions">
+                  <button onClick={() => onRoomSelect(room)} className="iso-inline-button" title="Enter room">
                     Enter
                   </button>
-                  <button onClick={() => handleRename(room.id, room.name)} className="habbo-inline-button" title="Rename room">
+                  <button onClick={() => handleRename(room.id, room.name)} className="iso-inline-button" title="Rename room">
                     Rename
                   </button>
                   {rooms.length > 1 && (
-                    <button onClick={() => onRoomDelete(room.id)} className="habbo-inline-button is-danger" title="Delete room">
+                    <button onClick={() => onRoomDelete(room.id)} className="iso-inline-button is-danger" title="Delete room">
                       Delete
                     </button>
                   )}
@@ -209,7 +209,7 @@ export const RoomManager: React.FC<RoomManagerProps> = ({
           ))}
         </div>
 
-        {rooms.length === 0 && <div className="habbo-room-card__empty">No rooms yet. Create your first hangout!</div>}
+        {rooms.length === 0 && <div className="iso-room-card__empty">No rooms yet. Create your first hangout!</div>}
       </div>
     </div>
   )

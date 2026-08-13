@@ -9,6 +9,15 @@ export function useGameEngine() {
   const initializeGame = useCallback((canvas: HTMLCanvasElement) => {
     if (!gameEngineRef.current) {
       gameEngineRef.current = new GameEngine(canvas, state, dispatch)
+
+      // Dev-only: lets the console and browser tests address exact tiles
+      // instead of guessing at canvas fractions.
+      if (import.meta.env.DEV) {
+        const debugWindow = window as unknown as {
+          __isoWorldToScreen?: (x: number, y: number) => { x: number; y: number }
+        }
+        debugWindow.__isoWorldToScreen = (x, y) => gameEngineRef.current!.worldToScreen(x, y)
+      }
     }
   }, [state, dispatch])
 
@@ -18,6 +27,14 @@ export function useGameEngine() {
       gameEngineRef.current.updateState(state)
     }
   }, [state])
+
+  // The engine owns a window-level keydown listener; release it on unmount.
+  useEffect(() => {
+    return () => {
+      gameEngineRef.current?.destroy()
+      gameEngineRef.current = null
+    }
+  }, [])
 
   const render = useCallback(() => {
     if (gameEngineRef.current) {

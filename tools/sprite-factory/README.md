@@ -160,6 +160,91 @@ npm run sprites -- --model=tools/sprite-factory/models/example-wooden-chair.glb 
                    --id=imported_chair --footprint=1x1
 ```
 
+## Characters
+
+Characters go through the same pipeline, with two additions.
+
+**Eight directions.** `directionCount: 8` renders 45-degree steps instead of
+90-degree ones. Direction names are world-axis based and compose: `south` is +x
+(down-right on screen), `east` is +y (down-left), so `south-east` is +x+y and
+projects straight down.
+
+**Poses.** Furniture is a fixed list of primitives; a character's parts are
+*computed* from a pose - a handful of joint angles. Each animation frame is a
+different pose run through the ordinary renderer, so a guest is lit, palettised
+and anchored exactly like the chair they sit on.
+
+```ts
+walkPose(frame, frameCount)   // legs and arms in opposition, bob per footfall
+idlePose()
+sitPose()                     // hips at the model origin, so the seat offset lands them right
+```
+
+Limbs rotate about a pivot rather than their own centre, and legs are two
+segments so the knee can bend - a single-box leg makes a sitting character stick
+their legs straight out like a mannequin.
+
+The sitting pose deliberately places the **hips at y = 0**. The game positions a
+sitter using the seat offset the furniture pipeline measured, so the model origin
+lands on the seat surface and the shins hang below it.
+
+Output lands in `public/character/<id>/<animation>/<direction>/frame_NNN.png`
+with metadata in `src/data/characterSprites.generated.json`.
+
+```bash
+npm run sprites                      # furniture and characters
+npm run sprites -- --characters-only # just the character
+npm run sprites -- --no-characters   # skip it
+```
+
+Proportions are in tile units, so a 1.7-unit guest stands ~77px against a 64px
+tile. Scale is correct by construction rather than by eye.
+
+## Room structures
+
+Floor tiles and wall panels come out of the same pipeline (`src/structures.ts`),
+which is what makes a wall-mounted lamp line up with the wall it hangs on: both
+are authored against the same plane in the same 3D space.
+
+- A floor tile is a 1x1 slab whose top face is exactly the 64x32 diamond. Detail
+  comes from separate materials, not lighting - every top face has the same
+  normal and lands in the same shade band.
+- A wall panel is one tile long, with its **thickness outside the tile
+  boundary**. That is load-bearing: with the thickness inside, each run's face
+  overshoots the corner and the two faces overlap.
+- `wall_corner` fills the square outside the boundary that neither run reaches.
+
+Segments tile seamlessly because each is identical geometry offset by exactly one
+tile, and one tile is an integer pixel offset (+32, +16). No seam fudging.
+
+Output: `public/structures/<id>/<direction>.png` plus
+`src/data/structureSprites.generated.json`.
+
+## Contact shadows
+
+Each frame also gets a shadow, generated from the real geometry rather than
+faked with an ellipse - so a chair's shadow has chair legs in it.
+
+A second pass renders a `ShadowMaterial` floor plane lit by a `DirectionalLight`
+aimed along the same key light everything else is shaded by. That material is
+transparent except where something shadows it, so rendering the plane alone
+gives a shadow-shaped image with the caster absent. The caster is hidden by
+suppressing colour and depth writes, not by hiding it - shadow-map rendering
+uses its own depth material, so the object still casts while being invisible.
+
+Shadows get their own post-processing. The ordinary alpha threshold makes
+everything fully opaque, which would put a solid slab under every object;
+`flattenShadow` instead thresholds the *coverage* and then forces one colour and
+one partial alpha, giving a crisp edge at constant opacity. Soft gradients would
+fight the four-band shading anyway.
+
+Shadows reach further than their caster, so they are measured separately: each
+bounding-box corner is slid down the light direction onto y = 0.
+
+Files land beside the frames as `<direction>-shadow.png`, with their own anchor.
+The game draws them in one pass between the floor and the objects - drawn
+per-object, a shadow would fall across whatever was drawn before it.
+
 ## Requirements
 
 Playwright's Chromium. If the bundled download is missing, the exporter falls back
@@ -167,7 +252,3 @@ to `CHROMIUM_EXECUTABLE` or a system Chromium before failing.
 
 ## Known gaps
 
-- Characters are not generated yet. That needs arbitrary rotation counts (8 × 45°
-  rather than 4 × 90°) and posed animation frames.
-- Walls and floor tiles are still drawn by hand in canvas rather than generated.
-- No contact shadows; the game draws no shadow under furniture either.

@@ -1,0 +1,1006 @@
+{
+  "basePath": "/character",
+  "characters": {
+    "guest": {
+      "id": "guest",
+      "name": "Guest",
+      "tile": {
+        "width": 64,
+        "height": 32
+      },
+      "pixelsPerUnit": 45.2548,
+      "palette": [
+        "#315b7e",
+        "#241d2b",
+        "#1f2732",
+        "#3c4557",
+        "#4a72a8",
+        "#7d5b3d",
+        "#d9723c",
+        "#e0a878",
+        "#2f2a33",
+        "#5a3b28",
+        "#7089ba",
+        "#2e1912",
+        "#493f4d",
+        "#4c464f",
+        "#0d0b0f",
+        "#575e74",
+        "#1f4559",
+        "#2b2430",
+        "#090d10"
+      ],
+      "directions": [
+        "south",
+        "south-west",
+        "west",
+        "north-west",
+        "north",
+        "north-east",
+        "east",
+        "south-east"
+      ],
+      "animations": {
+        "idle": {
+          "frameCount": 1,
+          "directions": {
+            "south": [
+              {
+                "file": "idle/south/frame_000.png",
+                "width": 26,
+                "height": 71,
+                "anchorX": 13,
+                "anchorY": 64,
+                "shadow": {
+                  "file": "idle/south/frame_000-shadow.png",
+                  "width": 52,
+                  "height": 13,
+                  "anchorX": 7,
+                  "anchorY": 7
+                }
+              }
+            ],
+            "south-west": [
+              {
+                "file": "idle/south-west/frame_000.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 20,
+                "anchorY": 71,
+                "shadow": {
+                  "file": "idle/south-west/frame_000-shadow.png",
+                  "width": 45,
+                  "height": 15,
+                  "anchorX": 3,
+                  "anchorY": 8
+                }
+              }
+            ],
+            "west": [
+              {
+                "file": "idle/west/frame_000.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 20,
+                "anchorY": 71,
+                "shadow": {
+                  "file": "idle/west/frame_000-shadow.png",
+                  "width": 52,
+                  "height": 13,
+                  "anchorX": 7,
+                  "anchorY": 7
+                }
+              }
+            ],
+            "north-west": [
+              {
+                "file": "idle/north-west/frame_000.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 20,
+                "anchorY": 71,
+                "shadow": {
+                  "file": "idle/north-west/frame_000-shadow.png",
+                  "width": 51,
+                  "height": 8,
+                  "anchorX": 8,
+                  "anchorY": 5
+                }
+              }
+            ],
+            "north": [
+              {
+                "file": "idle/north/frame_000.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 20,
+                "anchorY": 71,
+                "shadow": {
+                  "file": "idle/north/frame_000-shadow.png",
+                  "width": 52,
+                  "height": 13,
+                  "anchorX": 7,
+                  "anchorY": 7
+                }
+              }
+            ],
+            "north-east": [
+              {
+                "file": "idle/north-east/frame_000.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 20,
+                "anchorY": 71,
+                "shadow": {
+                  "file": "idle/north-east/frame_000-shadow.png",
+                  "width": 45,
+                  "height": 15,
+                  "anchorX": 3,
+                  "anchorY": 8
+                }
+              }
+            ],
+            "east": [
+              {
+                "file": "idle/east/frame_000.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 20,
+                "anchorY": 71,
+                "shadow": {
+                  "file": "idle/east/frame_000-shadow.png",
+                  "width": 52,
+                  "height": 13,
+                  "anchorX": 7,
+                  "anchorY": 7
+                }
+              }
+            ],
+            "south-east": [
+              {
+                "file": "idle/south-east/frame_000.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 20,
+                "anchorY": 71,
+                "shadow": {
+                  "file": "idle/south-east/frame_000-shadow.png",
+                  "width": 51,
+                  "height": 8,
+                  "anchorX": 8,
+                  "anchorY": 5
+                }
+              }
+            ]
+          }
+        },
+        "walk": {
+          "frameCount": 6,
+          "directions": {
+            "south": [
+              {
+                "file": "walk/south/frame_000.png",
+                "width": 24,
+                "height": 71,
+                "anchorX": 12,
+                "anchorY": 65,
+                "shadow": {
+                  "file": "walk/south/frame_000-shadow.png",
+                  "width": 52,
+                  "height": 12,
+                  "anchorX": 7,
+                  "anchorY": 7
+                }
+              },
+              {
+                "file": "walk/south/frame_001.png",
+                "width": 26,
+                "height": 68,
+                "anchorX": 13,
+                "anchorY": 64,
+                "shadow": {
+                  "file": "walk/south/frame_001-shadow.png",
+                  "width": 53,
+                  "height": 16,
+                  "anchorX": 8,
+                  "anchorY": 9
+                }
+              },
+              {
+                "file": "walk/south/frame_002.png",
+                "width": 26,
+                "height": 68,
+                "anchorX": 13,
+                "anchorY": 64,
+                "shadow": {
+                  "file": "walk/south/frame_002-shadow.png",
+                  "width": 53,
+                  "height": 16,
+                  "anchorX": 8,
+                  "anchorY": 9
+                }
+              },
+              {
+                "file": "walk/south/frame_003.png",
+                "width": 24,
+                "height": 71,
+                "anchorX": 12,
+                "anchorY": 65,
+                "shadow": {
+                  "file": "walk/south/frame_003-shadow.png",
+                  "width": 52,
+                  "height": 12,
+                  "anchorX": 7,
+                  "anchorY": 7
+                }
+              },
+              {
+                "file": "walk/south/frame_004.png",
+                "width": 33,
+                "height": 68,
+                "anchorX": 17,
+                "anchorY": 64,
+                "shadow": {
+                  "file": "walk/south/frame_004-shadow.png",
+                  "width": 53,
+                  "height": 13,
+                  "anchorX": 8,
+                  "anchorY": 7
+                }
+              },
+              {
+                "file": "walk/south/frame_005.png",
+                "width": 33,
+                "height": 68,
+                "anchorX": 17,
+                "anchorY": 64,
+                "shadow": {
+                  "file": "walk/south/frame_005-shadow.png",
+                  "width": 53,
+                  "height": 13,
+                  "anchorX": 8,
+                  "anchorY": 7
+                }
+              }
+            ],
+            "south-west": [
+              {
+                "file": "walk/south-west/frame_000.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 19,
+                "anchorY": 71,
+                "shadow": {
+                  "file": "walk/south-west/frame_000-shadow.png",
+                  "width": 46,
+                  "height": 15,
+                  "anchorX": 3,
+                  "anchorY": 8
+                }
+              },
+              {
+                "file": "walk/south-west/frame_001.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/south-west/frame_001-shadow.png",
+                  "width": 45,
+                  "height": 15,
+                  "anchorX": 3,
+                  "anchorY": 8
+                }
+              },
+              {
+                "file": "walk/south-west/frame_002.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/south-west/frame_002-shadow.png",
+                  "width": 45,
+                  "height": 15,
+                  "anchorX": 3,
+                  "anchorY": 8
+                }
+              },
+              {
+                "file": "walk/south-west/frame_003.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 19,
+                "anchorY": 71,
+                "shadow": {
+                  "file": "walk/south-west/frame_003-shadow.png",
+                  "width": 46,
+                  "height": 15,
+                  "anchorX": 3,
+                  "anchorY": 8
+                }
+              },
+              {
+                "file": "walk/south-west/frame_004.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/south-west/frame_004-shadow.png",
+                  "width": 45,
+                  "height": 15,
+                  "anchorX": 3,
+                  "anchorY": 8
+                }
+              },
+              {
+                "file": "walk/south-west/frame_005.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/south-west/frame_005-shadow.png",
+                  "width": 45,
+                  "height": 15,
+                  "anchorX": 3,
+                  "anchorY": 8
+                }
+              }
+            ],
+            "west": [
+              {
+                "file": "walk/west/frame_000.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 19,
+                "anchorY": 71,
+                "shadow": {
+                  "file": "walk/west/frame_000-shadow.png",
+                  "width": 52,
+                  "height": 12,
+                  "anchorX": 7,
+                  "anchorY": 7
+                }
+              },
+              {
+                "file": "walk/west/frame_001.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/west/frame_001-shadow.png",
+                  "width": 53,
+                  "height": 13,
+                  "anchorX": 8,
+                  "anchorY": 7
+                }
+              },
+              {
+                "file": "walk/west/frame_002.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/west/frame_002-shadow.png",
+                  "width": 53,
+                  "height": 13,
+                  "anchorX": 8,
+                  "anchorY": 7
+                }
+              },
+              {
+                "file": "walk/west/frame_003.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 19,
+                "anchorY": 71,
+                "shadow": {
+                  "file": "walk/west/frame_003-shadow.png",
+                  "width": 52,
+                  "height": 12,
+                  "anchorX": 7,
+                  "anchorY": 7
+                }
+              },
+              {
+                "file": "walk/west/frame_004.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/west/frame_004-shadow.png",
+                  "width": 53,
+                  "height": 16,
+                  "anchorX": 8,
+                  "anchorY": 9
+                }
+              },
+              {
+                "file": "walk/west/frame_005.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/west/frame_005-shadow.png",
+                  "width": 53,
+                  "height": 16,
+                  "anchorX": 8,
+                  "anchorY": 9
+                }
+              }
+            ],
+            "north-west": [
+              {
+                "file": "walk/north-west/frame_000.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 19,
+                "anchorY": 71,
+                "shadow": {
+                  "file": "walk/north-west/frame_000-shadow.png",
+                  "width": 51,
+                  "height": 8,
+                  "anchorX": 8,
+                  "anchorY": 5
+                }
+              },
+              {
+                "file": "walk/north-west/frame_001.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/north-west/frame_001-shadow.png",
+                  "width": 51,
+                  "height": 11,
+                  "anchorX": 8,
+                  "anchorY": 6
+                }
+              },
+              {
+                "file": "walk/north-west/frame_002.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/north-west/frame_002-shadow.png",
+                  "width": 51,
+                  "height": 11,
+                  "anchorX": 8,
+                  "anchorY": 6
+                }
+              },
+              {
+                "file": "walk/north-west/frame_003.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 19,
+                "anchorY": 71,
+                "shadow": {
+                  "file": "walk/north-west/frame_003-shadow.png",
+                  "width": 51,
+                  "height": 8,
+                  "anchorX": 8,
+                  "anchorY": 5
+                }
+              },
+              {
+                "file": "walk/north-west/frame_004.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/north-west/frame_004-shadow.png",
+                  "width": 51,
+                  "height": 11,
+                  "anchorX": 8,
+                  "anchorY": 6
+                }
+              },
+              {
+                "file": "walk/north-west/frame_005.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/north-west/frame_005-shadow.png",
+                  "width": 51,
+                  "height": 11,
+                  "anchorX": 8,
+                  "anchorY": 6
+                }
+              }
+            ],
+            "north": [
+              {
+                "file": "walk/north/frame_000.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 19,
+                "anchorY": 71,
+                "shadow": {
+                  "file": "walk/north/frame_000-shadow.png",
+                  "width": 52,
+                  "height": 12,
+                  "anchorX": 7,
+                  "anchorY": 7
+                }
+              },
+              {
+                "file": "walk/north/frame_001.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/north/frame_001-shadow.png",
+                  "width": 55,
+                  "height": 16,
+                  "anchorX": 10,
+                  "anchorY": 9
+                }
+              },
+              {
+                "file": "walk/north/frame_002.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/north/frame_002-shadow.png",
+                  "width": 55,
+                  "height": 16,
+                  "anchorX": 10,
+                  "anchorY": 9
+                }
+              },
+              {
+                "file": "walk/north/frame_003.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 19,
+                "anchorY": 71,
+                "shadow": {
+                  "file": "walk/north/frame_003-shadow.png",
+                  "width": 52,
+                  "height": 12,
+                  "anchorX": 7,
+                  "anchorY": 7
+                }
+              },
+              {
+                "file": "walk/north/frame_004.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/north/frame_004-shadow.png",
+                  "width": 55,
+                  "height": 13,
+                  "anchorX": 10,
+                  "anchorY": 7
+                }
+              },
+              {
+                "file": "walk/north/frame_005.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/north/frame_005-shadow.png",
+                  "width": 55,
+                  "height": 13,
+                  "anchorX": 10,
+                  "anchorY": 7
+                }
+              }
+            ],
+            "north-east": [
+              {
+                "file": "walk/north-east/frame_000.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 19,
+                "anchorY": 71,
+                "shadow": {
+                  "file": "walk/north-east/frame_000-shadow.png",
+                  "width": 46,
+                  "height": 15,
+                  "anchorX": 3,
+                  "anchorY": 8
+                }
+              },
+              {
+                "file": "walk/north-east/frame_001.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/north-east/frame_001-shadow.png",
+                  "width": 48,
+                  "height": 15,
+                  "anchorX": 6,
+                  "anchorY": 8
+                }
+              },
+              {
+                "file": "walk/north-east/frame_002.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/north-east/frame_002-shadow.png",
+                  "width": 48,
+                  "height": 15,
+                  "anchorX": 6,
+                  "anchorY": 8
+                }
+              },
+              {
+                "file": "walk/north-east/frame_003.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 19,
+                "anchorY": 71,
+                "shadow": {
+                  "file": "walk/north-east/frame_003-shadow.png",
+                  "width": 46,
+                  "height": 15,
+                  "anchorX": 3,
+                  "anchorY": 8
+                }
+              },
+              {
+                "file": "walk/north-east/frame_004.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/north-east/frame_004-shadow.png",
+                  "width": 48,
+                  "height": 15,
+                  "anchorX": 6,
+                  "anchorY": 8
+                }
+              },
+              {
+                "file": "walk/north-east/frame_005.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/north-east/frame_005-shadow.png",
+                  "width": 48,
+                  "height": 15,
+                  "anchorX": 6,
+                  "anchorY": 8
+                }
+              }
+            ],
+            "east": [
+              {
+                "file": "walk/east/frame_000.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 19,
+                "anchorY": 71,
+                "shadow": {
+                  "file": "walk/east/frame_000-shadow.png",
+                  "width": 52,
+                  "height": 12,
+                  "anchorX": 7,
+                  "anchorY": 7
+                }
+              },
+              {
+                "file": "walk/east/frame_001.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/east/frame_001-shadow.png",
+                  "width": 54,
+                  "height": 13,
+                  "anchorX": 9,
+                  "anchorY": 7
+                }
+              },
+              {
+                "file": "walk/east/frame_002.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/east/frame_002-shadow.png",
+                  "width": 54,
+                  "height": 13,
+                  "anchorX": 9,
+                  "anchorY": 7
+                }
+              },
+              {
+                "file": "walk/east/frame_003.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 19,
+                "anchorY": 71,
+                "shadow": {
+                  "file": "walk/east/frame_003-shadow.png",
+                  "width": 52,
+                  "height": 12,
+                  "anchorX": 7,
+                  "anchorY": 7
+                }
+              },
+              {
+                "file": "walk/east/frame_004.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/east/frame_004-shadow.png",
+                  "width": 54,
+                  "height": 16,
+                  "anchorX": 9,
+                  "anchorY": 9
+                }
+              },
+              {
+                "file": "walk/east/frame_005.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/east/frame_005-shadow.png",
+                  "width": 54,
+                  "height": 16,
+                  "anchorX": 9,
+                  "anchorY": 9
+                }
+              }
+            ],
+            "south-east": [
+              {
+                "file": "walk/south-east/frame_000.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 19,
+                "anchorY": 71,
+                "shadow": {
+                  "file": "walk/south-east/frame_000-shadow.png",
+                  "width": 51,
+                  "height": 8,
+                  "anchorX": 8,
+                  "anchorY": 5
+                }
+              },
+              {
+                "file": "walk/south-east/frame_001.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/south-east/frame_001-shadow.png",
+                  "width": 51,
+                  "height": 11,
+                  "anchorX": 8,
+                  "anchorY": 6
+                }
+              },
+              {
+                "file": "walk/south-east/frame_002.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/south-east/frame_002-shadow.png",
+                  "width": 51,
+                  "height": 11,
+                  "anchorX": 8,
+                  "anchorY": 6
+                }
+              },
+              {
+                "file": "walk/south-east/frame_003.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 19,
+                "anchorY": 71,
+                "shadow": {
+                  "file": "walk/south-east/frame_003-shadow.png",
+                  "width": 51,
+                  "height": 8,
+                  "anchorX": 8,
+                  "anchorY": 5
+                }
+              },
+              {
+                "file": "walk/south-east/frame_004.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/south-east/frame_004-shadow.png",
+                  "width": 51,
+                  "height": 11,
+                  "anchorX": 8,
+                  "anchorY": 6
+                }
+              },
+              {
+                "file": "walk/south-east/frame_005.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 23,
+                "anchorY": 72,
+                "shadow": {
+                  "file": "walk/south-east/frame_005-shadow.png",
+                  "width": 51,
+                  "height": 11,
+                  "anchorX": 8,
+                  "anchorY": 6
+                }
+              }
+            ]
+          }
+        },
+        "sit": {
+          "frameCount": 1,
+          "directions": {
+            "south": [
+              {
+                "file": "sit/south/frame_000.png",
+                "width": 28,
+                "height": 61,
+                "anchorX": 12,
+                "anchorY": 53,
+                "shadow": {
+                  "file": "sit/south/frame_000-shadow.png",
+                  "width": 42,
+                  "height": 14,
+                  "anchorX": 4,
+                  "anchorY": 6
+                }
+              }
+            ],
+            "south-west": [
+              {
+                "file": "sit/south-west/frame_000.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 26,
+                "anchorY": 63,
+                "shadow": {
+                  "file": "sit/south-west/frame_000-shadow.png",
+                  "width": 34,
+                  "height": 15,
+                  "anchorX": -2,
+                  "anchorY": 8
+                }
+              }
+            ],
+            "west": [
+              {
+                "file": "sit/west/frame_000.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 26,
+                "anchorY": 63,
+                "shadow": {
+                  "file": "sit/west/frame_000-shadow.png",
+                  "width": 42,
+                  "height": 15,
+                  "anchorX": 4,
+                  "anchorY": 9
+                }
+              }
+            ],
+            "north-west": [
+              {
+                "file": "sit/north-west/frame_000.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 26,
+                "anchorY": 63,
+                "shadow": {
+                  "file": "sit/north-west/frame_000-shadow.png",
+                  "width": 43,
+                  "height": 10,
+                  "anchorX": 7,
+                  "anchorY": 7
+                }
+              }
+            ],
+            "north": [
+              {
+                "file": "sit/north/frame_000.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 26,
+                "anchorY": 63,
+                "shadow": {
+                  "file": "sit/north/frame_000-shadow.png",
+                  "width": 47,
+                  "height": 15,
+                  "anchorX": 9,
+                  "anchorY": 9
+                }
+              }
+            ],
+            "north-east": [
+              {
+                "file": "sit/north-east/frame_000.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 26,
+                "anchorY": 63,
+                "shadow": {
+                  "file": "sit/north-east/frame_000-shadow.png",
+                  "width": 43,
+                  "height": 15,
+                  "anchorX": 7,
+                  "anchorY": 8
+                }
+              }
+            ],
+            "east": [
+              {
+                "file": "sit/east/frame_000.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 26,
+                "anchorY": 63,
+                "shadow": {
+                  "file": "sit/east/frame_000-shadow.png",
+                  "width": 47,
+                  "height": 14,
+                  "anchorX": 9,
+                  "anchorY": 6
+                }
+              }
+            ],
+            "south-east": [
+              {
+                "file": "sit/south-east/frame_000.png",
+                "width": 1,
+                "height": 1,
+                "anchorX": 26,
+                "anchorY": 63,
+                "shadow": {
+                  "file": "sit/south-east/frame_000-shadow.png",
+                  "width": 43,
+                  "height": 11,
+                  "anchorX": 7,
+                  "anchorY": 5
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

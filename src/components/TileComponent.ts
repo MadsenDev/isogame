@@ -1,6 +1,11 @@
+import { getFloorSprite } from '../data/structureSprites'
+
 export class TileComponent {
   private ctx: CanvasRenderingContext2D
   private tilesheet: HTMLImageElement | null = null
+  /** Generated floor sprites, keyed by URL. */
+  private floorSprites: Map<string, HTMLImageElement> = new Map()
+  private pendingFloors: Set<string> = new Set()
   private baseGridSize: number
   private gridSize: number
   private tileWidth: number
@@ -52,7 +57,16 @@ export class TileComponent {
     return textureMap[texture] || textureMap['default']
   }
 
+  /**
+   * Draw a floor tile.
+   *
+   * Prefers the generated sprite, which is an exact 64x32 diamond sharing the
+   * furniture's palette and key light. The old skewed-tilesheet path stays as a
+   * fallback until the sprite has loaded.
+   */
   public drawIsometricTile(_x: number, _y: number, color: string, size: number = 1, textureRow: number = 1, textureCol: number = 3, screenPos: { x: number; y: number }, texture?: string) {
+    if (size === 1 && this.drawFloorSprite(screenPos, texture)) return
+
     const width = this.tileWidth * size
     const height = this.tileHeight * size
     
@@ -94,6 +108,41 @@ export class TileComponent {
     this.ctx.stroke()
 
     this.ctx.restore()
+  }
+
+  private drawFloorSprite(screenPos: { x: number; y: number }, texture?: string): boolean {
+    const sprite = getFloorSprite(texture)
+    if (!sprite) return false
+
+    const image = this.floorSprites.get(sprite.url)
+    if (!image) {
+      if (!this.pendingFloors.has(sprite.url)) {
+        this.pendingFloors.add(sprite.url)
+        const img = new Image()
+        img.src = sprite.url
+        img.onload = () => {
+          this.pendingFloors.delete(sprite.url)
+          this.floorSprites.set(sprite.url, img)
+        }
+        img.onerror = () => {
+          this.pendingFloors.delete(sprite.url)
+          console.error(`Failed to load floor sprite: ${sprite.url}`)
+        }
+      }
+      return false
+    }
+
+    const smoothing = this.ctx.imageSmoothingEnabled
+    this.ctx.imageSmoothingEnabled = false
+    this.ctx.drawImage(
+      image,
+      Math.round(screenPos.x - sprite.anchorX * this.zoom),
+      Math.round(screenPos.y - sprite.anchorY * this.zoom),
+      Math.round(sprite.width * this.zoom),
+      Math.round(sprite.height * this.zoom)
+    )
+    this.ctx.imageSmoothingEnabled = smoothing
+    return true
   }
 
   private drawTexturedIsometricTile(width: number, height: number, textureRow: number, textureCol: number) {

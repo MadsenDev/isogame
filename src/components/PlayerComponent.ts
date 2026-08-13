@@ -1,9 +1,10 @@
 import { Player } from '../context/GameContext'
+import { getCharacterFrame, getAllCharacterFrameUrls } from '../data/characterSprites'
 
 export class PlayerComponent {
   private ctx: CanvasRenderingContext2D
+  /** Loaded frames, keyed by URL. */
   private characterSprites: Map<string, HTMLImageElement> = new Map()
-  private characterAnimations: Map<string, HTMLImageElement[]> = new Map()
   private baseGridSize: number
   private gridSize: number
   private zoom = 1
@@ -20,36 +21,20 @@ export class PlayerComponent {
     this.gridSize = this.baseGridSize * zoom
   }
 
+  /**
+   * Preload every generated frame.
+   *
+   * These come from public/, so they resolve in a production build too. The
+   * previous art was fetched from /src/assets/... which only ever worked
+   * because the dev server happens to serve the source tree.
+   */
   private loadCharacterSprites() {
-    const directions = ['south', 'south-east', 'east', 'north-east', 'north', 'north-west', 'west', 'south-west']
-    
-    // Load static sprites
-    directions.forEach(direction => {
+    for (const url of getAllCharacterFrameUrls()) {
       const img = new Image()
-      img.src = `/src/assets/character/character/rotations/${direction}.png`
-      img.onload = () => {
-        this.characterSprites.set(direction, img)
-      }
-    })
-    
-    // Load walk animations
-    directions.forEach(direction => {
-      const frameCount = 6
-      const animationFrames: HTMLImageElement[] = new Array(frameCount)
-      let loadedFrames = 0
-      
-      for (let i = 0; i < frameCount; i++) {
-        const img = new Image()
-        img.src = `/src/assets/character/character/animations/walk/${direction}/frame_${i.toString().padStart(3, '0')}.png`
-        img.onload = () => {
-          animationFrames[i] = img
-          loadedFrames++
-          if (loadedFrames === frameCount) {
-            this.characterAnimations.set(`walk-${direction}`, animationFrames)
-          }
-        }
-      }
-    })
+      img.src = url
+      img.onload = () => this.characterSprites.set(url, img)
+      img.onerror = () => console.error(`Failed to load character sprite: ${url}`)
+    }
   }
 
   public getCharacterDirection(player: Player): string {
@@ -68,16 +53,17 @@ export class PlayerComponent {
       const dx = curr.x - sx0;
       const dy = curr.y - sy0;
 
-      // True isometric grid → on-screen facing
+      // Grid step to facing, world-axis named to match the sprite pipeline:
+      // +x is south, +y is east, and the names compose from there.
       const dirMap: Record<string, string> = {
-        '-1,-1': 'north',        // up
-        '-1,0' : 'north-west',   // up-left
-        '-1,1' : 'west',         // left
-        '0,-1' : 'north-east',   // up-right
-        '0,1'  : 'south-west',   // down-left
-        '1,-1' : 'east',         // right
-        '1,0'  : 'south-east',   // down-right
-        '1,1'  : 'south',        // down
+        '1,0'  : 'south',        // down-right
+        '1,1'  : 'south-east',   // straight down
+        '0,1'  : 'east',         // down-left
+        '-1,1' : 'north-east',   // straight left
+        '-1,0' : 'north',        // up-left
+        '-1,-1': 'north-west',   // straight up
+        '0,-1' : 'west',         // up-right
+        '1,-1' : 'south-west',   // straight right
       };
 
       const key = `${dx},${dy}`;
@@ -90,67 +76,106 @@ export class PlayerComponent {
     return player.lastDirection;
   }
 
-  public drawPlayer(player: Player, screenPos: { x: number; y: number }, isCurrentPlayer: boolean) {
-    const direction = this.getCharacterDirection(player)
-    
+  /**
+   * Draw a player's contact shadow.
+   *
+   * Called from the engine's shadow pass, not from drawPlayer, so no shadow is
+   * ever painted over something drawn earlier.
+   */
+  public drawShadow(player: Player, screenPos: { x: number; y: number }, directionOverride?: string) {
+    const direction = directionOverride ?? this.getCharacterDirection(player)
+    const walking = player.isMoving && player.path.length > 0 && player.pathIndex < player.path.length
+    const animation = walking ? 'walk' : player.action === 'sitting' ? 'sit' : 'idle'
+    const progress = walking ? Math.min(player.moveTimer / player.moveDelay, 1) : 0
+
+    const frame = getCharacterFrame(animation, direction, walking ? Math.floor(progress * 6) : 0)
+    if (!frame?.shadow || !frame.shadowUrl) return
+
+    const image = this.characterSprites.get(frame.shadowUrl)
+    if (!image) return
+
+    const smoothing = this.ctx.imageSmoothingEnabled
+    this.ctx.imageSmoothingEnabled = false
+    this.ctx.drawImage(
+      image,
+      Math.round(screenPos.x - frame.shadow.anchorX * this.zoom),
+      Math.round(screenPos.y - frame.shadow.anchorY * this.zoom),
+      Math.round(frame.shadow.width * this.zoom),
+      Math.round(frame.shadow.height * this.zoom)
+    )
+    this.ctx.imageSmoothingEnabled = smoothing
+  }
+
+  /**
+   * `directionOverride` is used while a player occupies an interaction spot:
+   * a chair decides which way its occupant faces, not their last movement.
+   */
+  public drawPlayer(
+    player: Player,
+    screenPos: { x: number; y: number },
+    isCurrentPlayer: boolean,
+    directionOverride?: string
+  ) {
+    const direction = directionOverride ?? this.getCharacterDirection(player)
+    const walking = player.isMoving && player.path.length > 0 && player.pathIndex < player.path.length
+
+    // Pick the clip. Sitting is a pose, not a timed action, so it holds until
+    // the player walks away.
+    const animation = walking ? 'walk' : player.action === 'sitting' ? 'sit' : 'idle'
+
+    // Step the walk cycle by progress through the current tile, so the stride
+    // stays in sync with the movement rather than with wall-clock time.
+    const progress = walking ? Math.min(player.moveTimer / player.moveDelay, 1) : 0
+    const frameIndex = walking ? Math.floor(progress * 6) : 0
+
+    const frame = getCharacterFrame(animation, direction, frameIndex)
+    const sprite = frame ? this.characterSprites.get(frame.url) ?? null : null
+
     this.ctx.save()
-    this.ctx.translate(screenPos.x, screenPos.y)
-    
-    // Choose sprite or animation based on player state
-    let spriteToDraw: HTMLImageElement | null = null
-    
-    if (player.isMoving && player.path.length > 0 && player.pathIndex < player.path.length) {
-      const animationFrames = this.characterAnimations.get(`walk-${direction}`)
-      if (animationFrames && animationFrames.length > 0) {
-        const progress = Math.min(player.moveTimer / player.moveDelay, 1)
-        const frameIndex = Math.floor(progress * animationFrames.length)
-        spriteToDraw = animationFrames[Math.min(frameIndex, animationFrames.length - 1)]
-      }
-    }
-    
-    if (!spriteToDraw) {
-      spriteToDraw = this.characterSprites.get(direction) || null
-    }
-    
-    if (spriteToDraw) {
-      const spriteSize = this.gridSize * 3
-      const offsetY = -this.gridSize * 0.5
-      this.ctx.drawImage(
-        spriteToDraw,
-        -spriteSize / 2,
-        -spriteSize / 2 + offsetY,
-        spriteSize,
-        spriteSize
-      )
-      
+
+    if (frame && sprite) {
+      // Anchored like every other generated sprite: the anchor is the tile
+      // centre at floor level, so the character stands on their tile at the
+      // scale they were modelled at.
+      const width = Math.round(frame.width * this.zoom)
+      const height = Math.round(frame.height * this.zoom)
+      const left = Math.round(screenPos.x - frame.anchorX * this.zoom)
+      const top = Math.round(screenPos.y - frame.anchorY * this.zoom)
+
+      const smoothing = this.ctx.imageSmoothingEnabled
+      this.ctx.imageSmoothingEnabled = false
+      this.ctx.drawImage(sprite, left, top, width, height)
+      this.ctx.imageSmoothingEnabled = smoothing
+
       if (isCurrentPlayer) {
         this.ctx.strokeStyle = '#FFD700'
-        this.ctx.lineWidth = Math.max(2, 3 * this.zoom)
-        this.ctx.setLineDash([5, 5])
-        this.ctx.strokeRect(-spriteSize / 2, -spriteSize / 2 + offsetY, spriteSize, spriteSize)
+        this.ctx.lineWidth = Math.max(1, 2 * this.zoom)
+        this.ctx.setLineDash([4, 4])
+        this.ctx.strokeRect(left, top, width, height)
         this.ctx.setLineDash([])
       }
+
+      this.drawNameplate(player, screenPos, top)
     } else {
+      // Fallback until the frames finish loading.
+      this.ctx.translate(screenPos.x, screenPos.y)
       this.ctx.fillStyle = player.color
       this.ctx.beginPath()
       this.ctx.arc(0, 0, this.gridSize * player.size, 0, Math.PI * 2)
       this.ctx.fill()
-      this.ctx.strokeStyle = '#333'
+      this.ctx.strokeStyle = isCurrentPlayer ? '#FFD700' : '#333'
       this.ctx.lineWidth = Math.max(1, 2 * this.zoom)
       this.ctx.stroke()
-      if (isCurrentPlayer) {
-        this.ctx.strokeStyle = '#FFD700'
-        this.ctx.lineWidth = Math.max(2, 3 * this.zoom)
-        this.ctx.stroke()
-      }
     }
-    
-    const fontSize = Math.max(10, 12 * this.zoom)
+
+    this.ctx.restore()
+  }
+
+  private drawNameplate(player: Player, screenPos: { x: number; y: number }, spriteTop: number) {
+    const fontSize = Math.max(9, 11 * this.zoom)
     this.ctx.font = `${fontSize}px Arial`
     this.ctx.textAlign = 'center'
     this.ctx.fillStyle = player.color
-    this.ctx.fillText(player.name, 0, -this.gridSize * 2 - 10)
-    
-    this.ctx.restore()
+    this.ctx.fillText(player.name, screenPos.x, spriteTop - 4)
   }
 }

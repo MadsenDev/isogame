@@ -116,7 +116,7 @@
     padding: clamp(20px, 3vw, 36px);
   }
 
-  .habbo-room-canvas {
+  .iso-room-canvas {
     width: 100%;
     height: 100%;
     border-radius: 22px;
@@ -127,11 +127,13 @@
     cursor: crosshair;
   }
 
+  /* Above .neo-dock: the dock is a launcher, and when a window overlapped it
+     the dock swallowed every click on the window content beneath. */
   .neo-window-layer {
     pointer-events: none;
     position: fixed;
     inset: 0;
-    z-index: 10;
+    z-index: 20;
   }
 
   .floating-window {
@@ -244,7 +246,7 @@
     margin: 0.75rem 0;
   }
 
-  .habbo-pill-group {
+  .iso-pill-group {
     display: inline-flex;
     background: rgba(255, 255, 255, 0.04);
     border-radius: 999px;
@@ -253,7 +255,7 @@
     gap: 0.3rem;
   }
 
-  .habbo-pill {
+  .iso-pill {
     border: 0;
     background: transparent;
     color: var(--neo-text-muted);
@@ -266,30 +268,30 @@
     transition: background 0.2s ease, color 0.2s ease;
   }
 
-  .habbo-pill.is-active {
+  .iso-pill.is-active {
     background: linear-gradient(120deg, var(--neo-primary), var(--neo-primary-strong));
     color: #0a0d1c;
     box-shadow: 0 8px 16px rgba(110, 139, 255, 0.35);
   }
 
-  .habbo-window__muted {
+  .iso-window__muted {
     margin: 0;
     font-size: 0.85rem;
     color: var(--neo-text-muted);
     line-height: 1.6;
   }
 
-  .habbo-list {
+  .iso-list {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 0.75rem;
   }
 
-  .habbo-list--compact {
+  .iso-list--compact {
     grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
   }
 
-  .habbo-list__item {
+  .iso-list__item {
     border: 1px solid var(--neo-border);
     background: rgba(255, 255, 255, 0.04);
     border-radius: 14px;
@@ -303,31 +305,31 @@
     transition: transform 0.2s ease, border 0.2s ease, background 0.2s ease;
   }
 
-  .habbo-list__item:hover {
+  .iso-list__item:hover {
     transform: translateY(-2px);
     border-color: rgba(255, 255, 255, 0.25);
   }
 
-  .habbo-list__item.is-selected {
+  .iso-list__item.is-selected {
     background: rgba(110, 139, 255, 0.18);
     border-color: rgba(110, 139, 255, 0.55);
   }
 
-  .habbo-list__icon {
+  .iso-list__icon {
     font-size: 1.6rem;
   }
 
-  .habbo-stack {
+  .iso-stack {
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
   }
 
-  .habbo-stack--gap-sm {
+  .iso-stack--gap-sm {
     gap: 0.5rem;
   }
 
-  .habbo-button {
+  .iso-button {
     border: 1px solid transparent;
     border-radius: 12px;
     padding: 0.55rem 1rem;
@@ -338,33 +340,33 @@
     transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
   }
 
-  .habbo-button--primary {
+  .iso-button--primary {
     background: linear-gradient(135deg, var(--neo-primary), var(--neo-primary-strong));
     color: #0a0d1c;
     box-shadow: 0 10px 24px rgba(110, 139, 255, 0.35);
   }
 
-  .habbo-button--ghost {
+  .iso-button--ghost {
     background: rgba(255, 255, 255, 0.05);
     border-color: var(--neo-border);
     color: var(--neo-text-muted);
   }
 
-  .habbo-button--accent {
+  .iso-button--accent {
     background: linear-gradient(135deg, #ffb347, #ff9a5a);
     color: #1d0f00;
   }
 
-  .habbo-button--full {
+  .iso-button--full {
     width: 100%;
   }
 
-  .habbo-button:hover {
+  .iso-button:hover {
     transform: translateY(-1px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
   }
 
-  .habbo-stats {
+  .iso-stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 0.4rem 0.75rem;
@@ -373,29 +375,29 @@
     color: var(--neo-text-muted);
   }
 
-  .habbo-stats dt {
+  .iso-stats dt {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
 
-  .habbo-stats dd {
+  .iso-stats dd {
     margin: 0;
     color: #f6f7ff;
     font-weight: 500;
   }
 
-  .habbo-grid {
+  .iso-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
     gap: 0.75rem;
   }
 
-  .habbo-grid--compact {
+  .iso-grid--compact {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .habbo-field {
+  .iso-field {
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
@@ -403,7 +405,7 @@
     color: var(--neo-text-muted);
   }
 
-  .habbo-field input {
+  .iso-field input {
     border-radius: 10px;
     border: 1px solid var(--neo-border);
     background: rgba(255, 255, 255, 0.04);
@@ -412,7 +414,7 @@
     font-size: 0.85rem;
   }
 
-  .habbo-room-card {
+  .iso-room-card {
     border: 1px solid var(--neo-border);
     border-radius: 16px;
     background: rgba(10, 14, 31, 0.6);
@@ -423,23 +425,23 @@
     transition: border 0.2s ease, background 0.2s ease;
   }
 
-  .habbo-room-card.is-active {
+  .iso-room-card.is-active {
     border-color: rgba(110, 139, 255, 0.6);
     background: rgba(110, 139, 255, 0.12);
   }
 
-  .habbo-room-card--panel {
+  .iso-room-card--panel {
     background: rgba(12, 18, 38, 0.85);
   }
 
-  .habbo-room-card__title {
+  .iso-room-card__title {
     margin: 0;
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
 
-  .habbo-room-card__textarea {
+  .iso-room-card__textarea {
     width: 100%;
     min-height: 200px;
     background: rgba(255, 255, 255, 0.04);
@@ -452,7 +454,7 @@
     resize: vertical;
   }
 
-  .habbo-room-card__hint {
+  .iso-room-card__hint {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -461,39 +463,39 @@
     color: var(--neo-text-muted);
   }
 
-  .habbo-room-card__status {
+  .iso-room-card__status {
     font-size: 0.75rem;
     padding: 0.4rem 0.6rem;
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.08);
   }
 
-  .habbo-room-card__status.is-success {
+  .iso-room-card__status.is-success {
     color: #22d3ee;
   }
 
-  .habbo-room-card__status.is-danger {
+  .iso-room-card__status.is-danger {
     color: var(--neo-danger);
   }
 
-  .habbo-room-card__empty {
+  .iso-room-card__empty {
     font-size: 0.8rem;
     color: var(--neo-text-muted);
   }
 
-  .habbo-room-card__content {
+  .iso-room-card__content {
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
   }
 
-  .habbo-room-card__edit {
+  .iso-room-card__edit {
     display: flex;
     align-items: center;
     gap: 0.6rem;
   }
 
-  .habbo-input {
+  .iso-input {
     flex: 1;
     border-radius: 10px;
     border: 1px solid var(--neo-border);
@@ -503,12 +505,12 @@
     font-size: 0.85rem;
   }
 
-  .habbo-inline-actions {
+  .iso-inline-actions {
     display: inline-flex;
     gap: 0.4rem;
   }
 
-  .habbo-inline-actions__btn {
+  .iso-inline-actions__btn {
     width: 28px;
     height: 28px;
     border-radius: 50%;
@@ -518,15 +520,15 @@
     cursor: pointer;
   }
 
-  .habbo-inline-actions__btn.is-success {
+  .iso-inline-actions__btn.is-success {
     background: rgba(45, 212, 191, 0.35);
   }
 
-  .habbo-inline-actions__btn.is-danger {
+  .iso-inline-actions__btn.is-danger {
     background: rgba(255, 107, 107, 0.35);
   }
 
-  .habbo-room-card__meta {
+  .iso-room-card__meta {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.3rem;
@@ -534,18 +536,18 @@
     color: var(--neo-text-muted);
   }
 
-  .habbo-room-card__name {
+  .iso-room-card__name {
     font-weight: 600;
     color: #f5f7ff;
   }
 
-  .habbo-room-card__actions {
+  .iso-room-card__actions {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
   }
 
-  .habbo-inline-button {
+  .iso-inline-button {
     border: 0;
     background: rgba(255, 255, 255, 0.05);
     color: #f5f7ff;
@@ -557,18 +559,18 @@
     cursor: pointer;
   }
 
-  .habbo-inline-button.is-danger {
+  .iso-inline-button.is-danger {
     background: rgba(255, 107, 107, 0.18);
     color: #ffb4b4;
   }
 
-  .habbo-room-list {
+  .iso-room-list {
     display: flex;
     flex-direction: column;
     gap: 0.85rem;
   }
 
-  .habbo-room-meta {
+  .iso-room-meta {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 0.6rem;
@@ -576,13 +578,13 @@
     color: var(--neo-text-muted);
   }
 
-  .habbo-room-meta strong {
+  .iso-room-meta strong {
     display: block;
     color: #f5f7ff;
     font-weight: 600;
   }
 
-  .habbo-guidelines {
+  .iso-guidelines {
     margin: 0;
     padding-left: 1.1rem;
     font-size: 0.78rem;
@@ -591,7 +593,7 @@
     gap: 0.35rem;
   }
 
-  .habbo-texture {
+  .iso-texture {
     border: 1px solid var(--neo-border);
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.04);
@@ -606,25 +608,25 @@
     transition: border 0.2s ease, transform 0.2s ease;
   }
 
-  .habbo-texture.is-active {
+  .iso-texture.is-active {
     border-color: rgba(110, 139, 255, 0.6);
     transform: translateY(-2px);
   }
 
-  .habbo-texture__preview {
+  .iso-texture__preview {
     width: 48px;
     height: 48px;
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.12);
   }
 
-  .habbo-segmented {
+  .iso-segmented {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 0.6rem;
   }
 
-  .habbo-segmented__option {
+  .iso-segmented__option {
     border-radius: 14px;
     border: 1px solid var(--neo-border);
     background: rgba(255, 255, 255, 0.04);
@@ -638,22 +640,22 @@
     transition: border 0.2s ease, background 0.2s ease;
   }
 
-  .habbo-segmented__option.is-active {
+  .iso-segmented__option.is-active {
     border-color: rgba(110, 139, 255, 0.6);
     background: rgba(110, 139, 255, 0.14);
   }
 
-  .habbo-segmented__icon {
+  .iso-segmented__icon {
     font-size: 1.2rem;
   }
 
-  .habbo-furniture__grid {
+  .iso-furniture__grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 0.75rem;
   }
 
-  .habbo-furniture__item {
+  .iso-furniture__item {
     border: 1px solid var(--neo-border);
     border-radius: 16px;
     background: rgba(10, 14, 31, 0.55);
@@ -667,16 +669,16 @@
     transition: transform 0.2s ease, border 0.2s ease, background 0.2s ease;
   }
 
-  .habbo-furniture__item:hover {
+  .iso-furniture__item:hover {
     transform: translateY(-2px);
   }
 
-  .habbo-furniture__item.is-active {
+  .iso-furniture__item.is-active {
     border-color: rgba(110, 139, 255, 0.55);
     background: rgba(110, 139, 255, 0.12);
   }
 
-  .habbo-furniture__preview {
+  .iso-furniture__preview {
     width: 56px;
     height: 56px;
     border-radius: 14px;
@@ -687,13 +689,13 @@
     font-weight: 700;
   }
 
-  .habbo-furniture__label {
+  .iso-furniture__label {
     font-size: 0.82rem;
     text-align: center;
     color: var(--neo-text-muted);
   }
 
-  .habbo-furniture__selection {
+  .iso-furniture__selection {
     border: 1px solid rgba(110, 139, 255, 0.4);
     border-radius: 14px;
     padding: 0.85rem;
@@ -704,19 +706,19 @@
     font-size: 0.8rem;
   }
 
-  .habbo-furniture__selection-title {
+  .iso-furniture__selection-title {
     font-weight: 600;
     letter-spacing: 0.04em;
     text-transform: uppercase;
   }
 
-  .habbo-chat {
+  .iso-chat {
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
   }
 
-  .habbo-chat__messages {
+  .iso-chat__messages {
     max-height: 220px;
     overflow-y: auto;
     border-radius: 12px;
@@ -728,7 +730,7 @@
     gap: 0.45rem;
   }
 
-  .habbo-chat__message {
+  .iso-chat__message {
     font-size: 0.82rem;
     color: #f5f7ff;
     background: rgba(255, 255, 255, 0.06);
@@ -736,7 +738,7 @@
     padding: 0.5rem 0.6rem;
   }
 
-  .habbo-chat__input {
+  .iso-chat__input {
     border-radius: 12px;
     border: 1px solid var(--neo-border);
     background: rgba(255, 255, 255, 0.08);
@@ -839,7 +841,7 @@
     font-size: 0.72rem;
   }
 
-  .habbo-context-menu {
+  .iso-context-menu {
     position: absolute;
     pointer-events: all;
     background: rgba(10, 14, 31, 0.85);
@@ -849,12 +851,12 @@
     overflow: hidden;
   }
 
-  .habbo-context-menu__body {
+  .iso-context-menu__body {
     display: flex;
     flex-direction: column;
   }
 
-  .habbo-context-menu__button {
+  .iso-context-menu__button {
     border: 0;
     background: transparent;
     color: #f5f7ff;
@@ -865,7 +867,7 @@
     transition: background 0.2s ease;
   }
 
-  .habbo-context-menu__button:hover {
+  .iso-context-menu__button:hover {
     background: rgba(110, 139, 255, 0.2);
   }
 
@@ -878,7 +880,9 @@
       margin-bottom: 1rem;
     }
 
-    .neo-window-layer {
+    /* Above .neo-dock: the dock is a launcher, and when a window overlapped it
+     the dock swallowed every click on the window content beneath. */
+  .neo-window-layer {
       position: static;
       padding-bottom: 140px;
       overflow-y: auto;

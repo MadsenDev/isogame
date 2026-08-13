@@ -37,21 +37,21 @@ const ContextMenu: React.FC = () => {
 
   return (
     <div
-      className="habbo-context-menu"
+      className="iso-context-menu"
       style={{
         left: '50%',
         top: '50%',
         transform: 'translate(-50%, -50%)'
       }}
     >
-      <div className="habbo-context-menu__body">
-        <button className="habbo-context-menu__button" onClick={() => handleAction('sitting')}>
+      <div className="iso-context-menu__body">
+        <button className="iso-context-menu__button" onClick={() => handleAction('sitting')}>
           Sit
         </button>
-        <button className="habbo-context-menu__button" onClick={() => handleAction('dancing')}>
+        <button className="iso-context-menu__button" onClick={() => handleAction('dancing')}>
           Dance
         </button>
-        <button className="habbo-context-menu__button" onClick={() => handleAction('waving')}>
+        <button className="iso-context-menu__button" onClick={() => handleAction('waving')}>
           Wave
         </button>
       </div>

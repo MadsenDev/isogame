@@ -206,3 +206,36 @@ export function usedColours(image: RgbaImage): string[] {
     .sort((a, b) => b[1] - a[1])
     .map(([key]) => `#${key.toString(16).padStart(6, '0')}`)
 }
+
+/**
+ * Turn a rendered shadow into a flat, translucent stencil.
+ *
+ * The ordinary alpha threshold makes everything fully opaque, which would give
+ * furniture a solid black slab underneath it. A shadow instead wants a crisp
+ * edge but constant partial alpha: threshold the coverage, then force one
+ * colour and one alpha everywhere it survives.
+ */
+export function flattenShadow(
+  image: RgbaImage,
+  options: { colour: string; alpha: number; cutoff: number }
+): RgbaImage {
+  const { r, g, b } = hexToRgb(options.colour)
+  const alpha = Math.round(Math.max(0, Math.min(1, options.alpha)) * 255)
+  const data = new Uint8ClampedArray(image.data)
+
+  for (let i = 0; i < data.length; i += 4) {
+    if (data[i + 3] >= options.cutoff) {
+      data[i] = r
+      data[i + 1] = g
+      data[i + 2] = b
+      data[i + 3] = alpha
+    } else {
+      data[i] = 0
+      data[i + 1] = 0
+      data[i + 2] = 0
+      data[i + 3] = 0
+    }
+  }
+
+  return { ...image, data }
+}

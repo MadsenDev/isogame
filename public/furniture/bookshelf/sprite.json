@@ -37,8 +37,7 @@
     "#cbaf90",
     "#f0ede6",
     "#c19e69",
-    "#bf8865",
-    "#b07a42"
+    "#bf8865"
   ],
   "directions": {
     "south": {
@@ -68,7 +67,14 @@
             }
           ]
         }
-      ]
+      ],
+      "shadow": {
+        "file": "south-shadow.png",
+        "width": 72,
+        "height": 21,
+        "anchorX": 18,
+        "anchorY": 11
+      }
     },
     "west": {
       "file": "west.png",
@@ -97,7 +103,14 @@
             }
           ]
         }
-      ]
+      ],
+      "shadow": {
+        "file": "west-shadow.png",
+        "width": 72,
+        "height": 21,
+        "anchorX": 18,
+        "anchorY": 11
+      }
     },
     "north": {
       "file": "north.png",
@@ -126,7 +139,14 @@
             }
           ]
         }
-      ]
+      ],
+      "shadow": {
+        "file": "north-shadow.png",
+        "width": 72,
+        "height": 21,
+        "anchorX": 18,
+        "anchorY": 11
+      }
     },
     "east": {
       "file": "east.png",
@@ -155,7 +175,14 @@
             }
           ]
         }
-      ]
+      ],
+      "shadow": {
+        "file": "east-shadow.png",
+        "width": 72,
+        "height": 21,
+        "anchorX": 18,
+        "anchorY": 11
+      }
     }
   },
   "sheet": {

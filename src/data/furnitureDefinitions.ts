@@ -10,7 +10,7 @@
  * run `npm run sprites`.
  */
 
-import { FurnitureDefinition } from '../context/GameContext'
+import { Furniture, FurnitureDefinition, FurnitureDirection, FurniturePosition } from '../context/GameContext'
 import generated from './furnitureDefinitions.generated.json'
 
 export const FURNITURE_DEFINITIONS = generated as unknown as Record<string, FurnitureDefinition>
@@ -30,4 +30,68 @@ export const getAllFurnitureDefinitions = (): FurnitureDefinition[] => {
 /** Furniture that can only be placed on a wall or hung from the ceiling. */
 export const getMountedFurniture = (): FurnitureDefinition[] => {
   return getAllFurnitureDefinitions().filter(furniture => furniture.placement && furniture.placement !== 'floor')
+}
+
+/** The order rotation steps through, matching the pipeline's quarter turns. */
+const DIRECTION_CYCLE: FurnitureDirection[] = ['south', 'west', 'north', 'east']
+
+/** Orientations this piece was actually rendered in. Wall items only have two. */
+export const getAvailableDirections = (definition: FurnitureDefinition): FurnitureDirection[] => {
+  if (!definition.sprites) return []
+  return DIRECTION_CYCLE.filter(direction => definition.sprites?.[direction])
+}
+
+/**
+ * Next orientation when the player rotates a piece.
+ *
+ * Steps through the orientations that exist rather than blindly adding 90
+ * degrees, so rotating a wall lamp flips between its two frames instead of
+ * landing on one that was never rendered.
+ */
+export const getNextDirection = (
+  definition: FurnitureDefinition,
+  current?: FurnitureDirection
+): FurnitureDirection | undefined => {
+  const available = getAvailableDirections(definition)
+  if (available.length === 0) return undefined
+
+  const start = current ?? definition.defaultDirection ?? available[0]
+  const index = available.indexOf(start)
+  return available[(index + 1) % available.length]
+}
+
+export interface ResolvedInteraction {
+  furniture: Furniture
+  spot: FurniturePosition
+  type: string
+}
+
+/**
+ * Find the interaction spot a player is standing on, if any.
+ *
+ * Resolved at draw time rather than stored on the player, so it stays correct
+ * when furniture is moved or removed out from under them.
+ */
+export const findInteractionSpot = (
+  furniture: Furniture[],
+  tileX: number,
+  tileY: number,
+  types: string[]
+): ResolvedInteraction | null => {
+  for (const piece of furniture) {
+    const sprite = piece.definition.sprites?.[piece.direction ?? piece.definition.defaultDirection ?? '']
+    const interactions = sprite?.interactions ?? piece.definition.interactions
+
+    for (const interaction of interactions ?? []) {
+      if (!types.includes(interaction.type)) continue
+
+      for (const spot of interaction.positions) {
+        if (piece.x + spot.x === tileX && piece.y + spot.y === tileY) {
+          return { furniture: piece, spot, type: interaction.type }
+        }
+      }
+    }
+  }
+
+  return null
 }

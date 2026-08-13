@@ -1,0 +1,542 @@
+{
+  "generator": {
+    "version": 1,
+    "renderedAt": "2026-08-13T19:42:35.544Z",
+    "config": {
+      "supersample": 4,
+      "padding": 2,
+      "outline": {
+        "enabled": true,
+        "colour": "#241d2b"
+      },
+      "paletteSnap": true,
+      "extraPalette": [],
+      "alphaCutoff": 128,
+      "shadow": {
+        "enabled": true,
+        "colour": "#2a2233",
+        "alpha": 0.34,
+        "cutoff": 110
+      },
+      "shading": {
+        "light": [
+          -0.3,
+          0.89,
+          0.35
+        ],
+        "thresholds": [
+          0.25,
+          0.5,
+          0.8
+        ]
+      }
+    },
+    "tile": {
+      "width": 64,
+      "height": 32
+    },
+    "pixelsPerUnit": 45.2548
+  },
+  "basePath": "/structures",
+  "structures": {
+    "floor_wood": {
+      "id": "floor_wood",
+      "name": "Wood Floor",
+      "sprite": "/furniture/floor_wood/south.png",
+      "width": 1,
+      "height": 1,
+      "placement": "floor",
+      "category": "flooring",
+      "walkable": true,
+      "stackable": false,
+      "rotatable": false,
+      "collision": {
+        "blocksMovement": false,
+        "blocksVision": false,
+        "height": 0,
+        "shape": "rectangle"
+      },
+      "interactions": [],
+      "defaultDirection": "south",
+      "sprites": {
+        "south": {
+          "file": "south.png",
+          "index": 0,
+          "width": 64,
+          "height": 33,
+          "anchorX": 32,
+          "anchorY": 16,
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "interactions": [],
+          "url": "/furniture/floor_wood/south.png"
+        },
+        "west": {
+          "file": "west.png",
+          "index": 1,
+          "width": 64,
+          "height": 33,
+          "anchorX": 32,
+          "anchorY": 16,
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "interactions": [],
+          "url": "/furniture/floor_wood/west.png"
+        },
+        "north": {
+          "file": "north.png",
+          "index": 2,
+          "width": 64,
+          "height": 33,
+          "anchorX": 32,
+          "anchorY": 16,
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "interactions": [],
+          "url": "/furniture/floor_wood/north.png"
+        },
+        "east": {
+          "file": "east.png",
+          "index": 3,
+          "width": 64,
+          "height": 33,
+          "anchorX": 32,
+          "anchorY": 16,
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "interactions": [],
+          "url": "/furniture/floor_wood/east.png"
+        }
+      },
+      "palette": [
+        "#b58d54",
+        "#ba945f",
+        "#ad834d",
+        "#96683b",
+        "#a2703f",
+        "#764628",
+        "#8a5f38",
+        "#5e3722"
+      ]
+    },
+    "floor_stone": {
+      "id": "floor_stone",
+      "name": "Stone Floor",
+      "sprite": "/furniture/floor_stone/south.png",
+      "width": 1,
+      "height": 1,
+      "placement": "floor",
+      "category": "flooring",
+      "walkable": true,
+      "stackable": false,
+      "rotatable": false,
+      "collision": {
+        "blocksMovement": false,
+        "blocksVision": false,
+        "height": 0,
+        "shape": "rectangle"
+      },
+      "interactions": [],
+      "defaultDirection": "south",
+      "sprites": {
+        "south": {
+          "file": "south.png",
+          "index": 0,
+          "width": 64,
+          "height": 33,
+          "anchorX": 32,
+          "anchorY": 16,
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "interactions": [],
+          "url": "/furniture/floor_stone/south.png"
+        },
+        "west": {
+          "file": "west.png",
+          "index": 1,
+          "width": 64,
+          "height": 33,
+          "anchorX": 32,
+          "anchorY": 16,
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "interactions": [],
+          "url": "/furniture/floor_stone/west.png"
+        },
+        "north": {
+          "file": "north.png",
+          "index": 2,
+          "width": 64,
+          "height": 33,
+          "anchorX": 32,
+          "anchorY": 16,
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "interactions": [],
+          "url": "/furniture/floor_stone/north.png"
+        },
+        "east": {
+          "file": "east.png",
+          "index": 3,
+          "width": 64,
+          "height": 33,
+          "anchorX": 32,
+          "anchorY": 16,
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "interactions": [],
+          "url": "/furniture/floor_stone/east.png"
+        }
+      },
+      "palette": [
+        "#949391",
+        "#a2a1a0",
+        "#878786",
+        "#7d7770",
+        "#8b857f",
+        "#5e544c",
+        "#6f6a66",
+        "#504743"
+      ]
+    },
+    "floor_carpet": {
+      "id": "floor_carpet",
+      "name": "Carpet",
+      "sprite": "/furniture/floor_carpet/south.png",
+      "width": 1,
+      "height": 1,
+      "placement": "floor",
+      "category": "flooring",
+      "walkable": true,
+      "stackable": false,
+      "rotatable": false,
+      "collision": {
+        "blocksMovement": false,
+        "blocksVision": false,
+        "height": 0,
+        "shape": "rectangle"
+      },
+      "interactions": [],
+      "defaultDirection": "south",
+      "sprites": {
+        "south": {
+          "file": "south.png",
+          "index": 0,
+          "width": 64,
+          "height": 33,
+          "anchorX": 32,
+          "anchorY": 16,
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "interactions": [],
+          "url": "/furniture/floor_carpet/south.png"
+        },
+        "west": {
+          "file": "west.png",
+          "index": 1,
+          "width": 64,
+          "height": 33,
+          "anchorX": 32,
+          "anchorY": 16,
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "interactions": [],
+          "url": "/furniture/floor_carpet/west.png"
+        },
+        "north": {
+          "file": "north.png",
+          "index": 2,
+          "width": 64,
+          "height": 33,
+          "anchorX": 32,
+          "anchorY": 16,
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "interactions": [],
+          "url": "/furniture/floor_carpet/north.png"
+        },
+        "east": {
+          "file": "east.png",
+          "index": 3,
+          "width": 64,
+          "height": 33,
+          "anchorX": 32,
+          "anchorY": 16,
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "interactions": [],
+          "url": "/furniture/floor_carpet/east.png"
+        }
+      },
+      "palette": [
+        "#af8088",
+        "#a46d76",
+        "#9c5b6b",
+        "#773e53",
+        "#8a4f5e",
+        "#643345"
+      ]
+    },
+    "floor_marble": {
+      "id": "floor_marble",
+      "name": "Marble Floor",
+      "sprite": "/furniture/floor_marble/south.png",
+      "width": 1,
+      "height": 1,
+      "placement": "floor",
+      "category": "flooring",
+      "walkable": true,
+      "stackable": false,
+      "rotatable": false,
+      "collision": {
+        "blocksMovement": false,
+        "blocksVision": false,
+        "height": 0,
+        "shape": "rectangle"
+      },
+      "interactions": [],
+      "defaultDirection": "south",
+      "sprites": {
+        "south": {
+          "file": "south.png",
+          "index": 0,
+          "width": 64,
+          "height": 33,
+          "anchorX": 32,
+          "anchorY": 16,
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "interactions": [],
+          "url": "/furniture/floor_marble/south.png"
+        },
+        "west": {
+          "file": "west.png",
+          "index": 1,
+          "width": 64,
+          "height": 33,
+          "anchorX": 32,
+          "anchorY": 16,
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "interactions": [],
+          "url": "/furniture/floor_marble/west.png"
+        },
+        "north": {
+          "file": "north.png",
+          "index": 2,
+          "width": 64,
+          "height": 33,
+          "anchorX": 32,
+          "anchorY": 16,
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "interactions": [],
+          "url": "/furniture/floor_marble/north.png"
+        },
+        "east": {
+          "file": "east.png",
+          "index": 3,
+          "width": 64,
+          "height": 33,
+          "anchorX": 32,
+          "anchorY": 16,
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "interactions": [],
+          "url": "/furniture/floor_marble/east.png"
+        }
+      },
+      "palette": [
+        "#e1e0dd",
+        "#cfceca",
+        "#eeedeb",
+        "#d6d3cb",
+        "#c9c6bd",
+        "#b8b4a9",
+        "#b0a594"
+      ]
+    },
+    "wall_panel": {
+      "id": "wall_panel",
+      "name": "Wall Panel",
+      "sprite": "/furniture/wall_panel/south.png",
+      "width": 1,
+      "height": 1,
+      "placement": "wall",
+      "category": "wall",
+      "walkable": false,
+      "stackable": false,
+      "rotatable": false,
+      "collision": {
+        "blocksMovement": false,
+        "blocksVision": false,
+        "height": 0,
+        "shape": "rectangle"
+      },
+      "interactions": [],
+      "defaultDirection": "south",
+      "sprites": {
+        "south": {
+          "file": "south.png",
+          "index": 0,
+          "width": 37,
+          "height": 73,
+          "anchorX": 36,
+          "anchorY": 73,
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "interactions": [],
+          "url": "/furniture/wall_panel/south.png"
+        },
+        "east": {
+          "file": "east.png",
+          "index": 3,
+          "width": 37,
+          "height": 73,
+          "anchorX": 1,
+          "anchorY": 73,
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "interactions": [],
+          "url": "/furniture/wall_panel/east.png"
+        }
+      },
+      "palette": [
+        "#885637",
+        "#b08152",
+        "#bea37c",
+        "#51301e",
+        "#a36138",
+        "#c08f5e",
+        "#a07a4a",
+        "#7d5735",
+        "#643424"
+      ]
+    },
+    "wall_corner": {
+      "id": "wall_corner",
+      "name": "Wall Corner",
+      "sprite": "/furniture/wall_corner/south.png",
+      "width": 1,
+      "height": 1,
+      "placement": "floor",
+      "category": "wall",
+      "walkable": false,
+      "stackable": false,
+      "rotatable": false,
+      "collision": {
+        "blocksMovement": false,
+        "blocksVision": false,
+        "height": 0,
+        "shape": "rectangle"
+      },
+      "interactions": [],
+      "defaultDirection": "south",
+      "sprites": {
+        "south": {
+          "file": "south.png",
+          "index": 0,
+          "width": 10,
+          "height": 60,
+          "anchorX": 5,
+          "anchorY": 75,
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "interactions": [],
+          "url": "/furniture/wall_corner/south.png"
+        },
+        "west": {
+          "file": "west.png",
+          "index": 1,
+          "width": 10,
+          "height": 59,
+          "anchorX": 40,
+          "anchorY": 57,
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "interactions": [],
+          "url": "/furniture/wall_corner/west.png"
+        },
+        "north": {
+          "file": "north.png",
+          "index": 2,
+          "width": 10,
+          "height": 59,
+          "anchorX": 5,
+          "anchorY": 39,
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "interactions": [],
+          "url": "/furniture/wall_corner/north.png"
+        },
+        "east": {
+          "file": "east.png",
+          "index": 3,
+          "width": 10,
+          "height": 59,
+          "anchorX": -30,
+          "anchorY": 57,
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "interactions": [],
+          "url": "/furniture/wall_corner/east.png"
+        }
+      },
+      "palette": [
+        "#b08152",
+        "#885637",
+        "#bea37c",
+        "#7d5735",
+        "#51301e",
+        "#c08f5e",
+        "#a36138",
+        "#a07a4a",
+        "#643424"
+      ]
+    }
+  }
+}

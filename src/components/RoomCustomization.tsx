@@ -76,7 +76,7 @@ export const RoomCustomization: React.FC = () => {
     if (previewUrl) {
       return (
         <div
-          className="habbo-texture__preview"
+          className="iso-texture__preview"
           style={{
             backgroundImage: `url(${previewUrl})`,
             backgroundSize: 'cover',
@@ -88,7 +88,7 @@ export const RoomCustomization: React.FC = () => {
 
     return (
       <div
-        className="habbo-texture__preview"
+        className="iso-texture__preview"
         style={{ backgroundColor: texture.color }}
       />
     )
@@ -106,7 +106,7 @@ export const RoomCustomization: React.FC = () => {
         <h4 className="panel-subtitle">Floor textures</h4>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="habbo-button habbo-button--ghost"
+          className="iso-button iso-button--ghost"
           aria-expanded={isOpen}
           aria-label="Toggle room styling"
         >
@@ -116,12 +116,12 @@ export const RoomCustomization: React.FC = () => {
 
       {isOpen && (
         <div className="panel-section">
-          <div className="habbo-grid habbo-grid--textures">
+          <div className="iso-grid iso-grid--textures">
             {FLOOR_TEXTURES.map(texture => (
               <button
                 key={texture.id}
                 onClick={() => setSelectedTexture(texture.id)}
-                className={`habbo-texture ${selectedTexture === texture.id ? 'is-active' : ''}`}
+                className={`iso-texture ${selectedTexture === texture.id ? 'is-active' : ''}`}
                 title={texture.name}
               >
                 {renderTexturePreview(texture)}
@@ -130,13 +130,13 @@ export const RoomCustomization: React.FC = () => {
             ))}
           </div>
 
-          <button onClick={handleSetFloorTexture} className="habbo-button habbo-button--primary habbo-button--full">
+          <button onClick={handleSetFloorTexture} className="iso-button iso-button--primary iso-button--full">
             Apply to all tiles
           </button>
 
           <div className="panel-divider" />
 
-          <div className="habbo-room-meta">
+          <div className="iso-room-meta">
             <div>
               <span>Room</span>
               <strong>{state.currentRoom.name}</strong>
@@ -153,7 +153,7 @@ export const RoomCustomization: React.FC = () => {
             </div>
           </div>
 
-          <ul className="habbo-guidelines">
+          <ul className="iso-guidelines">
             <li>Select a texture then tap the button above to recolour the room.</li>
             <li>Use the Room tool with Shift+Click for precision painting.</li>
             <li>Previews pull from the actual resort tileset for accuracy.</li>

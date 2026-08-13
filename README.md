@@ -10,7 +10,8 @@ The project is a prototype rather than a finished online game. There is no produ
 
 ### Isometric room engine
 
-- canvas-based isometric rendering
+- canvas-based isometric rendering at 1:1 pixel scale
+- generated floor tiles and wall panels, sharing one light and palette
 - grid/world-to-screen coordinate conversion
 - click-to-move player controls
 - scaled pointer handling for accurate canvas interaction
@@ -19,10 +20,13 @@ The project is a prototype rather than a finished online game. There is no produ
 
 ### Sprite pipeline
 
-Furniture art is generated rather than drawn. Simple 3D models go through one
+Furniture *and* character art is generated rather than drawn. Simple 3D models go through one
 fixed isometric camera to produce sprites, anchors and game object definitions in
 a single pass, so a piece's artwork, footprint, collision box and interaction
-spots cannot drift apart. See [`tools/sprite-factory`](tools/sprite-factory).
+spots cannot drift apart. Characters run through the same camera and lighting
+from posed primitives, in 8 directions with idle, walk and sit animations, so
+guests and furniture are consistent in scale, palette and light by construction.
+See [`tools/sprite-factory`](tools/sprite-factory).
 
 ```bash
 npm run sprites   # rebuild every furniture sprite and definition
@@ -33,8 +37,8 @@ npm run sprites   # rebuild every furniture sprite and definition
 - add and remove floor tiles
 - room styling and customization tools
 - furniture catalog with category filtering
-- furniture placement previews
-- multi-tile furniture footprints
+- furniture placement previews with per-orientation rotation
+- multi-tile furniture footprints and collision
 - collision checks against furniture and players
 - furniture sprite loading with visual fallbacks
 
@@ -44,6 +48,8 @@ npm run sprites   # rebuild every furniture sprite and definition
 - player selection
 - chat interface
 - player actions such as sitting, dancing, and waving
+- walking onto a seat sits the character on it, at the seat height the sprite
+  pipeline measured from the 3D model
 - context-menu interactions
 
 ### Room management
@@ -78,6 +84,7 @@ The current UI exposes the main controls in-app, including:
 | Click | Move the active character / interact with the room |
 | Furniture tool | Select and place room furniture |
 | `Esc` | Cancel the current action |
+| `R` | Rotate the furniture piece being placed |
 | `1`-`4` | Switch active player |
 | `Enter` | Open/use chat |
 
@@ -146,6 +153,11 @@ public/
 ```
 
 The React layer controls application state and tooling, while the canvas engine handles room rendering and pointer/game interactions.
+
+## Roadmap
+
+See [`docs/ROADMAP.md`](docs/ROADMAP.md) for what is planned next and a list of
+known rough edges.
 
 ## Project status
 

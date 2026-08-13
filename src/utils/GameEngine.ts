@@ -1,12 +1,12 @@
 import type { Dispatch } from 'react'
-import { GameState, GameAction } from '../context/GameContext'
+import { Furniture, GameState, GameAction } from '../context/GameContext'
 import { PlayerComponent } from '../components/PlayerComponent'
 import { TileComponent } from '../components/TileComponent'
 import { FurnitureComponent } from '../components/FurnitureComponent'
 import { WallComponent } from '../components/WallComponent'
 import { Pathfinder } from '../utils/Pathfinder'
 import { CoordinateUtils } from '../utils/CoordinateUtils'
-import { getFurnitureDefinition } from '../data/furnitureDefinitions'
+import { findInteractionSpot, getFurnitureDefinition, getNextDirection } from '../data/furnitureDefinitions'
 
 export class GameEngine {
   private canvas: HTMLCanvasElement
@@ -26,6 +26,9 @@ export class GameEngine {
   private readonly baseTileWidth = this.gridSize * 2
   private readonly baseTileHeight = this.gridSize
   private zoom = 1
+  private frameHandle: number | null = null
+  private canvasWidth = 0
+  private canvasHeight = 0
   private readonly minZoom = 0.35
   private readonly maxZoom = 2
 
@@ -83,22 +86,201 @@ export class GameEngine {
     return this.coordinateUtils.screenToWorld(x, y)
   }
 
+  /**
+   * Draw furniture and players back-to-front in one pass.
+   *
+   * Sort key is the isometric depth (x + y). Furniture uses its front-most
+   * occupied tile so a 2x2 table does not sort as if it were only its origin
+   * corner. A player sitting on something is pinned either side of that piece
+   * using the `layer` the sprite pipeline worked out per orientation: furniture
+   * facing north or west shows its back to the camera, so the occupant belongs
+   * underneath it.
+   */
+  private drawSortedScene() {
+    if (!this.state.currentRoom) return
+
+    const drawables: Array<{ depth: number; order: number; draw: () => void }> = []
+
+    // Walls sort half a tile behind the tile they enclose, which is where they
+    // physically are. That is what lets a guest walk behind an interior wall
+    // and be hidden by it, instead of always painting on top.
+    const wallsByTile = new Set<string>()
+    this.state.currentRoom.walls.forEach(wall => {
+      wallsByTile.add(`${wall.x},${wall.y},${wall.edge}`)
+      drawables.push({
+        depth: wall.x + wall.y - 0.5,
+        order: 0,
+        draw: () => this.wallComponent.drawWall(wall)
+      })
+    })
+
+    // A tile carrying both edges is an inside corner; the post fills the square
+    // outside the boundary that neither run reaches. Drawn fractionally further
+    // back so it never covers either face.
+    this.state.currentRoom.walls.forEach(wall => {
+      if (wall.edge !== 'north') return
+      if (!wallsByTile.has(`${wall.x},${wall.y},west`)) return
+      drawables.push({
+        depth: wall.x + wall.y - 0.6,
+        order: 0,
+        draw: () => this.wallComponent.drawCorner(wall.x, wall.y)
+      })
+    })
+
+    this.state.currentRoom.furniture.forEach(furniture => {
+      const footprint = this.getFurnitureFootprint(furniture)
+
+      drawables.push({
+        depth: furniture.x + furniture.y + (footprint.width - 1) + (footprint.height - 1),
+        order: 0,
+        draw: () => this.furnitureComponent.drawFurniture(furniture)
+      })
+    })
+
+    this.state.players.forEach(player => {
+      const tileX = Math.round(player.x)
+      const tileY = Math.round(player.y)
+      const seated = player.action === 'sitting' || player.action === 'idle'
+        ? findInteractionSpot(this.state.currentRoom!.furniture, tileX, tileY, ['sit', 'lay', 'sleep'])
+        : null
+
+      const useSpot = player.action === 'sitting' && seated ? seated : null
+      const screenPos = this.coordinateUtils.worldToScreen(player.x, player.y)
+
+      // The seat offset is in unzoomed sprite pixels, like the sprite anchors.
+      const offsetX = (useSpot?.spot.offsetX ?? 0) * this.zoom
+      const offsetY = (useSpot?.spot.offsetY ?? 0) * this.zoom
+
+      let depth = player.x + player.y
+      if (useSpot) {
+        const piece = useSpot.furniture
+        const spriteFootprint = this.getFurnitureFootprint(piece)
+        const pieceDepth =
+          piece.x + piece.y + (spriteFootprint.width - 1) + (spriteFootprint.height - 1)
+        depth = useSpot.spot.layer === 'behind' ? pieceDepth - 0.5 : pieceDepth + 0.5
+      }
+
+      drawables.push({
+        depth,
+        // Ties go to the player, so a guest standing level with a piece of
+        // furniture is not hidden by it.
+        order: 1,
+        draw: () => {
+          this.playerComponent.drawPlayer(
+            player,
+            { x: screenPos.x + offsetX, y: screenPos.y + offsetY },
+            player.id === this.state.currentPlayerId,
+            useSpot?.spot.direction
+          )
+
+          if (player.isMoving) {
+            const targetScreenPos = this.coordinateUtils.worldToScreen(player.targetX, player.targetY)
+            this.tileComponent.drawTargetIndicator(player.targetX, player.targetY, targetScreenPos)
+          }
+        }
+      })
+    })
+
+    drawables
+      .sort((a, b) => a.depth - b.depth || a.order - b.order)
+      .forEach(drawable => drawable.draw())
+  }
+
+  /**
+   * Contact shadows for everything standing on the floor.
+   *
+   * Sitting players are skipped: their shadow is already implied by the
+   * furniture they are on, and drawing it would put a second one on the floor
+   * beneath the chair.
+   */
+  private drawShadows() {
+    if (!this.state.currentRoom) return
+
+    this.state.currentRoom.furniture.forEach(furniture => {
+      this.furnitureComponent.drawShadow(furniture)
+    })
+
+    this.state.players.forEach(player => {
+      if (player.action === 'sitting') return
+      const screenPos = this.coordinateUtils.worldToScreen(player.x, player.y)
+      this.playerComponent.drawShadow(player, screenPos)
+    })
+  }
+
+  /** Tiles a piece occupies in its current orientation. */
+  private getFurnitureFootprint(furniture: Furniture): { width: number; height: number } {
+    const sprite = furniture.definition.sprites?.[
+      furniture.direction ?? furniture.definition.defaultDirection ?? ''
+    ]
+    return sprite?.footprint ?? {
+      width: furniture.definition.width,
+      height: furniture.definition.height
+    }
+  }
+
+  /** Bound once so it can be removed again in destroy(). */
+  private handleKeyDown = (event: KeyboardEvent) => {
+    const target = event.target as HTMLElement | null
+    if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) return
+
+    if (event.key === 'r' || event.key === 'R') {
+      this.rotatePlacement()
+    }
+  }
+
+  /**
+   * Release everything the engine owns.
+   *
+   * Cancelling the animation frame is the important part: React StrictMode
+   * mounts, unmounts and remounts in development, and an engine whose loop
+   * outlives it keeps drawing its own stale copy of the room over the live one.
+   */
+  public destroy() {
+    if (this.frameHandle !== null) {
+      cancelAnimationFrame(this.frameHandle)
+      this.frameHandle = null
+    }
+    window.removeEventListener('keydown', this.handleKeyDown)
+    this.canvas.removeEventListener('click', this.onCanvasClick)
+    this.canvas.removeEventListener('contextmenu', this.onCanvasContextMenu)
+    this.canvas.removeEventListener('mousemove', this.onCanvasMouseMove)
+  }
+
+  /** Cycle the orientation used for the next furniture placement. */
+  public rotatePlacement() {
+    if (!this.state.selectedFurniture) return
+
+    const definition = getFurnitureDefinition(this.state.selectedFurniture)
+    if (!definition || !definition.rotatable) return
+
+    const next = getNextDirection(definition, this.state.placementDirection ?? undefined)
+    if (next) this.dispatch({ type: 'SET_PLACEMENT_DIRECTION', payload: next })
+  }
+
+  // Bound once each so destroy() can actually remove them again. Anonymous
+  // listeners cannot be removed, which left orphaned engines still handling
+  // clicks on the same canvas.
+  private onCanvasClick = (e: MouseEvent) => {
+    const { x, y } = this.getCanvasCoordinates(e)
+    this.handleClick(x, y, e)
+  }
+
+  private onCanvasContextMenu = (e: MouseEvent) => {
+    e.preventDefault()
+    const { x, y } = this.getCanvasCoordinates(e)
+    this.handleRightClick(x, y)
+  }
+
+  private onCanvasMouseMove = (e: MouseEvent) => {
+    const { x, y } = this.getCanvasCoordinates(e)
+    this.handleMouseMove(x, y)
+  }
+
   private setupEventListeners() {
-    this.canvas.addEventListener('click', (e) => {
-      const { x, y } = this.getCanvasCoordinates(e)
-      this.handleClick(x, y, e)
-    })
-
-    this.canvas.addEventListener('contextmenu', (e) => {
-      e.preventDefault()
-      const { x, y } = this.getCanvasCoordinates(e)
-      this.handleRightClick(x, y)
-    })
-
-    this.canvas.addEventListener('mousemove', (e) => {
-      const { x, y } = this.getCanvasCoordinates(e)
-      this.handleMouseMove(x, y)
-    })
+    window.addEventListener('keydown', this.handleKeyDown)
+    this.canvas.addEventListener('click', this.onCanvasClick)
+    this.canvas.addEventListener('contextmenu', this.onCanvasContextMenu)
+    this.canvas.addEventListener('mousemove', this.onCanvasMouseMove)
   }
 
   private getCanvasCoordinates(event: MouseEvent): { x: number; y: number } {
@@ -116,7 +298,7 @@ export class GameEngine {
     const gameLoop = () => {
       this.update()
       this.render()
-      requestAnimationFrame(gameLoop)
+      this.frameHandle = requestAnimationFrame(gameLoop)
     }
     gameLoop()
   }
@@ -164,11 +346,26 @@ export class GameEngine {
             // Ensure we're at the target position
             player.x = player.targetX
             player.y = player.targetY
+
+            // Arriving on a seat sits you down, the way it does in the games
+            // this borrows from.
+            const seat = findInteractionSpot(
+              this.state.currentRoom?.furniture ?? [],
+              Math.round(player.x),
+              Math.round(player.y),
+              ['sit', 'lay', 'sleep']
+            )
+            if (seat) {
+              player.action = 'sitting'
+              player.actionTimer = 0
+            } else if (player.action === 'sitting') {
+              player.action = 'idle'
+            }
           }
         }
       }
 
-      if (player.action !== 'idle') {
+      if (player.action !== 'idle' && player.action !== 'sitting') {
         player.actionTimer += 16
         if (player.actionTimer >= 3000) {
           player.action = 'idle'
@@ -179,28 +376,43 @@ export class GameEngine {
   }
 
   public render() {
+    // The canvas resizes with its container; pick that up before drawing so the
+    // room stays centred and clicks keep mapping to the right tile.
+    if (
+      this.canvasWidth !== this.canvas.width ||
+      this.canvasHeight !== this.canvas.height
+    ) {
+      this.canvasWidth = this.canvas.width
+      this.canvasHeight = this.canvas.height
+      this.coordinateUtils.updateCanvasSize(this.canvas.width, this.canvas.height)
+      this.applyZoom(this.calculateZoom())
+    }
+
     // Clear canvas
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 
     if (!this.state.currentRoom) return
 
-    // Draw floor tiles
-    this.state.currentRoom.floorTiles.forEach(tile => {
+    // Draw floor tiles back to front, so the 1px lip of the tile in front
+    // covers the one behind it.
+    const floorTiles = [...this.state.currentRoom.floorTiles].sort(
+      (a, b) => a.x + a.y - (b.x + b.y)
+    )
+    floorTiles.forEach(tile => {
       const screenPos = this.coordinateUtils.worldToScreen(tile.x, tile.y)
       const texture = tile.texture || this.state.currentRoom?.floorTexture || 'default'
       this.tileComponent.drawIsometricTile(tile.x, tile.y, '#90EE90', 1, 2, 1, screenPos, texture)
     })
 
-    // Draw walls that follow the current floor layout
-    this.wallComponent.drawRoomWalls(
-      this.state.currentRoom.walls,
-      this.state.currentRoom.doorway
-    )
+    // Every shadow goes down first, in its own pass between the floor and the
+    // objects. Drawn per-object instead, a shadow would fall across whatever
+    // had already been drawn next to it.
+    this.drawShadows()
 
-    // Draw furniture
-    this.state.currentRoom.furniture.forEach(furniture => {
-      this.furnitureComponent.drawFurniture(furniture)
-    })
+    // Furniture and players share one depth-sorted pass; drawing all furniture
+    // and then all players puts a standing guest on top of a wall they are
+    // behind, and a sitter on top of the chair back that should hide them.
+    this.drawSortedScene()
 
     // Draw preview furniture
     if (this.state.previewFurniture) {
@@ -294,17 +506,7 @@ export class GameEngine {
       this.tileComponent.drawPathPreview(path, (x, y) => this.coordinateUtils.worldToScreen(x, y))
     }
 
-    // Draw all players
-    this.state.players.forEach(player => {
-      const screenPos = this.coordinateUtils.worldToScreen(player.x, player.y)
-      const isCurrentPlayer = player.id === this.state.currentPlayerId
-      this.playerComponent.drawPlayer(player, screenPos, isCurrentPlayer)
-      
-      if (player.isMoving) {
-        const targetScreenPos = this.coordinateUtils.worldToScreen(player.targetX, player.targetY)
-        this.tileComponent.drawTargetIndicator(player.targetX, player.targetY, targetScreenPos)
-      }
-    })
+    // Players are drawn inside drawSortedScene(), interleaved with furniture.
   }
 
   private calculateZoom(): number {
@@ -336,7 +538,24 @@ export class GameEngine {
       return this.zoom
     }
 
-    return Math.min(this.maxZoom, Math.max(this.minZoom, desiredZoom))
+    return this.snapZoom(Math.min(this.maxZoom, Math.max(this.minZoom, desiredZoom)))
+  }
+
+  /**
+   * Snap to a scale that keeps the pixel grid intact.
+   *
+   * Nearest-neighbour at 1.2x renders some source pixels one screen pixel wide
+   * and others two, which reads as banding and makes clean sprites look like
+   * low-resolution mush. Only whole multiples - and clean halves below 1:1 -
+   * preserve the grid.
+   */
+  private snapZoom(zoom: number): number {
+    const steps = [0.25, 0.5, 1, 2, 3, 4]
+    let best = steps[0]
+    for (const step of steps) {
+      if (step <= zoom + 1e-6) best = step
+    }
+    return best
   }
 
   private applyZoom(zoom: number) {
@@ -372,14 +591,25 @@ export class GameEngine {
       return false
     }
 
-    // Check wall collision (but allow doorway)
-    if (this.state.currentRoom.walls.some(wall => wall.x === x && wall.y === y)) {
-      return false
-    }
+    // Furniture collision, over the whole footprint. Checking only the origin
+    // tile let players walk through three quarters of a 2x2 table.
+    const blocking = this.state.currentRoom.furniture.find(furniture => {
+      const footprint = this.getFurnitureFootprint(furniture)
+      return (
+        x >= furniture.x &&
+        x < furniture.x + footprint.width &&
+        y >= furniture.y &&
+        y < furniture.y + footprint.height
+      )
+    })
 
-    // Check furniture collision
-    if (this.state.currentRoom.furniture.some(f => f.x === x && f.y === y)) {
-      return false
+    if (blocking) {
+      // A seat is a destination, not an obstacle: you walk onto a chair to sit
+      // on it. Without this the seat offsets could never be reached.
+      const seat = findInteractionSpot([blocking], x, y, ['sit', 'lay', 'sleep'])
+      if (!seat && !blocking.definition.walkable) {
+        return false
+      }
     }
     
     // Check other players
@@ -409,16 +639,20 @@ export class GameEngine {
           gridY,
           this.state.currentPlayerId
         )
-        
-        this.dispatch({ 
-          type: 'MOVE_PLAYER', 
-          payload: { 
-            playerId: this.state.currentPlayerId, 
-            x: gridX, 
-            y: gridY,
-            path: path
-          } 
-        })
+
+        // An unreachable tile yields an empty path. Dispatching it anyway left
+        // the player flagged as moving forever, with nothing to move along.
+        if (path.length > 0) {
+          this.dispatch({
+            type: 'MOVE_PLAYER',
+            payload: {
+              playerId: this.state.currentPlayerId,
+              x: gridX,
+              y: gridY,
+              path: path
+            }
+          })
+        }
       }
     } else if (this.state.currentTool === 'furniture' && this.state.isPlacing && this.state.selectedFurniture) {
       // Handle furniture placement
@@ -439,6 +673,7 @@ export class GameEngine {
             x: gridX,
             y: gridY,
             type: this.state.selectedFurniture,
+            direction: this.state.placementDirection ?? furnitureDefinition.defaultDirection,
             definition: furnitureDefinition
           }
 
@@ -451,6 +686,11 @@ export class GameEngine {
           this.dispatch({
             type: 'SET_PLACING',
             payload: false
+          })
+          // Without this the ghost preview stays behind on the placed tile.
+          this.dispatch({
+            type: 'SET_PREVIEW_FURNITURE',
+            payload: null
           })
           this.dispatch({
             type: 'SELECT_FURNITURE',
@@ -525,7 +765,12 @@ export class GameEngine {
         // Always show preview, but with different styling for invalid positions
         this.dispatch({
           type: 'SET_PREVIEW_FURNITURE',
-          payload: { x: gridX, y: gridY, type: this.state.selectedFurniture }
+          payload: {
+            x: gridX,
+            y: gridY,
+            type: this.state.selectedFurniture,
+            direction: this.state.placementDirection ?? undefined
+          }
         })
       }
     } else if (this.state.currentTool === 'room') {

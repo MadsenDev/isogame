@@ -1,6 +1,6 @@
 import React from 'react'
 import { useGame } from '../context/GameContext'
-import { getAllFurnitureDefinitions } from '../data/furnitureDefinitions'
+import { getAllFurnitureDefinitions, getFurnitureDefinition, getNextDirection } from '../data/furnitureDefinitions'
 
 const Toolbar: React.FC = () => {
   const { state, dispatch, roomManager } = useGame()
@@ -33,21 +33,21 @@ const Toolbar: React.FC = () => {
   return (
     <div className="panel-content">
       <div className="panel-section">
-        <div className="habbo-pill-group" role="tablist">
+        <div className="iso-pill-group" role="tablist">
           <button
-            className={`habbo-pill ${state.currentTool === 'move' ? 'is-active' : ''}`}
+            className={`iso-pill ${state.currentTool === 'move' ? 'is-active' : ''}`}
             onClick={() => handleToolChange('move')}
           >
             Move
           </button>
           <button
-            className={`habbo-pill ${state.currentTool === 'furniture' ? 'is-active' : ''}`}
+            className={`iso-pill ${state.currentTool === 'furniture' ? 'is-active' : ''}`}
             onClick={() => handleToolChange('furniture')}
           >
             Furniture
           </button>
           <button
-            className={`habbo-pill ${state.currentTool === 'room' ? 'is-active' : ''}`}
+            className={`iso-pill ${state.currentTool === 'room' ? 'is-active' : ''}`}
             onClick={() => handleToolChange('room')}
           >
             Rooms
@@ -57,7 +57,7 @@ const Toolbar: React.FC = () => {
 
       {state.currentTool === 'move' && (
         <div className="panel-section">
-          <p className="habbo-window__muted">
+          <p className="iso-window__muted">
             Click anywhere on the floor to stroll around the resort. Hold shift to queue a path.
           </p>
         </div>
@@ -66,14 +66,27 @@ const Toolbar: React.FC = () => {
       {state.currentTool === 'furniture' && (
         <div className="panel-section">
           <h4 className="panel-subtitle">Quick pieces</h4>
-          <div className="habbo-list habbo-list--compact">
+          <div className="iso-list iso-list--compact">
+            {state.selectedFurniture && (
+              <button
+                className="iso-button"
+                onClick={() => {
+                  const definition = getFurnitureDefinition(state.selectedFurniture!)
+                  if (!definition) return
+                  const next = getNextDirection(definition, state.placementDirection ?? undefined)
+                  if (next) dispatch({ type: 'SET_PLACEMENT_DIRECTION', payload: next })
+                }}
+              >
+                Rotate ({state.placementDirection ?? 'default'}) &middot; R
+              </button>
+            )}
             {getAllFurnitureDefinitions().slice(0, 5).map(item => (
               <button
                 key={item.id}
-                className={`habbo-list__item ${state.selectedFurniture === item.id ? 'is-selected' : ''}`}
+                className={`iso-list__item ${state.selectedFurniture === item.id ? 'is-selected' : ''}`}
                 onClick={() => dispatch({ type: 'SELECT_FURNITURE', payload: item.id })}
               >
-                <img className="habbo-list__icon habbo-sprite" src={item.sprite} alt="" />
+                <img className="iso-list__icon iso-sprite" src={item.sprite} alt="" />
                 <span>{item.name}</span>
               </button>
             ))}
@@ -86,24 +99,24 @@ const Toolbar: React.FC = () => {
           <h4 className="panel-subtitle">Floor concierge</h4>
           {state.currentRoom ? (
             <>
-              <p className="habbo-window__muted">
+              <p className="iso-window__muted">
                 Paint floor tiles to your liking. Tiles with guests, furniture or the spawn point stay protected.
               </p>
-              <div className="habbo-stack habbo-stack--gap-sm">
+              <div className="iso-stack iso-stack--gap-sm">
                 <button
-                  className="habbo-button habbo-button--primary"
+                  className="iso-button iso-button--primary"
                   onClick={() => dispatch({ type: 'FILL_ROOM_FLOOR' })}
                 >
                   Fill entire room
                 </button>
                 <button
-                  className="habbo-button habbo-button--ghost"
+                  className="iso-button iso-button--ghost"
                   onClick={() => dispatch({ type: 'CLEAR_ROOM_FLOOR' })}
                 >
                   Clear empty tiles
                 </button>
               </div>
-              <dl className="habbo-stats">
+              <dl className="iso-stats">
                 <div>
                   <dt>Room</dt>
                   <dd>{state.currentRoom.name}</dd>
@@ -113,8 +126,8 @@ const Toolbar: React.FC = () => {
                   <dd>{state.currentRoom.floorTiles.length}</dd>
                 </div>
               </dl>
-              <div className="habbo-grid">
-                <label className="habbo-field">
+              <div className="iso-grid">
+                <label className="iso-field">
                   <span>Width</span>
                   <input
                     type="number"
@@ -124,7 +137,7 @@ const Toolbar: React.FC = () => {
                     onChange={(e) => handleResize('width', parseInt(e.target.value, 10) || state.currentRoom!.width)}
                   />
                 </label>
-                <label className="habbo-field">
+                <label className="iso-field">
                   <span>Height</span>
                   <input
                     type="number"
@@ -137,7 +150,7 @@ const Toolbar: React.FC = () => {
               </div>
             </>
           ) : (
-            <p className="habbo-window__muted">Select a room to begin sculpting its layout.</p>
+            <p className="iso-window__muted">Select a room to begin sculpting its layout.</p>
           )}
         </div>
       )}

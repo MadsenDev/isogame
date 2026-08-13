@@ -16,6 +16,9 @@
 import * as THREE from 'three'
 import { createPixelToonMaterial, MaterialSpec, ShadingConfig } from './materials'
 import { loadModelFile, ModelSource } from './loaders'
+import { Direction, DirectionCount } from './directions'
+
+export type { Direction }
 
 export type Vec3 = [number, number, number]
 
@@ -59,9 +62,6 @@ export interface ConeSpec extends PrimitiveBase {
 
 export type PrimitiveSpec = BoxSpec | CylinderSpec | SphereSpec | ConeSpec
 
-/** Compass names, in the order 90-degree rotations about +Y visit them. */
-export const DIRECTION_CYCLE = ['south', 'west', 'north', 'east'] as const
-export type Direction = (typeof DIRECTION_CYCLE)[number]
 
 export type InteractionType = 'sit' | 'lay' | 'stand' | 'use' | 'dance' | 'sleep'
 
@@ -127,6 +127,11 @@ export interface AssetSpec {
    * by how many times we turned it.
    */
   facing?: Direction
+  /**
+   * How many orientations to render. Four for furniture, which rotates on the
+   * tile grid; eight for characters, which face freely.
+   */
+  directionCount?: DirectionCount
   /** Tiles occupied at rotation 0. */
   footprint: { width: number; height: number }
   /**
@@ -147,6 +152,8 @@ export interface AssetSpec {
   source?: ModelSource
   /** Overrides the default silhouette outline for this asset. */
   outline?: { enabled?: boolean; colour?: string }
+  /** Overrides whether this asset casts a contact shadow. */
+  shadow?: { enabled?: boolean }
   notes?: string
 }
 

@@ -76,6 +76,14 @@ export function packSheet(frames: SpriteFrame[], gap = 1): PackedSheet {
   return { image: { data, width, height }, frames: packed }
 }
 
+export interface ShadowMetadata {
+  file: string
+  width: number
+  height: number
+  anchorX: number
+  anchorY: number
+}
+
 export interface SpriteDirectionMetadata {
   file: string
   index: number
@@ -85,6 +93,8 @@ export interface SpriteDirectionMetadata {
   anchorY: number
   footprint: { width: number; height: number }
   interactions: FrameInteraction[]
+  /** Contact shadow, anchored to the same tile as the frame. */
+  shadow?: ShadowMetadata
 }
 
 export interface SpriteMetadata {
@@ -118,6 +128,15 @@ export function buildMetadata(
       anchorY: frame.anchorY,
       footprint: frame.footprint,
       interactions: frame.interactions,
+      shadow: frame.shadow
+        ? {
+            file: `${frame.direction}-shadow.png`,
+            width: frame.shadow.width,
+            height: frame.shadow.height,
+            anchorX: frame.shadow.anchorX,
+            anchorY: frame.shadow.anchorY,
+          }
+        : undefined,
     }
   }
 
@@ -149,6 +168,37 @@ export function buildMetadata(
  * `sprites` carries every orientation with its anchors and rotated interaction
  * spots for code that wants to rotate furniture.
  */
+/** An interaction in the game's own vocabulary: `positions`, not `spots`. */
+export interface GameInteraction {
+  type: string
+  animation?: string
+  duration: number
+  positions: Array<{
+    x: number
+    y: number
+    direction: string
+    offsetX: number
+    offsetY: number
+    layer: 'front' | 'behind'
+  }>
+}
+
+function toGameInteractions(interactions: FrameInteraction[]): GameInteraction[] {
+  return interactions.map((interaction) => ({
+    type: interaction.type,
+    animation: interaction.animation,
+    duration: interaction.duration,
+    positions: interaction.spots.map((spot) => ({
+      x: spot.x,
+      y: spot.y,
+      direction: spot.direction,
+      offsetX: spot.offsetX,
+      offsetY: spot.offsetY,
+      layer: spot.layer,
+    })),
+  }))
+}
+
 export interface GameFurnitureDefinition {
   id: string
   name: string
@@ -161,21 +211,13 @@ export interface GameFurnitureDefinition {
   stackable: boolean
   rotatable: boolean
   collision: BehaviourSpec['collision']
-  interactions: Array<{
-    type: string
-    animation?: string
-    duration: number
-    positions: Array<{
-      x: number
-      y: number
-      direction: string
-      offsetX: number
-      offsetY: number
-      layer: 'front' | 'behind'
-    }>
-  }>
+  interactions: GameInteraction[]
   defaultDirection: string
-  sprites: Record<string, SpriteDirectionMetadata & { url: string }>
+  sprites: Record<string, Omit<SpriteDirectionMetadata, 'interactions' | 'shadow'> & {
+    url: string
+    interactions: GameInteraction[]
+    shadow?: ShadowMetadata & { url: string }
+  }>
   palette: string[]
 }
 
@@ -197,24 +239,19 @@ export function buildGameDefinition(
     stackable: metadata.behaviour.stackable,
     rotatable: metadata.behaviour.rotatable,
     collision: metadata.behaviour.collision,
-    interactions: defaultFrame.interactions.map((interaction) => ({
-      type: interaction.type,
-      animation: interaction.animation,
-      duration: interaction.duration,
-      positions: interaction.spots.map((spot) => ({
-        x: spot.x,
-        y: spot.y,
-        direction: spot.direction,
-        offsetX: spot.offsetX,
-        offsetY: spot.offsetY,
-        layer: spot.layer,
-      })),
-    })),
+    interactions: toGameInteractions(defaultFrame.interactions),
     defaultDirection: metadata.defaultDirection,
     sprites: Object.fromEntries(
       Object.entries(metadata.directions).map(([direction, frame]) => [
         direction,
-        { ...frame, url: `${basePath}/${metadata.id}/${frame.file}` },
+        {
+          ...frame,
+          url: `${basePath}/${metadata.id}/${frame.file}`,
+          interactions: toGameInteractions(frame.interactions),
+          shadow: frame.shadow
+            ? { ...frame.shadow, url: `${basePath}/${metadata.id}/${frame.shadow.file}` }
+            : undefined,
+        },
       ])
     ),
     palette: metadata.palette,

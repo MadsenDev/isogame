@@ -8,6 +8,8 @@
 
 import * as THREE from 'three'
 import { CATALOG } from './catalog'
+import { STRUCTURES } from './structures'
+import { CharacterSpec, DEFAULT_CHARACTER, poseAsset } from './character'
 import { AssetSpec } from './model'
 import { ModelSource } from './loaders'
 import { PIXELS_PER_UNIT, TILE_HEIGHT, TILE_WIDTH } from './iso'
@@ -73,6 +75,13 @@ export async function renderOne(
     path: `${asset.id}/${frame.direction}.png`,
     dataUrl: toPngDataUrl(frame.image),
   }))
+  for (const frame of rendered.frames) {
+    if (!frame.shadow) continue
+    files.push({
+      path: `${asset.id}/${frame.direction}-shadow.png`,
+      dataUrl: toPngDataUrl(frame.shadow.image),
+    })
+  }
   files.push({ path: `${asset.id}/sheet.png`, dataUrl: toPngDataUrl(sheet.image) })
 
   return {
@@ -137,6 +146,132 @@ export async function renderModelFile(options: ModelFileOptions): Promise<Export
   } finally {
     renderer.dispose()
   }
+}
+
+export interface CharacterFrameMetadata {
+  file: string
+  width: number
+  height: number
+  /** Pixel offset of the tile centre at floor level: where the feet land. */
+  anchorX: number
+  anchorY: number
+  shadow?: { file: string; width: number; height: number; anchorX: number; anchorY: number }
+}
+
+export interface CharacterMetadata {
+  id: string
+  name: string
+  tile: { width: number; height: number }
+  pixelsPerUnit: number
+  palette: string[]
+  directions: string[]
+  /** animation -> direction -> frames, in play order. */
+  animations: Record<string, { frameCount: number; directions: Record<string, CharacterFrameMetadata[]> }>
+}
+
+export interface ExportedCharacter {
+  metadata: CharacterMetadata
+  files: ExportedFile[]
+}
+
+/** Where the game serves character sprites from. */
+export const CHARACTER_BASE_PATH = '/character'
+
+/**
+ * Render every pose of a character, in every direction.
+ *
+ * Each frame is an ordinary asset render, so characters inherit the camera,
+ * shading, palette snapping and anchoring that furniture already uses. The
+ * anchor is the tile centre at floor level, so a guest stands on their tile the
+ * same way a bookshelf does.
+ */
+export async function renderCharacter(
+  character: CharacterSpec = DEFAULT_CHARACTER,
+  config: Partial<RenderConfig> = {}
+): Promise<{ metadata: CharacterMetadata; files: ExportedFile[] }> {
+  const renderer = createRenderer()
+  const merged: RenderConfig = { ...DEFAULT_RENDER_CONFIG, ...config }
+
+  try {
+    const files: ExportedFile[] = []
+    const animations: CharacterMetadata['animations'] = {}
+    const palette = new Set<string>()
+    let directions: string[] = []
+
+    for (const [animation, poses] of Object.entries(character.animations)) {
+      const byDirection: Record<string, CharacterFrameMetadata[]> = {}
+
+      for (const [frameIndex, pose] of poses.entries()) {
+        const rendered = await renderAsset(
+          renderer,
+          poseAsset(character, animation, frameIndex, pose),
+          merged
+        )
+        rendered.palette.forEach((colour) => palette.add(colour))
+        directions = rendered.frames.map((frame) => frame.direction)
+
+        for (const frame of rendered.frames) {
+          const stem = `${animation}/${frame.direction}/frame_${String(frameIndex).padStart(3, '0')}`
+          files.push({ path: `${character.id}/${stem}.png`, dataUrl: toPngDataUrl(frame.image) })
+          if (frame.shadow) {
+            files.push({
+              path: `${character.id}/${stem}-shadow.png`,
+              dataUrl: toPngDataUrl(frame.shadow.image),
+            })
+          }
+          const directionFrames = (byDirection[frame.direction] ??= [])
+          directionFrames[frameIndex] = {
+            file: `${stem}.png`,
+            width: frame.width,
+            height: frame.height,
+            anchorX: frame.anchorX,
+            anchorY: frame.anchorY,
+            shadow: frame.shadow
+              ? {
+                  file: `${stem}-shadow.png`,
+                  width: frame.shadow.width,
+                  height: frame.shadow.height,
+                  anchorX: frame.shadow.anchorX,
+                  anchorY: frame.shadow.anchorY,
+                }
+              : undefined,
+          }
+        }
+      }
+
+      animations[animation] = { frameCount: poses.length, directions: byDirection }
+    }
+
+    return {
+      metadata: {
+        id: character.id,
+        name: character.name,
+        tile: { width: TILE_WIDTH, height: TILE_HEIGHT },
+        pixelsPerUnit: Number(PIXELS_PER_UNIT.toFixed(4)),
+        palette: [...palette],
+        directions,
+        animations,
+      },
+      files,
+    }
+  } finally {
+    renderer.dispose()
+  }
+}
+
+/** Where the game serves room structure sprites from. */
+export const STRUCTURE_BASE_PATH = '/structures'
+
+/**
+ * Render floor tiles and wall panels.
+ *
+ * Structures reuse the furniture path wholesale - same camera, same anchors -
+ * so a wall panel and a lamp hung on it are positioned by identical maths.
+ */
+export async function renderStructures(
+  config: Partial<RenderConfig> = {}
+): Promise<ExportPayload> {
+  return renderAll(config, STRUCTURES)
 }
 
 /** Render the whole catalogue. This is what the CLI calls. */
