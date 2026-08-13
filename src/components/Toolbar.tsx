@@ -1,6 +1,6 @@
 import React from 'react'
 import { useGame } from '../context/GameContext'
-import { getAllFurnitureDefinitions } from '../data/furnitureDefinitions'
+import { getAllFurnitureDefinitions, getFurnitureDefinition, getNextDirection } from '../data/furnitureDefinitions'
 
 const Toolbar: React.FC = () => {
   const { state, dispatch, roomManager } = useGame()
@@ -67,6 +67,19 @@ const Toolbar: React.FC = () => {
         <div className="panel-section">
           <h4 className="panel-subtitle">Quick pieces</h4>
           <div className="habbo-list habbo-list--compact">
+            {state.selectedFurniture && (
+              <button
+                className="habbo-button"
+                onClick={() => {
+                  const definition = getFurnitureDefinition(state.selectedFurniture!)
+                  if (!definition) return
+                  const next = getNextDirection(definition, state.placementDirection ?? undefined)
+                  if (next) dispatch({ type: 'SET_PLACEMENT_DIRECTION', payload: next })
+                }}
+              >
+                Rotate ({state.placementDirection ?? 'default'}) &middot; R
+              </button>
+            )}
             {getAllFurnitureDefinitions().slice(0, 5).map(item => (
               <button
                 key={item.id}

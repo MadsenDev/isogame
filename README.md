@@ -33,8 +33,8 @@ npm run sprites   # rebuild every furniture sprite and definition
 - add and remove floor tiles
 - room styling and customization tools
 - furniture catalog with category filtering
-- furniture placement previews
-- multi-tile furniture footprints
+- furniture placement previews with per-orientation rotation
+- multi-tile furniture footprints and collision
 - collision checks against furniture and players
 - furniture sprite loading with visual fallbacks
 
@@ -44,6 +44,8 @@ npm run sprites   # rebuild every furniture sprite and definition
 - player selection
 - chat interface
 - player actions such as sitting, dancing, and waving
+- walking onto a seat sits the character on it, at the seat height the sprite
+  pipeline measured from the 3D model
 - context-menu interactions
 
 ### Room management
@@ -78,6 +80,7 @@ The current UI exposes the main controls in-app, including:
 | Click | Move the active character / interact with the room |
 | Furniture tool | Select and place room furniture |
 | `Esc` | Cancel the current action |
+| `R` | Rotate the furniture piece being placed |
 | `1`-`4` | Switch active player |
 | `Enter` | Open/use chat |
 
@@ -146,6 +149,11 @@ public/
 ```
 
 The React layer controls application state and tooling, while the canvas engine handles room rendering and pointer/game interactions.
+
+## Roadmap
+
+See [`docs/ROADMAP.md`](docs/ROADMAP.md) for what is planned next and a list of
+known rough edges.
 
 ## Project status
 

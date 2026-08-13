@@ -151,7 +151,9 @@ export interface GameState {
   contextMenuVisible: boolean
   contextMenuTarget: Player | null
   hoverGridPos: { x: number; y: number } | null
-  previewFurniture: { x: number; y: number; type: string } | null
+  previewFurniture: { x: number; y: number; type: string; direction?: FurnitureDirection } | null
+  /** Orientation the next placed piece will use. Null means its default. */
+  placementDirection: FurnitureDirection | null
 }
 
 // Action types
@@ -173,6 +175,7 @@ export type GameAction =
   | { type: 'SET_FLOOR_TEXTURE'; payload: { roomId: string; texture: string } }
   | { type: 'SET_TILE_TEXTURE'; payload: { roomId: string; x: number; y: number; texture: string } }
   | { type: 'ADD_FURNITURE'; payload: Furniture }
+  | { type: 'SET_PLACEMENT_DIRECTION'; payload: FurnitureDirection }
   | { type: 'ADD_PLAYER'; payload: Player }
   | { type: 'SET_CURRENT_PLAYER'; payload: number }
   | { type: 'MOVE_PLAYER'; payload: { playerId: number; x: number; y: number; path: Array<{ x: number; y: number }> } }
@@ -182,7 +185,7 @@ export type GameAction =
   | { type: 'SHOW_CONTEXT_MENU'; payload: { x: number; y: number; player: Player } }
   | { type: 'HIDE_CONTEXT_MENU' }
   | { type: 'SET_HOVER_GRID'; payload: { x: number; y: number } | null }
-  | { type: 'SET_PREVIEW_FURNITURE'; payload: { x: number; y: number; type: string } | null }
+  | { type: 'SET_PREVIEW_FURNITURE'; payload: { x: number; y: number; type: string; direction?: FurnitureDirection } | null }
 
 // Initial state
 const initialState: GameState = {
@@ -199,6 +202,7 @@ const initialState: GameState = {
   contextMenuTarget: null,
   hoverGridPos: null,
   previewFurniture: null,
+  placementDirection: null,
 }
 
 // Reducer
@@ -208,7 +212,12 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       return { ...state, currentTool: action.payload }
     
     case 'SELECT_FURNITURE':
-      return { ...state, selectedFurniture: action.payload, isPlacing: !!action.payload }
+      return {
+        ...state,
+        selectedFurniture: action.payload,
+        isPlacing: !!action.payload,
+        placementDirection: null
+      }
     
     case 'SET_PLACING':
       return { ...state, isPlacing: action.payload }
@@ -484,6 +493,9 @@ function gameReducer(state: GameState, action: GameAction): GameState {
            : state.currentRoom
        }
      }
+
+    case 'SET_PLACEMENT_DIRECTION':
+      return { ...state, placementDirection: action.payload }
 
     case 'ADD_FURNITURE':
       if (!state.currentRoom) return state
@@ -870,6 +882,15 @@ const createRoom = (name: string, width: number, height: number, floorTexture?: 
 // Provider
 export function GameProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(gameReducer, initialState)
+
+  // Dev-only inspection hook. Reading the live room and player state from the
+  // console (or a browser test) beats inferring it from canvas pixels.
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      const debugWindow = window as unknown as { __isogame?: GameState }
+      debugWindow.__isogame = state
+    }
+  }, [state])
 
   // Initialize game with default room and players
   useEffect(() => {

@@ -90,8 +90,17 @@ export class PlayerComponent {
     return player.lastDirection;
   }
 
-  public drawPlayer(player: Player, screenPos: { x: number; y: number }, isCurrentPlayer: boolean) {
-    const direction = this.getCharacterDirection(player)
+  /**
+   * `directionOverride` is used while a player occupies an interaction spot:
+   * a chair decides which way its occupant faces, not their last movement.
+   */
+  public drawPlayer(
+    player: Player,
+    screenPos: { x: number; y: number },
+    isCurrentPlayer: boolean,
+    directionOverride?: string
+  ) {
+    const direction = directionOverride ?? this.getCharacterDirection(player)
     
     this.ctx.save()
     this.ctx.translate(screenPos.x, screenPos.y)

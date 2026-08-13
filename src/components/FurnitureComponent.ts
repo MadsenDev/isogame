@@ -15,6 +15,7 @@ export class FurnitureComponent {
   private tileHeight: number
   private coordinateUtils: CoordinateUtils
   private furnitureSprites: Map<string, HTMLImageElement> = new Map()
+  private pendingSprites: Set<string> = new Set()
   private zoom = 1
 
   constructor(ctx: CanvasRenderingContext2D, tileWidth: number, tileHeight: number, coordinateUtils: CoordinateUtils) {
@@ -57,13 +58,17 @@ export class FurnitureComponent {
         return
       }
 
+      this.pendingSprites.add(url)
+
       const img = new Image()
       img.src = url
       img.onload = () => {
+        this.pendingSprites.delete(url)
         this.furnitureSprites.set(url, img)
         resolve()
       }
       img.onerror = () => {
+        this.pendingSprites.delete(url)
         console.error(`Failed to load furniture sprite: ${url}`)
         reject(new Error(`Failed to load furniture sprite: ${url}`))
       }
@@ -114,7 +119,14 @@ export class FurnitureComponent {
     if (!frame) return false
 
     const image = this.furnitureSprites.get(frame.url)
-    if (!image) return false
+    if (!image) {
+      // Load on demand: nothing in the game preloads furniture, and requiring a
+      // caller to remember to is how every piece ended up as a grey rectangle.
+      if (!this.pendingSprites.has(frame.url)) {
+        this.loadImage(frame.url).catch(() => undefined)
+      }
+      return false
+    }
 
     const screenPos = this.coordinateUtils.worldToScreen(x, y)
     const smoothing = this.ctx.imageSmoothingEnabled

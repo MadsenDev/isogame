@@ -149,6 +149,37 @@ export function buildMetadata(
  * `sprites` carries every orientation with its anchors and rotated interaction
  * spots for code that wants to rotate furniture.
  */
+/** An interaction in the game's own vocabulary: `positions`, not `spots`. */
+export interface GameInteraction {
+  type: string
+  animation?: string
+  duration: number
+  positions: Array<{
+    x: number
+    y: number
+    direction: string
+    offsetX: number
+    offsetY: number
+    layer: 'front' | 'behind'
+  }>
+}
+
+function toGameInteractions(interactions: FrameInteraction[]): GameInteraction[] {
+  return interactions.map((interaction) => ({
+    type: interaction.type,
+    animation: interaction.animation,
+    duration: interaction.duration,
+    positions: interaction.spots.map((spot) => ({
+      x: spot.x,
+      y: spot.y,
+      direction: spot.direction,
+      offsetX: spot.offsetX,
+      offsetY: spot.offsetY,
+      layer: spot.layer,
+    })),
+  }))
+}
+
 export interface GameFurnitureDefinition {
   id: string
   name: string
@@ -161,21 +192,12 @@ export interface GameFurnitureDefinition {
   stackable: boolean
   rotatable: boolean
   collision: BehaviourSpec['collision']
-  interactions: Array<{
-    type: string
-    animation?: string
-    duration: number
-    positions: Array<{
-      x: number
-      y: number
-      direction: string
-      offsetX: number
-      offsetY: number
-      layer: 'front' | 'behind'
-    }>
-  }>
+  interactions: GameInteraction[]
   defaultDirection: string
-  sprites: Record<string, SpriteDirectionMetadata & { url: string }>
+  sprites: Record<string, Omit<SpriteDirectionMetadata, 'interactions'> & {
+    url: string
+    interactions: GameInteraction[]
+  }>
   palette: string[]
 }
 
@@ -197,24 +219,16 @@ export function buildGameDefinition(
     stackable: metadata.behaviour.stackable,
     rotatable: metadata.behaviour.rotatable,
     collision: metadata.behaviour.collision,
-    interactions: defaultFrame.interactions.map((interaction) => ({
-      type: interaction.type,
-      animation: interaction.animation,
-      duration: interaction.duration,
-      positions: interaction.spots.map((spot) => ({
-        x: spot.x,
-        y: spot.y,
-        direction: spot.direction,
-        offsetX: spot.offsetX,
-        offsetY: spot.offsetY,
-        layer: spot.layer,
-      })),
-    })),
+    interactions: toGameInteractions(defaultFrame.interactions),
     defaultDirection: metadata.defaultDirection,
     sprites: Object.fromEntries(
       Object.entries(metadata.directions).map(([direction, frame]) => [
         direction,
-        { ...frame, url: `${basePath}/${metadata.id}/${frame.file}` },
+        {
+          ...frame,
+          url: `${basePath}/${metadata.id}/${frame.file}`,
+          interactions: toGameInteractions(frame.interactions),
+        },
       ])
     ),
     palette: metadata.palette,

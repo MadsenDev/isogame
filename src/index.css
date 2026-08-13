@@ -127,11 +127,13 @@
     cursor: crosshair;
   }
 
+  /* Above .neo-dock: the dock is a launcher, and when a window overlapped it
+     the dock swallowed every click on the window content beneath. */
   .neo-window-layer {
     pointer-events: none;
     position: fixed;
     inset: 0;
-    z-index: 10;
+    z-index: 20;
   }
 
   .floating-window {
@@ -878,7 +880,9 @@
       margin-bottom: 1rem;
     }
 
-    .neo-window-layer {
+    /* Above .neo-dock: the dock is a launcher, and when a window overlapped it
+     the dock swallowed every click on the window content beneath. */
+  .neo-window-layer {
       position: static;
       padding-bottom: 140px;
       overflow-y: auto;
