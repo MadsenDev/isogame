@@ -8,6 +8,7 @@ import { Pathfinder } from '../utils/Pathfinder'
 import { CoordinateUtils } from '../utils/CoordinateUtils'
 import { findInteractionSpot, getFurnitureDefinition, getNextDirection } from '../data/furnitureDefinitions'
 import { notifyView, registerView } from './viewController'
+import { doorwayWall } from '../data/structureSprites'
 
 export class GameEngine {
   private canvas: HTMLCanvasElement
@@ -123,6 +124,17 @@ export class GameEngine {
         draw: () => this.wallComponent.drawWall(wall)
       })
     })
+
+    // The doorway: a wall segment was skipped where the door goes, so the door
+    // panel takes its place and sorts exactly where that segment would have.
+    const door = doorwayWall(this.state.currentRoom.doorway)
+    if (door) {
+      drawables.push({
+        depth: door.x + door.y - 0.5,
+        order: 0,
+        draw: () => this.wallComponent.drawDoor(door.x, door.y, door.edge)
+      })
+    }
 
     // A tile carrying both edges is an inside corner; the post fills the square
     // outside the boundary that neither run reaches. Drawn fractionally further

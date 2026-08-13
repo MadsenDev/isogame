@@ -245,6 +245,112 @@ const WALL_CORNER: AssetSpec = {
 
 STRUCTURES.push(WALL_CORNER)
 
+/**
+ * A doorway: the same wall, with a hole in it.
+ *
+ * Built to the wall's dimensions - same thickness, same face plane, same one
+ * tile long - so it drops into a run without a seam. The opening is tall enough
+ * to walk through, which is what forced WALL_HEIGHT up: at the old height a
+ * guest was taller than the wall containing the door.
+ */
+const DOOR_OPENING_WIDTH = 0.66
+const DOOR_OPENING_HEIGHT = 1.62
+const DOOR_POST_WIDTH = (1 - DOOR_OPENING_WIDTH) / 2
+
+const DOOR: AssetSpec = {
+  id: 'door',
+  name: 'Doorway',
+  facing: 'south',
+  placement: 'wall',
+  footprint: { width: 1, height: 1 },
+  behaviour: { ...STRUCTURE_BEHAVIOUR, category: 'wall', walkable: true },
+  outline: { enabled: false },
+  shadow: { enabled: false },
+  materials: {
+    face: { colour: '#b08152' },
+    skirting: { colour: '#7d5735' },
+    frame: { colour: '#8a5f38' },
+    // Unlit: what is past the door is not in this room's light.
+    beyond: { colour: '#241d2b', unlit: true },
+    threshold: { colour: '#9a7248' },
+  },
+  parts: [
+    // Posts either side of the opening.
+    {
+      type: 'box',
+      size: [WALL_THICKNESS, WALL_HEIGHT, DOOR_POST_WIDTH],
+      position: [-0.5 - WALL_THICKNESS / 2, WALL_HEIGHT / 2, -0.5 + DOOR_POST_WIDTH / 2],
+      material: 'face',
+    },
+    {
+      type: 'box',
+      size: [WALL_THICKNESS, WALL_HEIGHT, DOOR_POST_WIDTH],
+      position: [-0.5 - WALL_THICKNESS / 2, WALL_HEIGHT / 2, 0.5 - DOOR_POST_WIDTH / 2],
+      material: 'face',
+    },
+    // Lintel over the opening.
+    {
+      type: 'box',
+      size: [WALL_THICKNESS, WALL_HEIGHT - DOOR_OPENING_HEIGHT, 1],
+      position: [
+        -0.5 - WALL_THICKNESS / 2,
+        DOOR_OPENING_HEIGHT + (WALL_HEIGHT - DOOR_OPENING_HEIGHT) / 2,
+        0,
+      ],
+      material: 'face',
+    },
+    // Darkness beyond, set behind the wall so the opening reads as a hole
+    // rather than as a painted rectangle.
+    {
+      type: 'box',
+      size: [0.04, DOOR_OPENING_HEIGHT, DOOR_OPENING_WIDTH],
+      position: [-0.5 - WALL_THICKNESS - 0.02, DOOR_OPENING_HEIGHT / 2, 0],
+      material: 'beyond',
+    },
+    // Frame trim, standing slightly proud of the wall face.
+    {
+      type: 'box',
+      size: [WALL_THICKNESS + 0.05, DOOR_OPENING_HEIGHT + 0.08, 0.07],
+      position: [-0.5 - WALL_THICKNESS / 2 + 0.025, (DOOR_OPENING_HEIGHT + 0.08) / 2, -DOOR_OPENING_WIDTH / 2],
+      material: 'frame',
+    },
+    {
+      type: 'box',
+      size: [WALL_THICKNESS + 0.05, DOOR_OPENING_HEIGHT + 0.08, 0.07],
+      position: [-0.5 - WALL_THICKNESS / 2 + 0.025, (DOOR_OPENING_HEIGHT + 0.08) / 2, DOOR_OPENING_WIDTH / 2],
+      material: 'frame',
+    },
+    {
+      type: 'box',
+      size: [WALL_THICKNESS + 0.05, 0.08, DOOR_OPENING_WIDTH + 0.14],
+      position: [-0.5 - WALL_THICKNESS / 2 + 0.025, DOOR_OPENING_HEIGHT + 0.04, 0],
+      material: 'frame',
+    },
+    // Threshold across the floor of the opening.
+    {
+      type: 'box',
+      size: [WALL_THICKNESS + 0.06, 0.03, DOOR_OPENING_WIDTH],
+      position: [-0.5 - WALL_THICKNESS / 2 + 0.03, 0.015, 0],
+      material: 'threshold',
+    },
+    // Skirting continues across the posts only, so the run reads unbroken.
+    {
+      type: 'box',
+      size: [WALL_THICKNESS + 0.03, 0.1, DOOR_POST_WIDTH],
+      position: [-0.5 - WALL_THICKNESS / 2 + 0.015, 0.05, -0.5 + DOOR_POST_WIDTH / 2],
+      material: 'skirting',
+    },
+    {
+      type: 'box',
+      size: [WALL_THICKNESS + 0.03, 0.1, DOOR_POST_WIDTH],
+      position: [-0.5 - WALL_THICKNESS / 2 + 0.015, 0.05, 0.5 - DOOR_POST_WIDTH / 2],
+      material: 'skirting',
+    },
+  ],
+}
+
+STRUCTURES.push(DOOR)
+
 export function findStructure(id: string): AssetSpec | undefined {
   return STRUCTURES.find((structure) => structure.id === id)
 }

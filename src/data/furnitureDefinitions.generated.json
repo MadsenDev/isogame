@@ -1893,9 +1893,9 @@
         "file": "south.png",
         "index": 0,
         "width": 21,
-        "height": 18,
+        "height": 17,
         "anchorX": 19,
-        "anchorY": 50,
+        "anchorY": 62,
         "footprint": {
           "width": 1,
           "height": 1
@@ -1923,9 +1923,9 @@
         "file": "east.png",
         "index": 3,
         "width": 21,
-        "height": 18,
+        "height": 17,
         "anchorX": 2,
-        "anchorY": 50,
+        "anchorY": 62,
         "footprint": {
           "width": 1,
           "height": 1
@@ -1985,7 +1985,7 @@
         "width": 26,
         "height": 29,
         "anchorX": 13,
-        "anchorY": 58,
+        "anchorY": 77,
         "footprint": {
           "width": 1,
           "height": 1
@@ -1995,8 +1995,8 @@
           "file": "south-shadow.png",
           "width": 27,
           "height": 13,
-          "anchorX": -10,
-          "anchorY": 7,
+          "anchorX": -22,
+          "anchorY": 8,
           "url": "/furniture/ceiling_lamp/south-shadow.png"
         },
         "url": "/furniture/ceiling_lamp/south.png"
@@ -2007,7 +2007,7 @@
         "width": 26,
         "height": 29,
         "anchorX": 13,
-        "anchorY": 58,
+        "anchorY": 77,
         "footprint": {
           "width": 1,
           "height": 1
@@ -2017,8 +2017,8 @@
           "file": "west-shadow.png",
           "width": 27,
           "height": 13,
-          "anchorX": -10,
-          "anchorY": 7,
+          "anchorX": -22,
+          "anchorY": 8,
           "url": "/furniture/ceiling_lamp/west-shadow.png"
         },
         "url": "/furniture/ceiling_lamp/west.png"
@@ -2029,7 +2029,7 @@
         "width": 26,
         "height": 29,
         "anchorX": 13,
-        "anchorY": 58,
+        "anchorY": 77,
         "footprint": {
           "width": 1,
           "height": 1
@@ -2039,8 +2039,8 @@
           "file": "north-shadow.png",
           "width": 27,
           "height": 13,
-          "anchorX": -10,
-          "anchorY": 7,
+          "anchorX": -22,
+          "anchorY": 8,
           "url": "/furniture/ceiling_lamp/north-shadow.png"
         },
         "url": "/furniture/ceiling_lamp/north.png"
@@ -2051,7 +2051,7 @@
         "width": 26,
         "height": 29,
         "anchorX": 13,
-        "anchorY": 58,
+        "anchorY": 77,
         "footprint": {
           "width": 1,
           "height": 1
@@ -2061,8 +2061,8 @@
           "file": "east-shadow.png",
           "width": 27,
           "height": 13,
-          "anchorX": -10,
-          "anchorY": 7,
+          "anchorX": -22,
+          "anchorY": 8,
           "url": "/furniture/ceiling_lamp/east-shadow.png"
         },
         "url": "/furniture/ceiling_lamp/east.png"

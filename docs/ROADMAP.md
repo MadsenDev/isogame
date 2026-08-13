@@ -17,6 +17,9 @@ for us.** See [`tools/sprite-factory`](../tools/sprite-factory).
 - **Walls and floors through the factory.** Floor tiles and wall panels are
   generated, walls belong to a tile edge instead of a phantom tile outside the
   room, and they join the depth-sorted pass so you can walk behind one.
+- **Doorways.** A generated door panel replaces the bare gap. Adding it forced
+  WALL_HEIGHT up: at the old height a guest was taller than the wall, so no
+  opening could be tall enough to walk through.
 - **Contact shadows.** Generated from the geometry in a second render pass and
   drawn in their own pass between the floor and the objects.
 - **Panel contents rebuilt.** Catalog, styling and rooms share one set of panel
@@ -29,8 +32,8 @@ for us.** See [`tools/sprite-factory`](../tools/sprite-factory).
 
 ### 1. Expand the catalogue
 
-Pure content, no engine work: doors, windows, shelving, seating variants, more
-plants and lighting. Also the honest stress test of whether authoring furniture
+Pure content, no engine work: windows, shelving, seating variants, more plants
+and lighting. Also the honest stress test of whether authoring furniture
 as primitives actually scales past ten pieces, or whether it needs a visual
 editor.
 
@@ -51,8 +54,6 @@ Found while wiring up the pipeline, not yet fixed:
 - **No multi-tile furniture preview.** The placement preview draws the sprite,
   but the validity highlight only tints the origin tile.
 - **Room persistence.** Furniture is lost on reload; there is no serialisation.
-- **Doorways are a plain gap.** The old wall code drew a door frame; the new one
-  simply omits that segment. A generated door asset would close this.
 - **`tileset.jpg` is now only a fallback.** Floors use generated sprites; the
   skewed-tilesheet path remains until they load.
 
