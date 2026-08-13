@@ -8,6 +8,7 @@ interface RoomManagerProps {
   onRoomCreate: (name: string, width: number, height: number) => void
   onRoomDelete: (roomId: string) => void
   onRoomRename: (roomId: string, newName: string) => void
+  onResetWorld?: () => void
 }
 
 export const RoomManager: React.FC<RoomManagerProps> = ({
@@ -16,7 +17,8 @@ export const RoomManager: React.FC<RoomManagerProps> = ({
   onRoomSelect,
   onRoomCreate,
   onRoomDelete,
-  onRoomRename
+  onRoomRename,
+  onResetWorld
 }) => {
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [newRoomName, setNewRoomName] = useState('')
@@ -181,6 +183,17 @@ export const RoomManager: React.FC<RoomManagerProps> = ({
       <button className="iso-button iso-button--ghost iso-button--full" onClick={() => setShowExport(v => !v)}>
         {showExport ? 'Hide layout JSON' : 'Export layout JSON'}
       </button>
+
+      {onResetWorld && (
+        <button
+          className="iso-button iso-button--ghost iso-button--full"
+          onClick={() => {
+            if (window.confirm('Discard every saved room and start again?')) onResetWorld()
+          }}
+        >
+          Reset saved rooms
+        </button>
+      )}
 
       {showExport && currentRoom && (
         <div className="iso-form">

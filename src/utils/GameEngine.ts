@@ -9,6 +9,7 @@ import { CoordinateUtils } from '../utils/CoordinateUtils'
 import { findInteractionSpot, getFurnitureDefinition, getNextDirection } from '../data/furnitureDefinitions'
 import { notifyView, registerView } from './viewController'
 import { doorwayWall } from '../data/structureSprites'
+import { createId } from '../persistence/serialise'
 
 export class GameEngine {
   private canvas: HTMLCanvasElement
@@ -803,7 +804,7 @@ export class GameEngine {
         const furnitureDefinition = this.getFurnitureDefinition(this.state.selectedFurniture)
         if (furnitureDefinition) {
           const furniture = {
-            id: `furniture-${Date.now()}`,
+            id: createId('furniture'),
             x: gridX,
             y: gridY,
             type: this.state.selectedFurniture,

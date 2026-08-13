@@ -142,6 +142,7 @@ function AppShell() {
                   onRoomCreate={roomManager.createRoom}
                   onRoomDelete={roomManager.deleteRoom}
                   onRoomRename={roomManager.renameRoom}
+                  onResetWorld={roomManager.resetWorld}
                 />
               )}
             </div>
