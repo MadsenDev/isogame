@@ -76,6 +76,14 @@ export function packSheet(frames: SpriteFrame[], gap = 1): PackedSheet {
   return { image: { data, width, height }, frames: packed }
 }
 
+export interface ShadowMetadata {
+  file: string
+  width: number
+  height: number
+  anchorX: number
+  anchorY: number
+}
+
 export interface SpriteDirectionMetadata {
   file: string
   index: number
@@ -85,6 +93,8 @@ export interface SpriteDirectionMetadata {
   anchorY: number
   footprint: { width: number; height: number }
   interactions: FrameInteraction[]
+  /** Contact shadow, anchored to the same tile as the frame. */
+  shadow?: ShadowMetadata
 }
 
 export interface SpriteMetadata {
@@ -118,6 +128,15 @@ export function buildMetadata(
       anchorY: frame.anchorY,
       footprint: frame.footprint,
       interactions: frame.interactions,
+      shadow: frame.shadow
+        ? {
+            file: `${frame.direction}-shadow.png`,
+            width: frame.shadow.width,
+            height: frame.shadow.height,
+            anchorX: frame.shadow.anchorX,
+            anchorY: frame.shadow.anchorY,
+          }
+        : undefined,
     }
   }
 
@@ -194,9 +213,10 @@ export interface GameFurnitureDefinition {
   collision: BehaviourSpec['collision']
   interactions: GameInteraction[]
   defaultDirection: string
-  sprites: Record<string, Omit<SpriteDirectionMetadata, 'interactions'> & {
+  sprites: Record<string, Omit<SpriteDirectionMetadata, 'interactions' | 'shadow'> & {
     url: string
     interactions: GameInteraction[]
+    shadow?: ShadowMetadata & { url: string }
   }>
   palette: string[]
 }
@@ -228,6 +248,9 @@ export function buildGameDefinition(
           ...frame,
           url: `${basePath}/${metadata.id}/${frame.file}`,
           interactions: toGameInteractions(frame.interactions),
+          shadow: frame.shadow
+            ? { ...frame.shadow, url: `${basePath}/${metadata.id}/${frame.shadow.file}` }
+            : undefined,
         },
       ])
     ),

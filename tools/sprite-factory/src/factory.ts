@@ -75,6 +75,13 @@ export async function renderOne(
     path: `${asset.id}/${frame.direction}.png`,
     dataUrl: toPngDataUrl(frame.image),
   }))
+  for (const frame of rendered.frames) {
+    if (!frame.shadow) continue
+    files.push({
+      path: `${asset.id}/${frame.direction}-shadow.png`,
+      dataUrl: toPngDataUrl(frame.shadow.image),
+    })
+  }
   files.push({ path: `${asset.id}/sheet.png`, dataUrl: toPngDataUrl(sheet.image) })
 
   return {
@@ -148,6 +155,7 @@ export interface CharacterFrameMetadata {
   /** Pixel offset of the tile centre at floor level: where the feet land. */
   anchorX: number
   anchorY: number
+  shadow?: { file: string; width: number; height: number; anchorX: number; anchorY: number }
 }
 
 export interface CharacterMetadata {
@@ -203,14 +211,30 @@ export async function renderCharacter(
         directions = rendered.frames.map((frame) => frame.direction)
 
         for (const frame of rendered.frames) {
-          const file = `${animation}/${frame.direction}/frame_${String(frameIndex).padStart(3, '0')}.png`
-          files.push({ path: `${character.id}/${file}`, dataUrl: toPngDataUrl(frame.image) })
-          ;(byDirection[frame.direction] ??= [])[frameIndex] = {
-            file,
+          const stem = `${animation}/${frame.direction}/frame_${String(frameIndex).padStart(3, '0')}`
+          files.push({ path: `${character.id}/${stem}.png`, dataUrl: toPngDataUrl(frame.image) })
+          if (frame.shadow) {
+            files.push({
+              path: `${character.id}/${stem}-shadow.png`,
+              dataUrl: toPngDataUrl(frame.shadow.image),
+            })
+          }
+          const directionFrames = (byDirection[frame.direction] ??= [])
+          directionFrames[frameIndex] = {
+            file: `${stem}.png`,
             width: frame.width,
             height: frame.height,
             anchorX: frame.anchorX,
             anchorY: frame.anchorY,
+            shadow: frame.shadow
+              ? {
+                  file: `${stem}-shadow.png`,
+                  width: frame.shadow.width,
+                  height: frame.shadow.height,
+                  anchorX: frame.shadow.anchorX,
+                  anchorY: frame.shadow.anchorY,
+                }
+              : undefined,
           }
         }
       }

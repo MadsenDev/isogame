@@ -28,6 +28,14 @@ export const CHARACTER_DIRECTIONS = [
 
 export type CharacterDirection = (typeof CHARACTER_DIRECTIONS)[number]
 
+export interface CharacterShadow {
+  file: string
+  width: number
+  height: number
+  anchorX: number
+  anchorY: number
+}
+
 export interface CharacterFrame {
   /** Path within the character's directory. */
   file: string
@@ -36,6 +44,7 @@ export interface CharacterFrame {
   /** Pixel offset of the tile centre at floor level: where the feet land. */
   anchorX: number
   anchorY: number
+  shadow?: CharacterShadow
 }
 
 export interface CharacterAnimation {
@@ -68,6 +77,8 @@ export function getCharacter(id: string = DEFAULT_CHARACTER_ID): CharacterMetada
 
 export interface ResolvedCharacterFrame extends CharacterFrame {
   url: string
+  /** Absolute URL of the contact shadow, when the frame has one. */
+  shadowUrl?: string
 }
 
 /**
@@ -92,7 +103,13 @@ export function getCharacterFrame(
   if (!frames || frames.length === 0) return null
 
   const resolved = frames[((frame % frames.length) + frames.length) % frames.length]
-  return { ...resolved, url: `${sprites.basePath}/${characterId}/${resolved.file}` }
+  return {
+    ...resolved,
+    url: `${sprites.basePath}/${characterId}/${resolved.file}`,
+    shadowUrl: resolved.shadow
+      ? `${sprites.basePath}/${characterId}/${resolved.shadow.file}`
+      : undefined
+  }
 }
 
 /** Every frame URL, for preloading. */
@@ -102,7 +119,10 @@ export function getAllCharacterFrameUrls(characterId: string = DEFAULT_CHARACTER
 
   return Object.values(character.animations).flatMap(clip =>
     Object.values(clip.directions).flatMap(frames =>
-      frames.map(frame => `${sprites.basePath}/${characterId}/${frame.file}`)
+      frames.flatMap(frame => {
+        const base = `${sprites.basePath}/${characterId}/`
+        return frame.shadow ? [base + frame.file, base + frame.shadow.file] : [base + frame.file]
+      })
     )
   )
 }

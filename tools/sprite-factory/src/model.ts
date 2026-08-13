@@ -152,6 +152,8 @@ export interface AssetSpec {
   source?: ModelSource
   /** Overrides the default silhouette outline for this asset. */
   outline?: { enabled?: boolean; colour?: string }
+  /** Overrides whether this asset casts a contact shadow. */
+  shadow?: { enabled?: boolean }
   notes?: string
 }
 

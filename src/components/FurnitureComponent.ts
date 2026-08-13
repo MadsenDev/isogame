@@ -45,7 +45,9 @@ export class FurnitureComponent {
   /** Load every rendered orientation of a piece, so rotation never stutters. */
   private loadFurnitureSprite(definition: FurnitureDefinition): Promise<void> {
     const urls = definition.sprites
-      ? Object.values(definition.sprites).map(sprite => sprite.url)
+      ? Object.values(definition.sprites).flatMap(sprite =>
+          sprite.shadow ? [sprite.url, sprite.shadow.url] : [sprite.url]
+        )
       : [definition.sprite]
 
     return Promise.all(urls.map(url => this.loadImage(url))).then(() => undefined)
@@ -89,6 +91,41 @@ export class FurnitureComponent {
 
   private getFurnitureDefinition(type: string): FurnitureDefinition | null {
     return getFurnitureDefinition(type)
+  }
+
+  /**
+   * Draw a piece's contact shadow.
+   *
+   * Separate from drawFurniture so the engine can put every shadow in one pass
+   * just above the floor. Drawn inline with each object instead, a shadow would
+   * land on top of whatever was drawn before it.
+   */
+  public drawShadow(furniture: Furniture) {
+    const definition = furniture.definition
+    const frame = this.getSprite(definition, furniture.direction)
+    const shadow = frame?.shadow
+    if (!shadow) return
+
+    const image = this.furnitureSprites.get(shadow.url)
+    if (!image) {
+      if (!this.pendingSprites.has(shadow.url)) {
+        this.loadImage(shadow.url).catch(() => undefined)
+      }
+      return
+    }
+
+    const screenPos = this.coordinateUtils.worldToScreen(furniture.x, furniture.y)
+    const smoothing = this.ctx.imageSmoothingEnabled
+
+    this.ctx.imageSmoothingEnabled = false
+    this.ctx.drawImage(
+      image,
+      Math.round(screenPos.x - shadow.anchorX * this.zoom),
+      Math.round(screenPos.y - shadow.anchorY * this.zoom),
+      Math.round(shadow.width * this.zoom),
+      Math.round(shadow.height * this.zoom)
+    )
+    this.ctx.imageSmoothingEnabled = smoothing
   }
 
   public drawFurniture(furniture: Furniture) {

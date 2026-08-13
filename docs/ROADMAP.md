@@ -17,6 +17,8 @@ for us.** See [`tools/sprite-factory`](../tools/sprite-factory).
 - **Walls and floors through the factory.** Floor tiles and wall panels are
   generated, walls belong to a tile edge instead of a phantom tile outside the
   room, and they join the depth-sorted pass so you can walk behind one.
+- **Contact shadows.** Generated from the geometry in a second render pass and
+  drawn in their own pass between the floor and the objects.
 - **Pixel-perfect rendering.** The canvas backing store matches its displayed
   size and zoom snaps to whole multiples, so sprites are never resampled.
 

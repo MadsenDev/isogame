@@ -1,7 +1,7 @@
 {
   "generator": {
     "version": 1,
-    "renderedAt": "2026-08-13T19:37:22.936Z",
+    "renderedAt": "2026-08-13T19:42:35.058Z",
     "config": {
       "supersample": 4,
       "padding": 2,
@@ -12,6 +12,12 @@
       "paletteSnap": true,
       "extraPalette": [],
       "alphaCutoff": 128,
+      "shadow": {
+        "enabled": true,
+        "colour": "#2a2233",
+        "alpha": 0.34,
+        "cutoff": 110
+      },
       "shading": {
         "light": [
           -0.3,
@@ -96,15 +102,22 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "south-shadow.png",
+            "width": 42,
+            "height": 17,
+            "anchorX": 13,
+            "anchorY": 9
+          }
         },
         "west": {
           "file": "west.png",
           "index": 1,
-          "width": 34,
-          "height": 49,
-          "anchorX": 17,
-          "anchorY": 42,
+          "width": 1,
+          "height": 1,
+          "anchorX": 19,
+          "anchorY": 51,
           "footprint": {
             "width": 1,
             "height": 1
@@ -125,15 +138,22 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "west-shadow.png",
+            "width": 42,
+            "height": 17,
+            "anchorX": 13,
+            "anchorY": 9
+          }
         },
         "north": {
           "file": "north.png",
           "index": 2,
-          "width": 34,
-          "height": 49,
-          "anchorX": 17,
-          "anchorY": 42,
+          "width": 1,
+          "height": 1,
+          "anchorX": 19,
+          "anchorY": 51,
           "footprint": {
             "width": 1,
             "height": 1
@@ -154,15 +174,22 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "north-shadow.png",
+            "width": 53,
+            "height": 17,
+            "anchorX": 13,
+            "anchorY": 9
+          }
         },
         "east": {
           "file": "east.png",
           "index": 3,
-          "width": 34,
-          "height": 55,
-          "anchorX": 17,
-          "anchorY": 48,
+          "width": 1,
+          "height": 1,
+          "anchorX": 19,
+          "anchorY": 51,
           "footprint": {
             "width": 1,
             "height": 1
@@ -183,12 +210,19 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "east-shadow.png",
+            "width": 53,
+            "height": 17,
+            "anchorX": 13,
+            "anchorY": 9
+          }
         }
       },
       "sheet": {
         "file": "sheet.png",
-        "width": 139,
+        "width": 40,
         "height": 55,
         "frames": [
           {
@@ -210,10 +244,10 @@
             "index": 1,
             "x": 35,
             "y": 0,
-            "width": 34,
-            "height": 49,
-            "anchorX": 17,
-            "anchorY": 42,
+            "width": 1,
+            "height": 1,
+            "anchorX": 19,
+            "anchorY": 51,
             "footprint": {
               "width": 1,
               "height": 1
@@ -222,12 +256,12 @@
           {
             "direction": "north",
             "index": 2,
-            "x": 70,
+            "x": 37,
             "y": 0,
-            "width": 34,
-            "height": 49,
-            "anchorX": 17,
-            "anchorY": 42,
+            "width": 1,
+            "height": 1,
+            "anchorX": 19,
+            "anchorY": 51,
             "footprint": {
               "width": 1,
               "height": 1
@@ -236,12 +270,12 @@
           {
             "direction": "east",
             "index": 3,
-            "x": 105,
+            "x": 39,
             "y": 0,
-            "width": 34,
-            "height": 55,
-            "anchorX": 17,
-            "anchorY": 48,
+            "width": 1,
+            "height": 1,
+            "anchorX": 19,
+            "anchorY": 51,
             "footprint": {
               "width": 1,
               "height": 1
@@ -325,15 +359,22 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "east-shadow.png",
+            "width": 102,
+            "height": 44,
+            "anchorX": 26,
+            "anchorY": 14
+          }
         },
         "south": {
           "file": "south.png",
           "index": 1,
-          "width": 87,
-          "height": 73,
-          "anchorX": 59,
-          "anchorY": 43,
+          "width": 86,
+          "height": 55,
+          "anchorX": 58,
+          "anchorY": 25,
           "footprint": {
             "width": 1,
             "height": 2
@@ -362,15 +403,22 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "south-shadow.png",
+            "width": 98,
+            "height": 44,
+            "anchorX": 57,
+            "anchorY": 14
+          }
         },
         "west": {
           "file": "west.png",
           "index": 2,
-          "width": 87,
-          "height": 66,
-          "anchorX": 27,
-          "anchorY": 37,
+          "width": 86,
+          "height": 54,
+          "anchorX": 26,
+          "anchorY": 25,
           "footprint": {
             "width": 2,
             "height": 1
@@ -399,15 +447,22 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "west-shadow.png",
+            "width": 98,
+            "height": 44,
+            "anchorX": 25,
+            "anchorY": 15
+          }
         },
         "north": {
           "file": "north.png",
           "index": 3,
-          "width": 87,
-          "height": 66,
+          "width": 86,
+          "height": 54,
           "anchorX": 60,
-          "anchorY": 37,
+          "anchorY": 25,
           "footprint": {
             "width": 1,
             "height": 2
@@ -436,12 +491,19 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "north-shadow.png",
+            "width": 102,
+            "height": 44,
+            "anchorX": 58,
+            "anchorY": 15
+          }
         }
       },
       "sheet": {
         "file": "sheet.png",
-        "width": 351,
+        "width": 348,
         "height": 73,
         "frames": [
           {
@@ -463,10 +525,10 @@
             "index": 1,
             "x": 88,
             "y": 0,
-            "width": 87,
-            "height": 73,
-            "anchorX": 59,
-            "anchorY": 43,
+            "width": 86,
+            "height": 55,
+            "anchorX": 58,
+            "anchorY": 25,
             "footprint": {
               "width": 1,
               "height": 2
@@ -475,12 +537,12 @@
           {
             "direction": "west",
             "index": 2,
-            "x": 176,
+            "x": 175,
             "y": 0,
-            "width": 87,
-            "height": 66,
-            "anchorX": 27,
-            "anchorY": 37,
+            "width": 86,
+            "height": 54,
+            "anchorX": 26,
+            "anchorY": 25,
             "footprint": {
               "width": 2,
               "height": 1
@@ -489,12 +551,12 @@
           {
             "direction": "north",
             "index": 3,
-            "x": 264,
+            "x": 262,
             "y": 0,
-            "width": 87,
-            "height": 66,
+            "width": 86,
+            "height": 54,
             "anchorX": 60,
-            "anchorY": 37,
+            "anchorY": 25,
             "footprint": {
               "width": 1,
               "height": 2
@@ -597,14 +659,21 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "south-shadow.png",
+            "width": 97,
+            "height": 45,
+            "anchorX": 28,
+            "anchorY": 15
+          }
         },
         "west": {
           "file": "west.png",
           "index": 1,
-          "width": 91,
-          "height": 63,
-          "anchorX": 62,
+          "width": 84,
+          "height": 52,
+          "anchorX": 57,
           "anchorY": 33,
           "footprint": {
             "width": 1,
@@ -649,14 +718,21 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "west-shadow.png",
+            "width": 98,
+            "height": 46,
+            "anchorX": 60,
+            "anchorY": 15
+          }
         },
         "north": {
           "file": "north.png",
           "index": 2,
-          "width": 91,
-          "height": 63,
-          "anchorX": 29,
+          "width": 84,
+          "height": 52,
+          "anchorX": 27,
           "anchorY": 33,
           "footprint": {
             "width": 2,
@@ -701,15 +777,22 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "north-shadow.png",
+            "width": 103,
+            "height": 46,
+            "anchorX": 28,
+            "anchorY": 15
+          }
         },
         "east": {
           "file": "east.png",
           "index": 3,
-          "width": 91,
-          "height": 68,
-          "anchorX": 61,
-          "anchorY": 38,
+          "width": 84,
+          "height": 50,
+          "anchorX": 59,
+          "anchorY": 30,
           "footprint": {
             "width": 1,
             "height": 2
@@ -753,12 +836,19 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "east-shadow.png",
+            "width": 103,
+            "height": 45,
+            "anchorX": 60,
+            "anchorY": 15
+          }
         }
       },
       "sheet": {
         "file": "sheet.png",
-        "width": 367,
+        "width": 346,
         "height": 68,
         "frames": [
           {
@@ -780,9 +870,9 @@
             "index": 1,
             "x": 92,
             "y": 0,
-            "width": 91,
-            "height": 63,
-            "anchorX": 62,
+            "width": 84,
+            "height": 52,
+            "anchorX": 57,
             "anchorY": 33,
             "footprint": {
               "width": 1,
@@ -792,11 +882,11 @@
           {
             "direction": "north",
             "index": 2,
-            "x": 184,
+            "x": 177,
             "y": 0,
-            "width": 91,
-            "height": 63,
-            "anchorX": 29,
+            "width": 84,
+            "height": 52,
+            "anchorX": 27,
             "anchorY": 33,
             "footprint": {
               "width": 2,
@@ -806,12 +896,12 @@
           {
             "direction": "east",
             "index": 3,
-            "x": 276,
+            "x": 262,
             "y": 0,
-            "width": 91,
-            "height": 68,
-            "anchorX": 61,
-            "anchorY": 38,
+            "width": 84,
+            "height": 50,
+            "anchorX": 59,
+            "anchorY": 30,
             "footprint": {
               "width": 1,
               "height": 2
@@ -908,13 +998,20 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "south-shadow.png",
+            "width": 125,
+            "height": 59,
+            "anchorX": 51,
+            "anchorY": 14
+          }
         },
         "west": {
           "file": "west.png",
           "index": 1,
           "width": 116,
-          "height": 82,
+          "height": 63,
           "anchorX": 58,
           "anchorY": 40,
           "footprint": {
@@ -961,13 +1058,20 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "west-shadow.png",
+            "width": 125,
+            "height": 59,
+            "anchorX": 51,
+            "anchorY": 14
+          }
         },
         "north": {
           "file": "north.png",
           "index": 2,
           "width": 116,
-          "height": 82,
+          "height": 63,
           "anchorX": 58,
           "anchorY": 40,
           "footprint": {
@@ -1014,13 +1118,20 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "north-shadow.png",
+            "width": 125,
+            "height": 59,
+            "anchorX": 51,
+            "anchorY": 14
+          }
         },
         "east": {
           "file": "east.png",
           "index": 3,
           "width": 116,
-          "height": 82,
+          "height": 63,
           "anchorX": 58,
           "anchorY": 40,
           "footprint": {
@@ -1067,7 +1178,14 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "east-shadow.png",
+            "width": 125,
+            "height": 59,
+            "anchorX": 51,
+            "anchorY": 14
+          }
         }
       },
       "sheet": {
@@ -1095,7 +1213,7 @@
             "x": 117,
             "y": 0,
             "width": 116,
-            "height": 82,
+            "height": 63,
             "anchorX": 58,
             "anchorY": 40,
             "footprint": {
@@ -1109,7 +1227,7 @@
             "x": 234,
             "y": 0,
             "width": 116,
-            "height": 82,
+            "height": 63,
             "anchorX": 58,
             "anchorY": 40,
             "footprint": {
@@ -1123,7 +1241,7 @@
             "x": 351,
             "y": 0,
             "width": 116,
-            "height": 82,
+            "height": 63,
             "anchorX": 58,
             "anchorY": 40,
             "footprint": {
@@ -1203,7 +1321,14 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "south-shadow.png",
+            "width": 153,
+            "height": 78,
+            "anchorX": 60,
+            "anchorY": 15
+          }
         },
         "west": {
           "file": "west.png",
@@ -1240,7 +1365,14 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "west-shadow.png",
+            "width": 153,
+            "height": 78,
+            "anchorX": 92,
+            "anchorY": 15
+          }
         },
         "north": {
           "file": "north.png",
@@ -1277,7 +1409,14 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "north-shadow.png",
+            "width": 153,
+            "height": 78,
+            "anchorX": 60,
+            "anchorY": 15
+          }
         },
         "east": {
           "file": "east.png",
@@ -1314,7 +1453,14 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "east-shadow.png",
+            "width": 153,
+            "height": 78,
+            "anchorX": 92,
+            "anchorY": 15
+          }
         }
       },
       "sheet": {
@@ -1437,51 +1583,79 @@
             "width": 1,
             "height": 1
           },
-          "interactions": []
+          "interactions": [],
+          "shadow": {
+            "file": "south-shadow.png",
+            "width": 39,
+            "height": 17,
+            "anchorX": 7,
+            "anchorY": 9
+          }
         },
         "west": {
           "file": "west.png",
           "index": 1,
-          "width": 33,
-          "height": 47,
-          "anchorX": 16,
-          "anchorY": 43,
+          "width": 28,
+          "height": 29,
+          "anchorX": 11,
+          "anchorY": 37,
           "footprint": {
             "width": 1,
             "height": 1
           },
-          "interactions": []
+          "interactions": [],
+          "shadow": {
+            "file": "west-shadow.png",
+            "width": 41,
+            "height": 13,
+            "anchorX": 7,
+            "anchorY": 7
+          }
         },
         "north": {
           "file": "north.png",
           "index": 2,
-          "width": 26,
-          "height": 47,
-          "anchorX": 13,
-          "anchorY": 43,
+          "width": 22,
+          "height": 31,
+          "anchorX": 11,
+          "anchorY": 39,
           "footprint": {
             "width": 1,
             "height": 1
           },
-          "interactions": []
+          "interactions": [],
+          "shadow": {
+            "file": "north-shadow.png",
+            "width": 39,
+            "height": 16,
+            "anchorX": 7,
+            "anchorY": 9
+          }
         },
         "east": {
           "file": "east.png",
           "index": 3,
-          "width": 33,
-          "height": 47,
+          "width": 28,
+          "height": 26,
           "anchorX": 17,
-          "anchorY": 43,
+          "anchorY": 34,
           "footprint": {
             "width": 1,
             "height": 1
           },
-          "interactions": []
+          "interactions": [],
+          "shadow": {
+            "file": "east-shadow.png",
+            "width": 41,
+            "height": 13,
+            "anchorX": 7,
+            "anchorY": 7
+          }
         }
       },
       "sheet": {
         "file": "sheet.png",
-        "width": 121,
+        "width": 107,
         "height": 47,
         "frames": [
           {
@@ -1503,10 +1677,10 @@
             "index": 1,
             "x": 27,
             "y": 0,
-            "width": 33,
-            "height": 47,
-            "anchorX": 16,
-            "anchorY": 43,
+            "width": 28,
+            "height": 29,
+            "anchorX": 11,
+            "anchorY": 37,
             "footprint": {
               "width": 1,
               "height": 1
@@ -1515,12 +1689,12 @@
           {
             "direction": "north",
             "index": 2,
-            "x": 61,
+            "x": 56,
             "y": 0,
-            "width": 26,
-            "height": 47,
-            "anchorX": 13,
-            "anchorY": 43,
+            "width": 22,
+            "height": 31,
+            "anchorX": 11,
+            "anchorY": 39,
             "footprint": {
               "width": 1,
               "height": 1
@@ -1529,12 +1703,12 @@
           {
             "direction": "east",
             "index": 3,
-            "x": 88,
+            "x": 79,
             "y": 0,
-            "width": 33,
-            "height": 47,
+            "width": 28,
+            "height": 26,
             "anchorX": 17,
-            "anchorY": 43,
+            "anchorY": 34,
             "footprint": {
               "width": 1,
               "height": 1
@@ -1607,7 +1781,14 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "south-shadow.png",
+            "width": 48,
+            "height": 12,
+            "anchorX": 10,
+            "anchorY": 7
+          }
         },
         "west": {
           "file": "west.png",
@@ -1636,7 +1817,14 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "west-shadow.png",
+            "width": 48,
+            "height": 12,
+            "anchorX": 10,
+            "anchorY": 7
+          }
         },
         "north": {
           "file": "north.png",
@@ -1665,7 +1853,14 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "north-shadow.png",
+            "width": 48,
+            "height": 12,
+            "anchorX": 10,
+            "anchorY": 7
+          }
         },
         "east": {
           "file": "east.png",
@@ -1694,7 +1889,14 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "east-shadow.png",
+            "width": 48,
+            "height": 12,
+            "anchorX": 10,
+            "anchorY": 7
+          }
         }
       },
       "sheet": {
@@ -1800,8 +2002,7 @@
         "#cbaf90",
         "#f0ede6",
         "#c19e69",
-        "#bf8865",
-        "#b07a42"
+        "#bf8865"
       ],
       "directions": {
         "south": {
@@ -1831,7 +2032,14 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "south-shadow.png",
+            "width": 72,
+            "height": 21,
+            "anchorX": 18,
+            "anchorY": 11
+          }
         },
         "west": {
           "file": "west.png",
@@ -1860,7 +2068,14 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "west-shadow.png",
+            "width": 72,
+            "height": 21,
+            "anchorX": 18,
+            "anchorY": 11
+          }
         },
         "north": {
           "file": "north.png",
@@ -1889,7 +2104,14 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "north-shadow.png",
+            "width": 72,
+            "height": 21,
+            "anchorX": 18,
+            "anchorY": 11
+          }
         },
         "east": {
           "file": "east.png",
@@ -1918,7 +2140,14 @@
                 }
               ]
             }
-          ]
+          ],
+          "shadow": {
+            "file": "east-shadow.png",
+            "width": 72,
+            "height": 21,
+            "anchorX": 18,
+            "anchorY": 11
+          }
         }
       },
       "sheet": {
@@ -2162,7 +2391,14 @@
             "width": 1,
             "height": 1
           },
-          "interactions": []
+          "interactions": [],
+          "shadow": {
+            "file": "south-shadow.png",
+            "width": 27,
+            "height": 13,
+            "anchorX": -10,
+            "anchorY": 7
+          }
         },
         "west": {
           "file": "west.png",
@@ -2175,7 +2411,14 @@
             "width": 1,
             "height": 1
           },
-          "interactions": []
+          "interactions": [],
+          "shadow": {
+            "file": "west-shadow.png",
+            "width": 27,
+            "height": 13,
+            "anchorX": -10,
+            "anchorY": 7
+          }
         },
         "north": {
           "file": "north.png",
@@ -2188,7 +2431,14 @@
             "width": 1,
             "height": 1
           },
-          "interactions": []
+          "interactions": [],
+          "shadow": {
+            "file": "north-shadow.png",
+            "width": 27,
+            "height": 13,
+            "anchorX": -10,
+            "anchorY": 7
+          }
         },
         "east": {
           "file": "east.png",
@@ -2201,7 +2451,14 @@
             "width": 1,
             "height": 1
           },
-          "interactions": []
+          "interactions": [],
+          "shadow": {
+            "file": "east-shadow.png",
+            "width": 27,
+            "height": 13,
+            "anchorX": -10,
+            "anchorY": 7
+          }
         }
       },
       "sheet": {

@@ -1,7 +1,7 @@
 {
   "generator": {
     "version": 1,
-    "renderedAt": "2026-08-13T19:37:23.386Z",
+    "renderedAt": "2026-08-13T19:42:35.544Z",
     "config": {
       "supersample": 4,
       "padding": 2,
@@ -12,6 +12,12 @@
       "paletteSnap": true,
       "extraPalette": [],
       "alphaCutoff": 128,
+      "shadow": {
+        "enabled": true,
+        "colour": "#2a2233",
+        "alpha": 0.34,
+        "cutoff": 110
+      },
       "shading": {
         "light": [
           -0.3,

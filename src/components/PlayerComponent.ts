@@ -77,9 +77,35 @@ export class PlayerComponent {
   }
 
   /**
-   * `directionOverride` is used while a player occupies an interaction spot:
-   * a chair decides which way its occupant faces, not their last movement.
+   * Draw a player's contact shadow.
+   *
+   * Called from the engine's shadow pass, not from drawPlayer, so no shadow is
+   * ever painted over something drawn earlier.
    */
+  public drawShadow(player: Player, screenPos: { x: number; y: number }, directionOverride?: string) {
+    const direction = directionOverride ?? this.getCharacterDirection(player)
+    const walking = player.isMoving && player.path.length > 0 && player.pathIndex < player.path.length
+    const animation = walking ? 'walk' : player.action === 'sitting' ? 'sit' : 'idle'
+    const progress = walking ? Math.min(player.moveTimer / player.moveDelay, 1) : 0
+
+    const frame = getCharacterFrame(animation, direction, walking ? Math.floor(progress * 6) : 0)
+    if (!frame?.shadow || !frame.shadowUrl) return
+
+    const image = this.characterSprites.get(frame.shadowUrl)
+    if (!image) return
+
+    const smoothing = this.ctx.imageSmoothingEnabled
+    this.ctx.imageSmoothingEnabled = false
+    this.ctx.drawImage(
+      image,
+      Math.round(screenPos.x - frame.shadow.anchorX * this.zoom),
+      Math.round(screenPos.y - frame.shadow.anchorY * this.zoom),
+      Math.round(frame.shadow.width * this.zoom),
+      Math.round(frame.shadow.height * this.zoom)
+    )
+    this.ctx.imageSmoothingEnabled = smoothing
+  }
+
   /**
    * `directionOverride` is used while a player occupies an interaction spot:
    * a chair decides which way its occupant faces, not their last movement.

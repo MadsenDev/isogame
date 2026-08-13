@@ -186,6 +186,27 @@ export class GameEngine {
       .forEach(drawable => drawable.draw())
   }
 
+  /**
+   * Contact shadows for everything standing on the floor.
+   *
+   * Sitting players are skipped: their shadow is already implied by the
+   * furniture they are on, and drawing it would put a second one on the floor
+   * beneath the chair.
+   */
+  private drawShadows() {
+    if (!this.state.currentRoom) return
+
+    this.state.currentRoom.furniture.forEach(furniture => {
+      this.furnitureComponent.drawShadow(furniture)
+    })
+
+    this.state.players.forEach(player => {
+      if (player.action === 'sitting') return
+      const screenPos = this.coordinateUtils.worldToScreen(player.x, player.y)
+      this.playerComponent.drawShadow(player, screenPos)
+    })
+  }
+
   /** Tiles a piece occupies in its current orientation. */
   private getFurnitureFootprint(furniture: Furniture): { width: number; height: number } {
     const sprite = furniture.definition.sprites?.[
@@ -382,6 +403,11 @@ export class GameEngine {
       const texture = tile.texture || this.state.currentRoom?.floorTexture || 'default'
       this.tileComponent.drawIsometricTile(tile.x, tile.y, '#90EE90', 1, 2, 1, screenPos, texture)
     })
+
+    // Every shadow goes down first, in its own pass between the floor and the
+    // objects. Drawn per-object instead, a shadow would fall across whatever
+    // had already been drawn next to it.
+    this.drawShadows()
 
     // Furniture and players share one depth-sorted pass; drawing all furniture
     // and then all players puts a standing guest on top of a wall they are

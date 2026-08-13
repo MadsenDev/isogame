@@ -220,6 +220,31 @@ tile, and one tile is an integer pixel offset (+32, +16). No seam fudging.
 Output: `public/structures/<id>/<direction>.png` plus
 `src/data/structureSprites.generated.json`.
 
+## Contact shadows
+
+Each frame also gets a shadow, generated from the real geometry rather than
+faked with an ellipse - so a chair's shadow has chair legs in it.
+
+A second pass renders a `ShadowMaterial` floor plane lit by a `DirectionalLight`
+aimed along the same key light everything else is shaded by. That material is
+transparent except where something shadows it, so rendering the plane alone
+gives a shadow-shaped image with the caster absent. The caster is hidden by
+suppressing colour and depth writes, not by hiding it - shadow-map rendering
+uses its own depth material, so the object still casts while being invisible.
+
+Shadows get their own post-processing. The ordinary alpha threshold makes
+everything fully opaque, which would put a solid slab under every object;
+`flattenShadow` instead thresholds the *coverage* and then forces one colour and
+one partial alpha, giving a crisp edge at constant opacity. Soft gradients would
+fight the four-band shading anyway.
+
+Shadows reach further than their caster, so they are measured separately: each
+bounding-box corner is slid down the light direction onto y = 0.
+
+Files land beside the frames as `<direction>-shadow.png`, with their own anchor.
+The game draws them in one pass between the floor and the objects - drawn
+per-object, a shadow would fall across whatever was drawn before it.
+
 ## Requirements
 
 Playwright's Chromium. If the bundled download is missing, the exporter falls back
@@ -227,4 +252,3 @@ to `CHROMIUM_EXECUTABLE` or a system Chromium before failing.
 
 ## Known gaps
 
-- No contact shadows; the game draws no shadow under furniture either.

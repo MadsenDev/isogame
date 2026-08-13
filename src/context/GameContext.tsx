@@ -45,6 +45,16 @@ export type FurniturePlacement = 'floor' | 'wall' | 'ceiling'
  * sprite, which is what lets a 78px-tall bookshelf and a flat rug both be drawn
  * from the same tile coordinate without per-item fudge factors.
  */
+/** A contact shadow, anchored to the same tile as the sprite it belongs to. */
+export interface SpriteShadow {
+  url: string
+  file: string
+  width: number
+  height: number
+  anchorX: number
+  anchorY: number
+}
+
 export interface FurnitureSprite {
   url: string
   file: string
@@ -55,6 +65,7 @@ export interface FurnitureSprite {
   anchorY: number
   footprint: { width: number; height: number }
   interactions: FurnitureInteraction[]
+  shadow?: SpriteShadow
 }
 
 export interface FurnitureDefinition {

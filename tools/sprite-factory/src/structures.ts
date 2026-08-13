@@ -81,6 +81,7 @@ function floorTile(
     // A grid line rather than a silhouette: floors abut, so a full dark outline
     // would double up into a heavy border between every pair of tiles.
     outline: { enabled: false },
+    shadow: { enabled: false },
     materials,
     parts,
   }
@@ -159,6 +160,7 @@ export const STRUCTURES: AssetSpec[] = [
     behaviour: { ...STRUCTURE_BEHAVIOUR, category: 'wall', walkable: false },
     notes: 'Face on the tile boundary at x = -0.5, thickness outside the room.',
     outline: { enabled: false },
+    shadow: { enabled: false },
     materials: {
       face: { colour: '#b08152' },
       skirting: { colour: '#7d5735' },
@@ -213,6 +215,7 @@ const WALL_CORNER: AssetSpec = {
   footprint: { width: 1, height: 1 },
   behaviour: { ...STRUCTURE_BEHAVIOUR, category: 'wall', walkable: false },
   outline: { enabled: false },
+  shadow: { enabled: false },
   materials: {
     face: { colour: '#b08152' },
     skirting: { colour: '#7d5735' },

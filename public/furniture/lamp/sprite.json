@@ -62,7 +62,14 @@
             }
           ]
         }
-      ]
+      ],
+      "shadow": {
+        "file": "south-shadow.png",
+        "width": 48,
+        "height": 12,
+        "anchorX": 10,
+        "anchorY": 7
+      }
     },
     "west": {
       "file": "west.png",
@@ -91,7 +98,14 @@
             }
           ]
         }
-      ]
+      ],
+      "shadow": {
+        "file": "west-shadow.png",
+        "width": 48,
+        "height": 12,
+        "anchorX": 10,
+        "anchorY": 7
+      }
     },
     "north": {
       "file": "north.png",
@@ -120,7 +134,14 @@
             }
           ]
         }
-      ]
+      ],
+      "shadow": {
+        "file": "north-shadow.png",
+        "width": 48,
+        "height": 12,
+        "anchorX": 10,
+        "anchorY": 7
+      }
     },
     "east": {
       "file": "east.png",
@@ -149,7 +170,14 @@
             }
           ]
         }
-      ]
+      ],
+      "shadow": {
+        "file": "east-shadow.png",
+        "width": 48,
+        "height": 12,
+        "anchorX": 10,
+        "anchorY": 7
+      }
     }
   },
   "sheet": {
