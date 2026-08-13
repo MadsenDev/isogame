@@ -12,15 +12,9 @@ import {
   TILE_WIDTH,
 } from './iso'
 import { DEFAULT_SHADING, ShadingConfig } from './materials'
-import {
-  AssetSpec,
-  buildAssetModel,
-  Direction,
-  DIRECTION_CYCLE,
-  InteractionType,
-  Placement,
-} from './model'
-import { facingLayer, rotateDirection, rotateFootprint, rotatePoint, rotateTile } from './transform'
+import { AssetSpec, buildAssetModel, InteractionType, Placement } from './model'
+import { angleFor, Direction, DirectionCount, rotateDirection } from './directions'
+import { facingLayer, rotateFootprint, rotatePoint, rotateTile } from './transform'
 import {
   addInnerOutline,
   cropToContent,
@@ -33,19 +27,19 @@ import {
 } from './postprocess'
 import { uniqueColours } from './palette'
 
-export { DIRECTION_CYCLE }
 export type { Direction }
 
-/** Number of frames rendered per asset. */
-export const DIRECTION_COUNT = DIRECTION_CYCLE.length
+/** How many orientations this asset renders in. */
+export function directionCountFor(asset: AssetSpec): DirectionCount {
+  return asset.directionCount ?? 4
+}
 
 /**
- * Which way the asset points after `index` quarter turns, given how it was
- * authored. Turning the model 90 degrees about +Y walks the compass cycle.
+ * Which way the asset points after `index` rotation steps, given how it was
+ * authored. Rotating the model about +Y walks the compass cycle.
  */
 export function directionFor(asset: AssetSpec, index: number): Direction {
-  const base = DIRECTION_CYCLE.indexOf(asset.facing ?? 'south')
-  return DIRECTION_CYCLE[(base + index) % DIRECTION_CYCLE.length]
+  return rotateDirection(asset.facing ?? 'south', index, directionCountFor(asset))
 }
 
 export interface RenderConfig {
@@ -112,8 +106,10 @@ export interface RenderedAsset {
  * A wall only ever shows two faces in an isometric room, so a wall-mounted
  * asset that rendered four ways would ship two frames facing into masonry.
  */
-export function rotationsFor(placement: Placement = 'floor'): number[] {
-  return placement === 'wall' ? [0, 3] : [0, 1, 2, 3]
+export function rotationsFor(asset: AssetSpec): number[] {
+  // A wall only shows two faces, and both are quarter turns apart.
+  if (asset.placement === 'wall') return [0, 3]
+  return Array.from({ length: directionCountFor(asset) }, (_, index) => index)
 }
 
 /**
@@ -131,8 +127,10 @@ function measureCanvas(
   let maxX = 0
   let maxY = 0
 
-  for (const index of rotationsFor(asset.placement)) {
-    group.rotation.y = (index * Math.PI) / 2
+  const step = angleFor(directionCountFor(asset))
+
+  for (const index of rotationsFor(asset)) {
+    group.rotation.y = index * step
     group.updateMatrixWorld(true)
 
     const box = new THREE.Box3().setFromObject(group)
@@ -194,6 +192,7 @@ function rotateInteractions(asset: AssetSpec, index: number): FrameInteraction[]
 
   const footprint = rotateFootprint(asset.footprint, index)
   const origin = originTileCentre(footprint.width, footprint.height)
+  const step = angleFor(directionCountFor(asset))
 
   return asset.interactions.map((interaction) => ({
     type: interaction.type,
@@ -201,10 +200,10 @@ function rotateInteractions(asset: AssetSpec, index: number): FrameInteraction[]
     duration: interaction.durationMs ?? 0,
     spots: interaction.spots.map((spot) => {
       const tile = rotateTile(spot.tile, asset.footprint, index)
-      const point = rotatePoint(spot.point, index)
+      const point = rotatePoint(spot.point, index, step)
       const tileCentre = origin.clone().add(new THREE.Vector3(tile.x, 0, tile.y))
       const offset = projectToPixels(point, tileCentre)
-      const direction = rotateDirection(spot.facing, index)
+      const direction = rotateDirection(spot.facing, index, directionCountFor(asset))
 
       return {
         x: tile.x,
@@ -255,8 +254,10 @@ export async function renderAsset(
   const buffer = new Uint8Array(target.width * target.height * 4)
   const frames: SpriteFrame[] = []
 
-  for (const index of rotationsFor(asset.placement)) {
-    model.group.rotation.y = (index * Math.PI) / 2
+  const rotationStep = angleFor(directionCountFor(asset))
+
+  for (const index of rotationsFor(asset)) {
+    model.group.rotation.y = index * rotationStep
     model.group.updateMatrixWorld(true)
 
     const footprint = rotateFootprint(asset.footprint, index)

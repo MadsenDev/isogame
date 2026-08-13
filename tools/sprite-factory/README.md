@@ -160,6 +160,46 @@ npm run sprites -- --model=tools/sprite-factory/models/example-wooden-chair.glb 
                    --id=imported_chair --footprint=1x1
 ```
 
+## Characters
+
+Characters go through the same pipeline, with two additions.
+
+**Eight directions.** `directionCount: 8` renders 45-degree steps instead of
+90-degree ones. Direction names are world-axis based and compose: `south` is +x
+(down-right on screen), `east` is +y (down-left), so `south-east` is +x+y and
+projects straight down.
+
+**Poses.** Furniture is a fixed list of primitives; a character's parts are
+*computed* from a pose - a handful of joint angles. Each animation frame is a
+different pose run through the ordinary renderer, so a guest is lit, palettised
+and anchored exactly like the chair they sit on.
+
+```ts
+walkPose(frame, frameCount)   // legs and arms in opposition, bob per footfall
+idlePose()
+sitPose()                     // hips at the model origin, so the seat offset lands them right
+```
+
+Limbs rotate about a pivot rather than their own centre, and legs are two
+segments so the knee can bend - a single-box leg makes a sitting character stick
+their legs straight out like a mannequin.
+
+The sitting pose deliberately places the **hips at y = 0**. The game positions a
+sitter using the seat offset the furniture pipeline measured, so the model origin
+lands on the seat surface and the shins hang below it.
+
+Output lands in `public/character/<id>/<animation>/<direction>/frame_NNN.png`
+with metadata in `src/data/characterSprites.generated.json`.
+
+```bash
+npm run sprites                      # furniture and characters
+npm run sprites -- --characters-only # just the character
+npm run sprites -- --no-characters   # skip it
+```
+
+Proportions are in tile units, so a 1.7-unit guest stands ~77px against a 64px
+tile. Scale is correct by construction rather than by eye.
+
 ## Requirements
 
 Playwright's Chromium. If the bundled download is missing, the exporter falls back
@@ -167,7 +207,5 @@ to `CHROMIUM_EXECUTABLE` or a system Chromium before failing.
 
 ## Known gaps
 
-- Characters are not generated yet. That needs arbitrary rotation counts (8 × 45°
-  rather than 4 × 90°) and posed animation frames.
 - Walls and floor tiles are still drawn by hand in canvas rather than generated.
 - No contact shadows; the game draws no shadow under furniture either.

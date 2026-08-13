@@ -11,31 +11,13 @@ for us.** See [`tools/sprite-factory`](../tools/sprite-factory).
   definitions in a single pass.
 - **Wired into the game.** Anchored sprite drawing, furniture rotation, depth
   sorting, interaction spots with generated seat offsets, wall/ceiling placement.
+- **Characters through the factory.** Eight directions, idle/walk/sit poses, at
+  correct scale against the furniture. Direction naming unified on the
+  world-axis convention across furniture and characters.
 
 ## Next
 
-### 1. Characters through the factory
-
-The biggest remaining visual inconsistency. The current character art is
-AI-generated, sits at 8 directions x 6 walk frames, and is visibly out of scale
-with the furniture — the sprite is drawn at `gridSize * 3` (96px) against a 64px
-tile, so a guest towers over a chair they are sitting on.
-
-Two pipeline capabilities are missing:
-
-- **Arbitrary rotation counts.** The renderer is hardcoded to four 90° turns
-  (`rotationsFor()` in `render.ts`). Characters need eight 45° steps, which also
-  means direction naming has to cover the diagonals the game already uses
-  (`north-east`, `south-west`, ...).
-- **Posed animation frames.** A walk cycle needs the model posed per frame:
-  either a small skeleton, or procedural limb rotation over a phase parameter.
-  Furniture never needed either.
-
-Worth doing because it removes the last hand-waved assets and makes scale
-consistent by construction — the character would be authored in the same tile
-units as everything else.
-
-### 2. Walls and floor tiles as generated assets
+### 1. Walls and floor tiles as generated assets
 
 `WallComponent` has been patched rather than designed: a `wallBorderOffset = 2`
 fudge, per-face colour constants, manual seam overlaps, and separate code paths
@@ -50,12 +32,19 @@ land on.
 
 This is the change most likely to alter how the game looks overall.
 
-### 3. Expand the catalogue
+### 2. Expand the catalogue
 
 Pure content, no engine work: doors, windows, shelving, seating variants, more
 plants and lighting. Also the honest stress test of whether authoring furniture
 as primitives actually scales past ten pieces, or whether it needs a visual
 editor.
+
+### 3. Character variety
+
+One `guest` exists. The rig takes a palette (skin, hair, shirt, trousers, shoes)
+and proportions, so per-player appearance is mostly a matter of passing different
+values and exporting more than one character. Clothing shapes would need new
+primitives.
 
 ## Known bugs and rough edges
 
@@ -75,6 +64,11 @@ Found while wiring up the pipeline, not yet fixed:
 - **No multi-tile furniture preview.** The placement preview draws the sprite,
   but the validity highlight only tints the origin tile.
 - **Room persistence.** Furniture is lost on reload; there is no serialisation.
+- **Old character art is now unused.** `src/assets/character/` and
+  `public/character/A_completely_normal_habbo_hotel_-like_character._Isometric/`
+  are superseded by the generated `guest`, and were loaded from `/src/assets/...`
+  which would not have survived a production build. Left in place rather than
+  deleted unprompted.
 
 ## Design notes worth keeping
 

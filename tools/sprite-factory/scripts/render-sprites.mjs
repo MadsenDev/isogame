@@ -32,10 +32,12 @@ const REPO_ROOT = resolve(HERE, '../../..')
 const SPRITE_DIR = join(REPO_ROOT, 'public/furniture')
 const GAME_DATA = join(REPO_ROOT, 'src/data/furnitureSprites.generated.json')
 const GAME_DEFINITIONS = join(REPO_ROOT, 'src/data/furnitureDefinitions.generated.json')
+const CHARACTER_DIR = join(REPO_ROOT, 'public/character')
+const GAME_CHARACTERS = join(REPO_ROOT, 'src/data/characterSprites.generated.json')
 const PAGE = '/tools/sprite-factory/headless.html'
 
 function parseArgs(argv) {
-  const options = { config: {}, only: null, model: null }
+  const options = { config: {}, only: null, model: null, charactersOnly: false, skipCharacters: false }
 
   for (const arg of argv) {
     const [rawKey, rawValue] = arg.replace(/^--/, '').split('=')
@@ -60,6 +62,12 @@ function parseArgs(argv) {
         break
       case 'no-palette-snap':
         options.config.paletteSnap = false
+        break
+      case 'characters-only':
+        options.charactersOnly = true
+        break
+      case 'no-characters':
+        options.skipCharacters = true
         break
       case 'only':
         options.only = value.split(',').map((id) => id.trim()).filter(Boolean)
@@ -184,7 +192,9 @@ async function main() {
     if (loadError) throw new Error(`Pipeline failed to load:\n${loadError}`)
 
     let payload
-    if (options.model) {
+    if (options.charactersOnly) {
+      payload = { generator: null, assets: [] }
+    } else if (options.model) {
       if (!options.model.file) throw new Error('--model requires a file path')
       const id = options.model.id ?? basename(options.model.file).replace(/\.[^.]+$/, '')
       // The dev server has the repo as its root, so a repo-relative path is a URL.
@@ -281,13 +291,58 @@ async function main() {
       ...Object.fromEntries(assets.map((asset) => [asset.definition.id, asset.definition])),
     }
 
-    await writeFile(join(SPRITE_DIR, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`)
-    await writeFile(GAME_DATA, `${JSON.stringify(manifest, null, 2)}\n`)
-    await writeFile(GAME_DEFINITIONS, `${JSON.stringify(definitions, null, 2)}\n`)
+    // Guard: a run that rendered no furniture must not rewrite the furniture
+    // manifests, or --characters-only silently empties the game's catalogue.
+    if (assets.length > 0) {
+      await writeFile(join(SPRITE_DIR, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`)
+      await writeFile(GAME_DATA, `${JSON.stringify(manifest, null, 2)}\n`)
+      await writeFile(GAME_DEFINITIONS, `${JSON.stringify(definitions, null, 2)}\n`)
+    }
 
-    console.log(`\nWrote ${assets.length} asset(s) to public/furniture/`)
-    console.log('Game metadata: src/data/furnitureSprites.generated.json')
-    console.log('Game objects:  src/data/furnitureDefinitions.generated.json')
+    // Characters: rendered from poses, so they get their own layout of
+    // animation/direction/frame rather than the furniture one.
+    if (!options.model && !options.only && !options.skipCharacters) {
+      console.log('\nRendering character...')
+      const character = await page.evaluate(async (config) => {
+        const result = await window.spriteFactory.renderCharacter(undefined, config)
+        return JSON.parse(JSON.stringify(result))
+      }, options.config)
+
+      // Scoped to this character's own directory: public/character also holds
+      // hand-made art that this pipeline does not own.
+      await rm(join(CHARACTER_DIR, character.metadata.id), { recursive: true, force: true })
+      await mkdir(CHARACTER_DIR, { recursive: true })
+
+      for (const file of character.files) {
+        const target = join(CHARACTER_DIR, file.path)
+        await mkdir(dirname(target), { recursive: true })
+        await writeFile(target, decodeDataUrl(file.dataUrl))
+      }
+
+      const characterManifest = {
+        basePath: '/character',
+        characters: { [character.metadata.id]: character.metadata },
+      }
+      await writeFile(
+        join(CHARACTER_DIR, 'manifest.json'),
+        `${JSON.stringify(characterManifest, null, 2)}\n`
+      )
+      await writeFile(GAME_CHARACTERS, `${JSON.stringify(characterManifest, null, 2)}\n`)
+
+      const animations = Object.entries(character.metadata.animations)
+        .map(([name, a]) => `${name} x${a.frameCount}`)
+        .join(', ')
+      console.log(
+        `  ${character.metadata.id.padEnd(16)} ${character.metadata.directions.length} directions, ` +
+          `${animations}, ${character.metadata.palette.length} colours, ${character.files.length} frames`
+      )
+    }
+
+    if (assets.length > 0) {
+      console.log(`\nWrote ${assets.length} asset(s) to public/furniture/`)
+      console.log('Game metadata: src/data/furnitureSprites.generated.json')
+      console.log('Game objects:  src/data/furnitureDefinitions.generated.json')
+    }
   } finally {
     await browser.close()
     await server.close()

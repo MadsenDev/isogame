@@ -19,10 +19,13 @@ The project is a prototype rather than a finished online game. There is no produ
 
 ### Sprite pipeline
 
-Furniture art is generated rather than drawn. Simple 3D models go through one
+Furniture *and* character art is generated rather than drawn. Simple 3D models go through one
 fixed isometric camera to produce sprites, anchors and game object definitions in
 a single pass, so a piece's artwork, footprint, collision box and interaction
-spots cannot drift apart. See [`tools/sprite-factory`](tools/sprite-factory).
+spots cannot drift apart. Characters run through the same camera and lighting
+from posed primitives, in 8 directions with idle, walk and sit animations, so
+guests and furniture are consistent in scale, palette and light by construction.
+See [`tools/sprite-factory`](tools/sprite-factory).
 
 ```bash
 npm run sprites   # rebuild every furniture sprite and definition
