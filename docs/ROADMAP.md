@@ -38,6 +38,13 @@ and proportions, so per-player appearance is mostly a matter of passing differen
 values and exporting more than one character. Clothing shapes would need new
 primitives.
 
+### 4. Panel contents
+
+The shell was rebuilt but the panel *contents* were not: `FurnitureSelector`,
+`RoomCustomization` and `RoomManager` still have their original markup, restyled
+only by the new palette. The category chips taking three rows is the visible
+symptom.
+
 ## Known bugs and rough edges
 
 Found while wiring up the pipeline, not yet fixed:
@@ -45,11 +52,6 @@ Found while wiring up the pipeline, not yet fixed:
 - **Frame-rate-dependent movement.** `GameEngine.update()` adds a hardcoded
   `16` ms per frame instead of a real delta, so walking speed tracks the frame
   rate. Under software rendering a step takes ~2.5s instead of 400ms.
-- **The dock and floating windows fight for space.** Windows now render above the
-  dock (fixed), but the default window positions still stack on top of each other
-  and on top of the dock.
-- **`FurnitureSelector` is unreachable in the UI.** The Catalog panel exists and
-  renders every generated piece, but the dock button overlaps other windows.
 - **No multi-tile furniture preview.** The placement preview draws the sprite,
   but the validity highlight only tints the origin tile.
 - **Room persistence.** Furniture is lost on reload; there is no serialisation.

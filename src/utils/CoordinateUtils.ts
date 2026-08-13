@@ -16,6 +16,8 @@ export class CoordinateUtils {
   private roomWidth: number
   private roomHeight: number
   private zoom: number
+  private panX = 0
+  private panY = 0
 
   constructor(
     tileWidth: number,
@@ -49,6 +51,16 @@ export class CoordinateUtils {
     this.zoom = zoom
   }
 
+  /** Screen-space offset applied on top of the centred room, for panning. */
+  public setPan(x: number, y: number) {
+    this.panX = x
+    this.panY = y
+  }
+
+  public getPan(): ScreenPosition {
+    return { x: this.panX, y: this.panY }
+  }
+
   public worldToScreen(worldX: number, worldY: number): ScreenPosition {
     const tileWidth = this.tileWidth * this.zoom
     const tileHeight = this.tileHeight * this.zoom
@@ -62,8 +74,8 @@ export class CoordinateUtils {
     const centerScreenY = (roomCenterX + roomCenterY) * (tileHeight / 2)
 
     // Calculate offset to center the room
-    const offsetX = (this.canvasWidth / 2) - centerScreenX
-    const offsetY = (this.canvasHeight / 2) - centerScreenY
+    const offsetX = (this.canvasWidth / 2) - centerScreenX + this.panX
+    const offsetY = (this.canvasHeight / 2) - centerScreenY + this.panY
 
     // True isometric coordinate conversion
     // Convert from world coordinates to isometric screen coordinates
@@ -84,8 +96,8 @@ export class CoordinateUtils {
     const centerScreenX = (roomCenterX - roomCenterY) * (tileWidth / 2)
     const centerScreenY = (roomCenterX + roomCenterY) * (tileHeight / 2)
 
-    const offsetX = (this.canvasWidth / 2) - centerScreenX
-    const offsetY = (this.canvasHeight / 2) - centerScreenY
+    const offsetX = (this.canvasWidth / 2) - centerScreenX + this.panX
+    const offsetY = (this.canvasHeight / 2) - centerScreenY + this.panY
 
     // Reverse the true isometric transformation
     // From worldToScreen:

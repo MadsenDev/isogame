@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import GameCanvas from './components/GameCanvas'
 import Minimap from './components/Minimap'
 import Controls from './components/Controls'
@@ -9,6 +9,7 @@ import { RoomManager } from './components/RoomManager'
 import { RoomCustomization } from './components/RoomCustomization'
 import { FurnitureSelector } from './components/FurnitureSelector'
 import { GameProvider, useGame } from './context/GameContext'
+import { subscribeView, view } from './utils/viewController'
 
 function App() {
   return (
@@ -79,6 +80,10 @@ function AppShell() {
   const [showMap, setShowMap] = useState(true)
   // Purely presentational, so it stays out of the game reducer.
   const [showGuide, setShowGuide] = useState(false)
+
+  // The engine owns zoom and pan; only the label needs to re-render.
+  const [zoom, setZoom] = useState(1)
+  useEffect(() => subscribeView(() => setZoom(view.getZoom())), [])
 
   const tool = TOOLS.find(entry => entry.id === activeTool) ?? TOOLS[0]
 
@@ -168,7 +173,7 @@ function AppShell() {
           </aside>
         )}
 
-        <p className="iso-hint">{tool.hint}</p>
+        <p className="iso-hint">{tool.hint} Drag to pan.</p>
       </div>
 
       <nav className="iso-bar" aria-label="Tools">
@@ -187,6 +192,32 @@ function AppShell() {
         </div>
 
         <div className="iso-bar__spacer" />
+
+        <div className="iso-bar__group iso-zoom">
+          <button
+            className="iso-tool iso-tool--icon"
+            onClick={() => view.zoomOut()}
+            disabled={!view.canZoomOut()}
+            title="Zoom out"
+          >
+            −
+          </button>
+          <button
+            className="iso-tool iso-zoom__level"
+            onClick={() => view.reset()}
+            title="Fit the room to the screen"
+          >
+            {zoom}×
+          </button>
+          <button
+            className="iso-tool iso-tool--icon"
+            onClick={() => view.zoomIn()}
+            disabled={!view.canZoomIn()}
+            title="Zoom in"
+          >
+            +
+          </button>
+        </div>
 
         {currentPlayer && (
           <span className="iso-guest">

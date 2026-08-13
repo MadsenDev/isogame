@@ -162,6 +162,22 @@
     padding: 0 12px;
   }
 
+  .iso-zoom__level {
+    min-width: 52px;
+    justify-content: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .iso-tool:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  .iso-tool:disabled:hover {
+    border-color: var(--iso-border);
+    color: var(--iso-text-muted);
+  }
+
   .iso-guest {
     display: inline-flex;
     align-items: center;
