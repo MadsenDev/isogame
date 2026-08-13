@@ -116,12 +116,23 @@ export class GameEngine {
     // physically are. That is what lets a guest walk behind an interior wall
     // and be hidden by it, instead of always painting on top.
     const wallsByTile = new Set<string>()
+    const windows = new Set(
+      (this.state.currentRoom.windows ?? []).map(w => `${w.x},${w.y},${w.edge}`)
+    )
+
     this.state.currentRoom.walls.forEach(wall => {
-      wallsByTile.add(`${wall.x},${wall.y},${wall.edge}`)
+      const key = `${wall.x},${wall.y},${wall.edge}`
+      wallsByTile.add(key)
+      // A window replaces the segment rather than overlaying it, so a stale
+      // window left behind by a layout change simply never draws.
+      const glazed = windows.has(key)
       drawables.push({
         depth: wall.x + wall.y - 0.5,
         order: 0,
-        draw: () => this.wallComponent.drawWall(wall)
+        draw: () =>
+          glazed
+            ? this.wallComponent.drawWindow(wall.x, wall.y, wall.edge)
+            : this.wallComponent.drawWall(wall)
       })
     })
 
@@ -825,6 +836,13 @@ export class GameEngine {
       if (!this.state.currentRoom) return
 
       if (gridX < 0 || gridX >= this.state.currentRoom.width || gridY < 0 || gridY >= this.state.currentRoom.height) {
+        return
+      }
+
+      // In window mode a click glazes the wall on that tile instead of
+      // toggling its floor.
+      if (this.state.styleMode === 'window') {
+        this.dispatch({ type: 'TOGGLE_WINDOW', payload: { x: gridX, y: gridY } })
         return
       }
 

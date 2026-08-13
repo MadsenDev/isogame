@@ -23,16 +23,37 @@ const LABELS: Record<string, string> = {
 }
 
 export const RoomCustomization: React.FC = () => {
-  const { state, roomManager } = useGame()
+  const { state, dispatch, roomManager } = useGame()
   const [selected, setSelected] = useState('wood')
 
   if (!state?.currentRoom || !roomManager) return null
 
   const room = state.currentRoom
   const textures = getFloorTextureNames()
+  const mode = state.styleMode
 
   return (
     <div className="iso-styling">
+      {/* Floor painting and glazing both want the same click, so the tool has
+          to say which one it is doing. */}
+      <div className="iso-chips" role="tablist" aria-label="Style mode">
+        <button
+          role="tab"
+          aria-selected={mode === 'floor'}
+          className={`iso-chip ${mode === 'floor' ? 'is-active' : ''}`}
+          onClick={() => dispatch({ type: 'SET_STYLE_MODE', payload: 'floor' })}
+        >
+          <span aria-hidden="true">🧱</span> Floor
+        </button>
+        <button
+          role="tab"
+          aria-selected={mode === 'window'}
+          className={`iso-chip ${mode === 'window' ? 'is-active' : ''}`}
+          onClick={() => dispatch({ type: 'SET_STYLE_MODE', payload: 'window' })}
+        >
+          <span aria-hidden="true">🪟</span> Windows
+        </button>
+      </div>
       <div className="iso-swatches">
         {textures.map(texture => {
           const sprite = getFloorSprite(texture)
@@ -77,7 +98,9 @@ export const RoomCustomization: React.FC = () => {
       </dl>
 
       <p className="iso-note">
-        With this tool active, clicking a tile toggles floor on and off.
+        {mode === 'floor'
+          ? 'Clicking a tile adds or removes floor.'
+          : 'Click a tile against a wall to glaze it. Click again to undo.'}
       </p>
     </div>
   )

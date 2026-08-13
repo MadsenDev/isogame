@@ -213,8 +213,10 @@ are authored against the same plane in the same 3D space.
   boundary**. That is load-bearing: with the thickness inside, each run's face
   overshoots the corner and the two faces overlap.
 - `wall_corner` fills the square outside the boundary that neither run reaches.
-- `door` is the same wall with an opening: same thickness, same face plane, same
-  one tile long, so it drops into a run without a seam.
+- `door` and `window` are the same wall with an opening: same thickness, same
+  face plane, same one tile long, so they drop into a run without a seam. What
+  is beyond each is unlit - the void past a door, daylight past a window - since
+  neither is in this room's key light.
 
 `WALL_HEIGHT` is the room height in world units. It is no longer tied to the old
 hand-drawn `tileHeight * 2`; it had to rise because at that height a wall stood

@@ -49,6 +49,7 @@ const EDGE_DIRECTION: Record<WallEdge, string> = {
 export const WALL_PANEL_ID = 'wall_panel'
 export const WALL_CORNER_ID = 'wall_corner'
 export const DOOR_ID = 'door'
+export const WINDOW_ID = 'window'
 
 /** Floor texture names, as rooms store them, mapped to generated tiles. */
 const FLOOR_TEXTURES: Record<string, string> = {
@@ -85,6 +86,11 @@ export function getWallSprite(edge: WallEdge): StructureSprite | null {
 /** The doorway panel: the same wall, with an opening in it. */
 export function getDoorSprite(edge: WallEdge): StructureSprite | null {
   return resolve(DOOR_ID, EDGE_DIRECTION[edge])
+}
+
+/** The window panel: the same wall, opened in its upper half. */
+export function getWindowSprite(edge: WallEdge): StructureSprite | null {
+  return resolve(WINDOW_ID, EDGE_DIRECTION[edge])
 }
 
 /**

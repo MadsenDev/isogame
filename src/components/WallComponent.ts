@@ -1,5 +1,11 @@
 import { CoordinateUtils } from '../utils/CoordinateUtils'
-import { getDoorSprite, getWallCornerSprite, getWallSprite, WallEdge } from '../data/structureSprites'
+import {
+  getDoorSprite,
+  getWallCornerSprite,
+  getWallSprite,
+  getWindowSprite,
+  WallEdge
+} from '../data/structureSprites'
 
 export interface Wall {
   x: number
@@ -57,6 +63,11 @@ export class WallComponent {
       this.pending.delete(url)
       console.error(`Failed to load wall sprite: ${url}`)
     }
+  }
+
+  /** Draw the window panel in place of a plain wall segment. */
+  public drawWindow(x: number, y: number, edge: WallEdge) {
+    this.drawSprite(getWindowSprite(edge), x, y)
   }
 
   /** Draw the doorway panel where a wall run is broken by a door. */

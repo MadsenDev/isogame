@@ -351,6 +351,124 @@ const DOOR: AssetSpec = {
 
 STRUCTURES.push(DOOR)
 
+/**
+ * A window: the same wall again, opened in its upper half.
+ *
+ * Like the door it is built to the wall's own dimensions so it drops into a run
+ * without a seam. What is beyond is unlit and pale rather than dark - daylight
+ * is not this room's key light either, but it is not a void.
+ */
+const WINDOW_WIDTH = 0.62
+const WINDOW_SILL = 0.72
+const WINDOW_HEAD = 1.52
+const WINDOW_PIER = (1 - WINDOW_WIDTH) / 2
+
+const WINDOW: AssetSpec = {
+  id: 'window',
+  name: 'Window',
+  facing: 'south',
+  placement: 'wall',
+  footprint: { width: 1, height: 1 },
+  behaviour: { ...STRUCTURE_BEHAVIOUR, category: 'wall', walkable: false },
+  outline: { enabled: false },
+  shadow: { enabled: false },
+  materials: {
+    face: { colour: '#b08152' },
+    skirting: { colour: '#7d5735' },
+    frame: { colour: '#c49a68' },
+    sill: { colour: '#9a7248' },
+    sky: { colour: '#9fc6e0', unlit: true },
+    glint: { colour: '#d8ecf7', unlit: true },
+  },
+  parts: [
+    // Piers either side, plus the wall below the sill and above the head.
+    {
+      type: 'box',
+      size: [WALL_THICKNESS, WALL_HEIGHT, WINDOW_PIER],
+      position: [-0.5 - WALL_THICKNESS / 2, WALL_HEIGHT / 2, -0.5 + WINDOW_PIER / 2],
+      material: 'face',
+    },
+    {
+      type: 'box',
+      size: [WALL_THICKNESS, WALL_HEIGHT, WINDOW_PIER],
+      position: [-0.5 - WALL_THICKNESS / 2, WALL_HEIGHT / 2, 0.5 - WINDOW_PIER / 2],
+      material: 'face',
+    },
+    {
+      type: 'box',
+      size: [WALL_THICKNESS, WINDOW_SILL, 1],
+      position: [-0.5 - WALL_THICKNESS / 2, WINDOW_SILL / 2, 0],
+      material: 'face',
+    },
+    {
+      type: 'box',
+      size: [WALL_THICKNESS, WALL_HEIGHT - WINDOW_HEAD, 1],
+      position: [-0.5 - WALL_THICKNESS / 2, WINDOW_HEAD + (WALL_HEIGHT - WINDOW_HEAD) / 2, 0],
+      material: 'face',
+    },
+    // Daylight beyond, set behind the wall like the door's void.
+    {
+      type: 'box',
+      size: [0.04, WINDOW_HEAD - WINDOW_SILL, WINDOW_WIDTH],
+      position: [
+        -0.5 - WALL_THICKNESS - 0.02,
+        (WINDOW_SILL + WINDOW_HEAD) / 2,
+        0,
+      ],
+      material: 'sky',
+    },
+    // A diagonal glint, so the opening reads as glazed rather than empty.
+    {
+      type: 'box',
+      size: [0.02, (WINDOW_HEAD - WINDOW_SILL) * 0.8, 0.1],
+      position: [-0.5 - WALL_THICKNESS - 0.04, (WINDOW_SILL + WINDOW_HEAD) / 2, -0.1],
+      rotation: [18, 0, 0],
+      material: 'glint',
+    },
+    // Frame: jambs, head, and a mullion down the middle.
+    {
+      type: 'box',
+      size: [WALL_THICKNESS + 0.04, WINDOW_HEAD - WINDOW_SILL + 0.1, 0.06],
+      position: [-0.5 - WALL_THICKNESS / 2 + 0.02, (WINDOW_SILL + WINDOW_HEAD) / 2, -WINDOW_WIDTH / 2],
+      material: 'frame',
+    },
+    {
+      type: 'box',
+      size: [WALL_THICKNESS + 0.04, WINDOW_HEAD - WINDOW_SILL + 0.1, 0.06],
+      position: [-0.5 - WALL_THICKNESS / 2 + 0.02, (WINDOW_SILL + WINDOW_HEAD) / 2, WINDOW_WIDTH / 2],
+      material: 'frame',
+    },
+    {
+      type: 'box',
+      size: [WALL_THICKNESS + 0.04, 0.06, WINDOW_WIDTH + 0.12],
+      position: [-0.5 - WALL_THICKNESS / 2 + 0.02, WINDOW_HEAD + 0.03, 0],
+      material: 'frame',
+    },
+    {
+      type: 'box',
+      size: [WALL_THICKNESS + 0.02, WINDOW_HEAD - WINDOW_SILL, 0.045],
+      position: [-0.5 - WALL_THICKNESS / 2 + 0.01, (WINDOW_SILL + WINDOW_HEAD) / 2, 0],
+      material: 'frame',
+    },
+    // Sill, standing proud into the room.
+    {
+      type: 'box',
+      size: [WALL_THICKNESS + 0.12, 0.06, WINDOW_WIDTH + 0.18],
+      position: [-0.5 - WALL_THICKNESS / 2 + 0.06, WINDOW_SILL - 0.03, 0],
+      material: 'sill',
+    },
+    // Skirting runs unbroken: nothing interrupts it at floor level.
+    {
+      type: 'box',
+      size: [WALL_THICKNESS + 0.03, 0.1, 1],
+      position: [-0.5 - WALL_THICKNESS / 2 + 0.015, 0.05, 0],
+      material: 'skirting',
+    },
+  ],
+}
+
+STRUCTURES.push(WINDOW)
+
 export function findStructure(id: string): AssetSpec | undefined {
   return STRUCTURES.find((structure) => structure.id === id)
 }

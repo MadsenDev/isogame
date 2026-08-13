@@ -134,6 +134,14 @@ export interface Room {
    * enclose means the sprite's own anchor positions them, with no fudge.
    */
   walls: Array<{ x: number; y: number; edge: WallEdge }>
+  /**
+   * Wall segments replaced by a window.
+   *
+   * Kept separate from `walls` so rebuilding the walls after a layout change
+   * does not discard them; a window with no wall left under it is simply not
+   * drawn.
+   */
+  windows?: Array<{ x: number; y: number; edge: WallEdge }>
   doorway?: { x: number; y: number; type: 'north-east' | 'north-west' }
   spawnPoint?: { x: number; y: number }
   floorTexture?: string
@@ -173,6 +181,8 @@ export interface GameState {
   previewFurniture: { x: number; y: number; type: string; direction?: FurnitureDirection } | null
   /** Orientation the next placed piece will use. Null means its default. */
   placementDirection: FurnitureDirection | null
+  /** What the Style tool does with a click. */
+  styleMode: 'floor' | 'window'
 }
 
 // Action types
@@ -189,6 +199,8 @@ export type GameAction =
       payload: { roomId: string } & RoomLayoutUpdate
     }
   | { type: 'TOGGLE_FLOOR_TILE'; payload: { x: number; y: number } }
+  | { type: 'TOGGLE_WINDOW'; payload: { x: number; y: number } }
+  | { type: 'SET_STYLE_MODE'; payload: 'floor' | 'window' }
   | { type: 'FILL_ROOM_FLOOR' }
   | { type: 'CLEAR_ROOM_FLOOR' }
   | { type: 'SET_FLOOR_TEXTURE'; payload: { roomId: string; texture: string } }
@@ -222,6 +234,7 @@ const initialState: GameState = {
   hoverGridPos: null,
   previewFurniture: null,
   placementDirection: null,
+  styleMode: 'floor',
 }
 
 // Reducer
@@ -518,6 +531,46 @@ function gameReducer(state: GameState, action: GameAction): GameState {
            : state.currentRoom
        }
      }
+
+    case 'SET_STYLE_MODE':
+      return { ...state, styleMode: action.payload }
+
+    case 'TOGGLE_WINDOW': {
+      if (!state.currentRoom) return state
+
+      // Every wall edge on the clicked tile flips together. Almost every tile
+      // has exactly one, and picking between two by cursor position at this
+      // scale would be a coin toss.
+      const edges = state.currentRoom.walls.filter(
+        wall => wall.x === action.payload.x && wall.y === action.payload.y
+      )
+      if (edges.length === 0) return state
+
+      const existing = state.currentRoom.windows ?? []
+      const isOpen = edges.every(edge =>
+        existing.some(w => w.x === edge.x && w.y === edge.y && w.edge === edge.edge)
+      )
+
+      const windows = isOpen
+        ? existing.filter(
+            w => !edges.some(edge => w.x === edge.x && w.y === edge.y && w.edge === edge.edge)
+          )
+        : [
+            ...existing.filter(
+              w => !edges.some(edge => w.x === edge.x && w.y === edge.y && w.edge === edge.edge)
+            ),
+            ...edges.map(edge => ({ x: edge.x, y: edge.y, edge: edge.edge }))
+          ]
+
+      const applyWindows = (room: Room) =>
+        room.id === state.currentRoom!.id ? { ...room, windows } : room
+
+      return {
+        ...state,
+        rooms: state.rooms.map(applyWindows),
+        currentRoom: { ...state.currentRoom, windows }
+      }
+    }
 
     case 'SET_PLACEMENT_DIRECTION':
       return { ...state, placementDirection: action.payload }

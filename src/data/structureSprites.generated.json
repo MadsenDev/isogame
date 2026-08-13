@@ -1,7 +1,7 @@
 {
   "generator": {
     "version": 1,
-    "renderedAt": "2026-08-13T20:41:19.906Z",
+    "renderedAt": "2026-08-13T20:44:33.459Z",
     "config": {
       "supersample": 4,
       "padding": 2,
@@ -601,6 +601,73 @@
         "#51301e",
         "#a07a4a",
         "#ad834d"
+      ]
+    },
+    "window": {
+      "id": "window",
+      "name": "Window",
+      "sprite": "/furniture/window/south.png",
+      "width": 1,
+      "height": 1,
+      "placement": "wall",
+      "category": "wall",
+      "walkable": false,
+      "stackable": false,
+      "rotatable": false,
+      "collision": {
+        "blocksMovement": false,
+        "blocksVision": false,
+        "height": 0,
+        "shape": "rectangle"
+      },
+      "interactions": [],
+      "defaultDirection": "south",
+      "sprites": {
+        "south": {
+          "file": "south.png",
+          "index": 0,
+          "width": 37,
+          "height": 92,
+          "anchorX": 36,
+          "anchorY": 92,
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "interactions": [],
+          "url": "/furniture/window/south.png"
+        },
+        "east": {
+          "file": "east.png",
+          "index": 3,
+          "width": 37,
+          "height": 92,
+          "anchorX": 1,
+          "anchorY": 92,
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "interactions": [],
+          "url": "/furniture/window/east.png"
+        }
+      },
+      "palette": [
+        "#885637",
+        "#b08152",
+        "#c49a68",
+        "#bea37c",
+        "#ae6c3c",
+        "#cbdcec",
+        "#b29568",
+        "#51301e",
+        "#9a7248",
+        "#71492f",
+        "#9fc6e0",
+        "#d1ba93",
+        "#7d5735",
+        "#a07a4a",
+        "#643424"
       ]
     }
   }

@@ -17,6 +17,8 @@ for us.** See [`tools/sprite-factory`](../tools/sprite-factory).
 - **Walls and floors through the factory.** Floor tiles and wall panels are
   generated, walls belong to a tile edge instead of a phantom tile outside the
   room, and they join the depth-sorted pass so you can walk behind one.
+- **Windows.** Placed with the Style tool, replacing a wall segment rather than
+  overlaying it.
 - **Doorways.** A generated door panel replaces the bare gap. Adding it forced
   WALL_HEIGHT up: at the old height a guest was taller than the wall, so no
   opening could be tall enough to walk through.
@@ -32,8 +34,8 @@ for us.** See [`tools/sprite-factory`](../tools/sprite-factory).
 
 ### 1. Expand the catalogue
 
-Pure content, no engine work: windows, shelving, seating variants, more plants
-and lighting. Also the honest stress test of whether authoring furniture
+Pure content, no engine work: shelving, seating variants, more plants and
+lighting, wall art. Also the honest stress test of whether authoring furniture
 as primitives actually scales past ten pieces, or whether it needs a visual
 editor.
 
