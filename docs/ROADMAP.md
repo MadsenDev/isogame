@@ -17,6 +17,9 @@ for us.** See [`tools/sprite-factory`](../tools/sprite-factory).
 - **Walls and floors through the factory.** Floor tiles and wall panels are
   generated, walls belong to a tile edge instead of a phantom tile outside the
   room, and they join the depth-sorted pass so you can walk behind one.
+- **Frame-rate-independent simulation.** The loop steps by real elapsed time
+  instead of an assumed 16ms per frame, so walking takes the same wall-clock
+  time on any machine.
 - **Persistence, server-ready.** Rooms, furniture, glazing and floor paint
   survive a reload, saved through a `WorldStore` interface so the backend can
   become a server without touching the game.
@@ -53,9 +56,6 @@ primitives.
 
 Found while wiring up the pipeline, not yet fixed:
 
-- **Frame-rate-dependent movement.** `GameEngine.update()` adds a hardcoded
-  `16` ms per frame instead of a real delta, so walking speed tracks the frame
-  rate. Under software rendering a step takes ~2.5s instead of 400ms.
 - **No multi-tile furniture preview.** The placement preview draws the sprite,
   but the validity highlight only tints the origin tile.
 - **`tileset.jpg` is now only a fallback.** Floors use generated sprites; the
@@ -65,9 +65,6 @@ Found while wiring up the pipeline, not yet fixed:
 
 Found while wiring up the pipeline, not yet fixed:
 
-- **Frame-rate-dependent movement.** `GameEngine.update()` adds a hardcoded
-  `16` ms per frame instead of a real delta, so walking speed tracks the frame
-  rate. Under software rendering a step takes ~2.5s instead of 400ms.
 - **No multi-tile furniture preview.** The placement preview draws the sprite,
   but the validity highlight only tints the origin tile.
 - **`tileset.jpg` is now only a fallback.** Floors use generated sprites; the
