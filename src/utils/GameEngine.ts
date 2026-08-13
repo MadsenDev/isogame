@@ -30,6 +30,9 @@ export class GameEngine {
   private readonly baseTileHeight = this.gridSize
   private zoom = 1
   private frameHandle: number | null = null
+  private lastFrameTime: number | null = null
+  /** Longest step the simulation will take in one frame, in milliseconds. */
+  private static readonly MAX_FRAME_DELTA = 100
   private canvasWidth = 0
   private canvasHeight = 0
   /** Set once the player picks a zoom; null means auto-fit. */
@@ -328,6 +331,7 @@ export class GameEngine {
    * outlives it keeps drawing its own stale copy of the room over the live one.
    */
   public destroy() {
+    this.lastFrameTime = null
     if (this.frameHandle !== null) {
       cancelAnimationFrame(this.frameHandle)
       this.frameHandle = null
@@ -428,15 +432,25 @@ export class GameEngine {
   }
 
   private startGameLoop() {
-    const gameLoop = () => {
-      this.update()
+    const gameLoop = (timestamp: number) => {
+      // Real elapsed time, not an assumed frame length. The loop used to add a
+      // flat 16ms per frame, so everything timed by it ran at whatever rate the
+      // machine happened to render: a walk that should take 400ms per tile took
+      // ~2.5s under software rendering, and would run fast on a 120Hz display.
+      const delta = this.lastFrameTime === null ? 0 : timestamp - this.lastFrameTime
+      this.lastFrameTime = timestamp
+
+      // Clamp: requestAnimationFrame pauses in a background tab, so the first
+      // frame back can be seconds late. Without a ceiling that teleports every
+      // walking guest to the end of their path.
+      this.update(Math.min(delta, GameEngine.MAX_FRAME_DELTA))
       this.render()
       this.frameHandle = requestAnimationFrame(gameLoop)
     }
-    gameLoop()
+    this.frameHandle = requestAnimationFrame(gameLoop)
   }
 
-  private update() {
+  private update(deltaMs: number) {
     // Update player movements and actions
     this.state.players.forEach(player => {
       if (player.isMoving && player.path.length > 0 && player.pathIndex < player.path.length) {
@@ -444,7 +458,7 @@ export class GameEngine {
         const targetPos = player.path[player.pathIndex]
         
         // Smooth interpolation between current position and target position
-        player.moveTimer += 16 // 16ms per frame at 60fps
+        player.moveTimer += deltaMs
         const progress = Math.min(player.moveTimer / player.moveDelay, 1)
         
         // For the first step, interpolate from player's current position
@@ -499,7 +513,7 @@ export class GameEngine {
       }
 
       if (player.action !== 'idle' && player.action !== 'sitting') {
-        player.actionTimer += 16
+        player.actionTimer += deltaMs
         if (player.actionTimer >= 3000) {
           player.action = 'idle'
           player.actionTimer = 0
