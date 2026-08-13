@@ -1,6 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import GameCanvas from './components/GameCanvas'
-import Toolbar from './components/Toolbar'
 import Minimap from './components/Minimap'
 import Controls from './components/Controls'
 import ChatSystem from './components/ChatSystem'
@@ -9,8 +8,8 @@ import ContextMenu from './components/ContextMenu'
 import { RoomManager } from './components/RoomManager'
 import { RoomCustomization } from './components/RoomCustomization'
 import { FurnitureSelector } from './components/FurnitureSelector'
-import FloatingWindow from './components/FloatingWindow'
 import { GameProvider, useGame } from './context/GameContext'
+import { subscribeView, view } from './utils/viewController'
 
 function App() {
   return (
@@ -20,186 +19,240 @@ function App() {
   )
 }
 
-type WindowKey = 'tools' | 'styling' | 'rooms' | 'catalog' | 'map' | 'guide'
+/**
+ * Tools are modes, not windows.
+ *
+ * The old shell had a dock of seven launchers *and* seven draggable windows, so
+ * every action cost two clicks and the panels opened on top of each other and
+ * on top of the dock. Here the bar picks a mode and one contextual panel shows
+ * whatever that mode needs.
+ */
+type ToolId = 'move' | 'build' | 'style' | 'rooms'
 
-type DockItem = {
-  id: WindowKey | 'chat'
+interface Tool {
+  id: ToolId
   label: string
   icon: string
-  type: 'window' | 'chat'
+  /** What the engine should treat the pointer as doing. */
+  engineTool: 'move' | 'furniture' | 'room'
+  panelTitle?: string
+  hint: string
 }
 
-const dockItems: DockItem[] = [
-  { id: 'tools', label: 'Build tools', icon: '🛠️', type: 'window' },
-  { id: 'catalog', label: 'Catalog', icon: '🪑', type: 'window' },
-  { id: 'styling', label: 'Room styling', icon: '🎨', type: 'window' },
-  { id: 'rooms', label: 'Rooms', icon: '🗂️', type: 'window' },
-  { id: 'guide', label: 'Guide', icon: 'ℹ️', type: 'window' },
-  { id: 'map', label: 'Map', icon: '🗺️', type: 'window' },
-  { id: 'chat', label: 'Chat', icon: '💬', type: 'chat' }
+const TOOLS: Tool[] = [
+  {
+    id: 'move',
+    label: 'Walk',
+    icon: '🚶',
+    engineTool: 'move',
+    hint: 'Click the floor to walk. Walk onto a chair to sit.'
+  },
+  {
+    id: 'build',
+    label: 'Build',
+    icon: '🪑',
+    engineTool: 'furniture',
+    panelTitle: 'Furniture',
+    hint: 'Pick a piece, then click a tile. R rotates it.'
+  },
+  {
+    id: 'style',
+    label: 'Style',
+    icon: '🎨',
+    engineTool: 'room',
+    panelTitle: 'Room styling',
+    hint: 'Paint floor tiles and adjust the room.'
+  },
+  {
+    id: 'rooms',
+    label: 'Rooms',
+    icon: '🗂️',
+    engineTool: 'move',
+    panelTitle: 'Rooms',
+    hint: 'Switch between rooms, or make a new one.'
+  }
 ]
 
 function AppShell() {
   const { state, dispatch, roomManager } = useGame()
-  const [openWindows, setOpenWindows] = useState<Record<WindowKey, boolean>>({
-    tools: true,
-    catalog: false,
-    styling: false,
-    rooms: false,
-    guide: true,
-    map: true
-  })
+  const [activeTool, setActiveTool] = useState<ToolId>('move')
+  const [panelOpen, setPanelOpen] = useState(false)
+  const [showMap, setShowMap] = useState(true)
+  // Purely presentational, so it stays out of the game reducer.
+  const [showGuide, setShowGuide] = useState(false)
 
-  const toggleWindow = (key: WindowKey) => {
-    setOpenWindows(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }))
-  }
+  // The engine owns zoom and pan; only the label needs to re-render.
+  const [zoom, setZoom] = useState(1)
+  useEffect(() => subscribeView(() => setZoom(view.getZoom())), [])
 
-  const handleDockClick = (item: DockItem) => {
-    if (item.type === 'chat') {
-      dispatch({ type: 'SET_SHOW_CHAT', payload: !state.showChat })
-      return
+  const tool = TOOLS.find(entry => entry.id === activeTool) ?? TOOLS[0]
+
+  const selectTool = (next: Tool) => {
+    setActiveTool(next.id)
+    // Re-tapping the active tool closes its panel, so the room can be seen.
+    setPanelOpen(next.id === activeTool ? !panelOpen : Boolean(next.panelTitle))
+    dispatch({ type: 'SET_TOOL', payload: next.engineTool })
+
+    if (next.engineTool !== 'furniture') {
+      dispatch({ type: 'SET_PLACING', payload: false })
+      dispatch({ type: 'SELECT_FURNITURE', payload: null })
     }
-
-    toggleWindow(item.id as WindowKey)
   }
+
+  const currentPlayer = state.players[state.currentPlayerId]
+  const showPanel = panelOpen && Boolean(tool.panelTitle)
 
   return (
-    <div className="neo-shell">
-      <header className="neo-topbar">
-        <div className="neo-topbar__branding">
-          <span className="neo-topbar__mark">Iso</span>
-          <span className="neo-topbar__name">Game Plaza</span>
+    <div className="iso-shell">
+      <div className="iso-stage">
+        <GameCanvas />
+        <ContextMenu />
+
+        <div className="iso-brand">
+          <span className="iso-brand__mark">Iso</span>
+          <span>{state.currentRoom?.name ?? 'Game'}</span>
         </div>
-        <div className="neo-topbar__status">
-          <span className="neo-status-dot" />
-          <span>Now welcoming guests</span>
-        </div>
-      </header>
 
-      <main className="neo-playfield">
-        <div className="neo-stage">
-          <GameCanvas />
-          <ContextMenu />
-        </div>
-      </main>
-
-      <div className="neo-window-layer" aria-live="polite">
-        {openWindows.tools && (
-          <FloatingWindow
-            id="tools"
-            title="Build tools"
-            initialPosition={{ x: 64, y: 160 }}
-            width={360}
-            onClose={() => toggleWindow('tools')}
-          >
-            <Toolbar />
-          </FloatingWindow>
-        )}
-
-        {openWindows.catalog && (
-          <FloatingWindow
-            id="catalog"
-            title="Furniture catalog"
-            initialPosition={{ x: 420, y: 180 }}
-            width={420}
-            onClose={() => toggleWindow('catalog')}
-          >
-            <FurnitureSelector />
-          </FloatingWindow>
-        )}
-
-        {openWindows.styling && (
-          <FloatingWindow
-            id="styling"
-            title="Room styling"
-            initialPosition={{ x: 720, y: 120 }}
-            width={360}
-            onClose={() => toggleWindow('styling')}
-          >
-            <RoomCustomization />
-          </FloatingWindow>
-        )}
-
-        {openWindows.rooms && state && roomManager && (
-          <FloatingWindow
-            id="rooms"
-            title="Room navigator"
-            initialPosition={{ x: 960, y: 320 }}
-            width={380}
-            onClose={() => toggleWindow('rooms')}
-          >
-            <RoomManager
-              rooms={state.rooms}
-              currentRoom={state.currentRoom}
-              onRoomSelect={roomManager.selectRoom}
-              onRoomCreate={roomManager.createRoom}
-              onRoomDelete={roomManager.deleteRoom}
-              onRoomRename={roomManager.renameRoom}
-            />
-          </FloatingWindow>
-        )}
-
-        {openWindows.guide && (
-          <FloatingWindow
-            id="guide"
-            title="Resort guide"
-            initialPosition={{ x: 64, y: 520 }}
-            width={280}
-            onClose={() => toggleWindow('guide')}
-          >
-            <div className="neo-guide">
-              <PlayerInfo />
-              <Controls />
-            </div>
-          </FloatingWindow>
-        )}
-
-        {openWindows.map && (
-          <FloatingWindow
-            id="map"
-            title="Atrium map"
-            initialPosition={{ x: 720, y: 520 }}
-            width={260}
-            onClose={() => toggleWindow('map')}
-          >
+        {showMap && (
+          <div className="iso-overlay iso-overlay--map">
             <Minimap />
-          </FloatingWindow>
+          </div>
+        )}
+
+        {showPanel && (
+          <aside className="iso-panel">
+            <header className="iso-panel__header">
+              <span>{tool.panelTitle}</span>
+              <button
+                className="iso-panel__close"
+                onClick={() => setPanelOpen(false)}
+                aria-label="Close panel"
+              >
+                ×
+              </button>
+            </header>
+            <div className="iso-panel__body">
+              {activeTool === 'build' && <FurnitureSelector />}
+              {activeTool === 'style' && <RoomCustomization />}
+              {activeTool === 'rooms' && roomManager && (
+                <RoomManager
+                  rooms={state.rooms}
+                  currentRoom={state.currentRoom}
+                  onRoomSelect={roomManager.selectRoom}
+                  onRoomCreate={roomManager.createRoom}
+                  onRoomDelete={roomManager.deleteRoom}
+                  onRoomRename={roomManager.renameRoom}
+                  onResetWorld={roomManager.resetWorld}
+                />
+              )}
+            </div>
+          </aside>
         )}
 
         {state.showChat && (
-          <FloatingWindow
-            id="chat"
-            title="Lounge chat"
-            initialPosition={{ x: 960, y: 520 }}
-            width={340}
-            onClose={() => dispatch({ type: 'SET_SHOW_CHAT', payload: false })}
-          >
+          <div className="iso-overlay iso-overlay--chat">
             <ChatSystem visible />
-          </FloatingWindow>
+          </div>
         )}
+
+        {showGuide && (
+          <aside className="iso-panel">
+            <header className="iso-panel__header">
+              <span>Guide</span>
+              <button
+                className="iso-panel__close"
+                onClick={() => setShowGuide(false)}
+                aria-label="Close guide"
+              >
+                ×
+              </button>
+            </header>
+            <div className="iso-panel__body">
+              <PlayerInfo />
+              <Controls />
+            </div>
+          </aside>
+        )}
+
+        <p className="iso-hint">{tool.hint} Drag to pan.</p>
       </div>
 
-      <nav className="neo-dock" aria-label="Interface dock">
-        {dockItems.map(item => {
-          const isActive = item.type === 'chat'
-            ? state.showChat
-            : openWindows[item.id as WindowKey]
-
-          return (
+      <nav className="iso-bar" aria-label="Tools">
+        <div className="iso-bar__group">
+          {TOOLS.map(entry => (
             <button
-              key={item.id}
-              onClick={() => handleDockClick(item)}
-              className={`neo-dock__button ${isActive ? 'is-active' : ''}`}
-              aria-pressed={isActive}
+              key={entry.id}
+              className={`iso-tool ${entry.id === activeTool ? 'is-active' : ''}`}
+              onClick={() => selectTool(entry)}
+              aria-pressed={entry.id === activeTool}
             >
-              <span className="neo-dock__icon" aria-hidden="true">{item.icon}</span>
-              <span className="neo-dock__label">{item.label}</span>
+              <span className="iso-tool__icon" aria-hidden="true">{entry.icon}</span>
+              <span>{entry.label}</span>
             </button>
-          )
-        })}
+          ))}
+        </div>
+
+        <div className="iso-bar__spacer" />
+
+        <div className="iso-bar__group iso-zoom">
+          <button
+            className="iso-tool iso-tool--icon"
+            onClick={() => view.zoomOut()}
+            disabled={!view.canZoomOut()}
+            title="Zoom out"
+          >
+            −
+          </button>
+          <button
+            className="iso-tool iso-zoom__level"
+            onClick={() => view.reset()}
+            title="Fit the room to the screen"
+          >
+            {zoom}×
+          </button>
+          <button
+            className="iso-tool iso-tool--icon"
+            onClick={() => view.zoomIn()}
+            disabled={!view.canZoomIn()}
+            title="Zoom in"
+          >
+            +
+          </button>
+        </div>
+
+        {currentPlayer && (
+          <span className="iso-guest">
+            <span className="iso-guest__swatch" style={{ background: currentPlayer.color }} />
+            {currentPlayer.name}
+          </span>
+        )}
+
+        <div className="iso-bar__group">
+          <button
+            className={`iso-tool iso-tool--icon ${showMap ? 'is-active' : ''}`}
+            onClick={() => setShowMap(value => !value)}
+            aria-pressed={showMap}
+            title="Minimap"
+          >
+            <span className="iso-tool__icon" aria-hidden="true">🗺️</span>
+          </button>
+          <button
+            className={`iso-tool iso-tool--icon ${state.showChat ? 'is-active' : ''}`}
+            onClick={() => dispatch({ type: 'SET_SHOW_CHAT', payload: !state.showChat })}
+            aria-pressed={state.showChat}
+            title="Chat"
+          >
+            <span className="iso-tool__icon" aria-hidden="true">💬</span>
+          </button>
+          <button
+            className={`iso-tool iso-tool--icon ${showGuide ? 'is-active' : ''}`}
+            onClick={() => setShowGuide(value => !value)}
+            aria-pressed={showGuide}
+            title="Guide"
+          >
+            <span className="iso-tool__icon" aria-hidden="true">ℹ️</span>
+          </button>
+        </div>
       </nav>
     </div>
   )

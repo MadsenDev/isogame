@@ -171,11 +171,24 @@ export class PlayerComponent {
     this.ctx.restore()
   }
 
+  /**
+   * Draw the name above a player.
+   *
+   * Anti-aliased colour text straight onto a busy pixel-art room is unreadable,
+   * so the label is stroked with the sprite outline colour first. Font size is
+   * a whole number of pixels to avoid sub-pixel fuzz.
+   */
   private drawNameplate(player: Player, screenPos: { x: number; y: number }, spriteTop: number) {
-    const fontSize = Math.max(9, 11 * this.zoom)
-    this.ctx.font = `${fontSize}px Arial`
+    const fontSize = Math.max(10, Math.round(11 * this.zoom))
+    const y = Math.round(spriteTop - 5)
+
+    this.ctx.font = `${fontSize}px system-ui, sans-serif`
     this.ctx.textAlign = 'center'
+    this.ctx.lineJoin = 'round'
+    this.ctx.lineWidth = Math.max(3, Math.round(3 * this.zoom))
+    this.ctx.strokeStyle = '#241d2b'
+    this.ctx.strokeText(player.name, Math.round(screenPos.x), y)
     this.ctx.fillStyle = player.color
-    this.ctx.fillText(player.name, screenPos.x, spriteTop - 4)
+    this.ctx.fillText(player.name, Math.round(screenPos.x), y)
   }
 }

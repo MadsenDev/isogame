@@ -7,6 +7,9 @@ import { WallComponent } from '../components/WallComponent'
 import { Pathfinder } from '../utils/Pathfinder'
 import { CoordinateUtils } from '../utils/CoordinateUtils'
 import { findInteractionSpot, getFurnitureDefinition, getNextDirection } from '../data/furnitureDefinitions'
+import { notifyView, registerView } from './viewController'
+import { doorwayWall } from '../data/structureSprites'
+import { createId } from '../persistence/serialise'
 
 export class GameEngine {
   private canvas: HTMLCanvasElement
@@ -29,6 +32,14 @@ export class GameEngine {
   private frameHandle: number | null = null
   private canvasWidth = 0
   private canvasHeight = 0
+  /** Set once the player picks a zoom; null means auto-fit. */
+  private zoomOverride: number | null = null
+  private panX = 0
+  private panY = 0
+  /** Pointer state, used to tell a drag apart from a click. */
+  private pointer: { x: number; y: number; panX: number; panY: number; dragging: boolean } | null = null
+  /** Whole multiples only, so the pixel grid survives. */
+  private readonly zoomSteps = [1, 2, 3, 4]
   private readonly minZoom = 0.35
   private readonly maxZoom = 2
 
@@ -61,6 +72,7 @@ export class GameEngine {
     this.pathfinder = new Pathfinder((x, y, excludePlayerId) => this.isValidPlayerPosition(x, y, excludePlayerId))
     
     this.setupEventListeners()
+    registerView(this.viewApi)
     this.startGameLoop()
   }
 
@@ -105,14 +117,36 @@ export class GameEngine {
     // physically are. That is what lets a guest walk behind an interior wall
     // and be hidden by it, instead of always painting on top.
     const wallsByTile = new Set<string>()
+    const windows = new Set(
+      (this.state.currentRoom.windows ?? []).map(w => `${w.x},${w.y},${w.edge}`)
+    )
+
     this.state.currentRoom.walls.forEach(wall => {
-      wallsByTile.add(`${wall.x},${wall.y},${wall.edge}`)
+      const key = `${wall.x},${wall.y},${wall.edge}`
+      wallsByTile.add(key)
+      // A window replaces the segment rather than overlaying it, so a stale
+      // window left behind by a layout change simply never draws.
+      const glazed = windows.has(key)
       drawables.push({
         depth: wall.x + wall.y - 0.5,
         order: 0,
-        draw: () => this.wallComponent.drawWall(wall)
+        draw: () =>
+          glazed
+            ? this.wallComponent.drawWindow(wall.x, wall.y, wall.edge)
+            : this.wallComponent.drawWall(wall)
       })
     })
+
+    // The doorway: a wall segment was skipped where the door goes, so the door
+    // panel takes its place and sorts exactly where that segment would have.
+    const door = doorwayWall(this.state.currentRoom.doorway)
+    if (door) {
+      drawables.push({
+        depth: door.x + door.y - 0.5,
+        order: 0,
+        draw: () => this.wallComponent.drawDoor(door.x, door.y, door.edge)
+      })
+    }
 
     // A tile carrying both edges is an inside corner; the post fills the square
     // outside the boundary that neither run reaches. Drawn fractionally further
@@ -218,6 +252,64 @@ export class GameEngine {
     }
   }
 
+  /**
+   * Keep the room reachable.
+   *
+   * Panning is allowed as far as the room's edge plus a margin, so it can be
+   * dragged fully into view at any zoom but never off into empty space.
+   */
+  private clampPan() {
+    if (!this.state.currentRoom) return
+
+    const { width, height } = this.state.currentRoom
+    const roomWidth = (width + height) * (this.baseTileWidth / 2) * this.zoom
+    const roomHeight = (width + height) * (this.baseTileHeight / 2) * this.zoom
+    const margin = 120
+
+    const limitX = Math.max(0, (roomWidth - this.canvas.width) / 2) + margin
+    const limitY = Math.max(0, (roomHeight - this.canvas.height) / 2) + margin
+
+    this.panX = Math.max(-limitX, Math.min(limitX, this.panX))
+    this.panY = Math.max(-limitY, Math.min(limitY, this.panY))
+    this.coordinateUtils.setPan(this.panX, this.panY)
+  }
+
+  private setZoomLevel(zoom: number | null) {
+    this.zoomOverride = zoom
+    const next = this.calculateZoom()
+    if (next !== this.zoom) {
+      this.zoom = next
+      this.coordinateUtils.updateZoom(next)
+      this.playerComponent.setZoom(next)
+      this.tileComponent.setZoom(next)
+      this.furnitureComponent.setZoom(next)
+      this.wallComponent.setZoom(next)
+    }
+    this.clampPan()
+    notifyView()
+  }
+
+  /** Camera controls, driven by the toolbar through the view controller. */
+  private viewApi = {
+    zoomIn: () => {
+      const next = this.zoomSteps.find(step => step > this.zoom)
+      if (next !== undefined) this.setZoomLevel(next)
+    },
+    zoomOut: () => {
+      const below = this.zoomSteps.filter(step => step < this.zoom)
+      if (below.length) this.setZoomLevel(below[below.length - 1])
+    },
+    reset: () => {
+      this.panX = 0
+      this.panY = 0
+      this.coordinateUtils.setPan(0, 0)
+      this.setZoomLevel(null)
+    },
+    getZoom: () => this.zoom,
+    canZoomIn: () => this.zoomSteps.some(step => step > this.zoom),
+    canZoomOut: () => this.zoomSteps.some(step => step < this.zoom)
+  }
+
   /** Bound once so it can be removed again in destroy(). */
   private handleKeyDown = (event: KeyboardEvent) => {
     const target = event.target as HTMLElement | null
@@ -240,8 +332,10 @@ export class GameEngine {
       cancelAnimationFrame(this.frameHandle)
       this.frameHandle = null
     }
+    registerView(null)
     window.removeEventListener('keydown', this.handleKeyDown)
-    this.canvas.removeEventListener('click', this.onCanvasClick)
+    window.removeEventListener('mouseup', this.onWindowPointerUp)
+    this.canvas.removeEventListener('mousedown', this.onCanvasPointerDown)
     this.canvas.removeEventListener('contextmenu', this.onCanvasContextMenu)
     this.canvas.removeEventListener('mousemove', this.onCanvasMouseMove)
   }
@@ -260,9 +354,29 @@ export class GameEngine {
   // Bound once each so destroy() can actually remove them again. Anonymous
   // listeners cannot be removed, which left orphaned engines still handling
   // clicks on the same canvas.
-  private onCanvasClick = (e: MouseEvent) => {
-    const { x, y } = this.getCanvasCoordinates(e)
-    this.handleClick(x, y, e)
+  /**
+   * A press starts a potential drag.
+   *
+   * Left-drag pans and a left click still selects, told apart by how far the
+   * pointer moved: below the threshold it is a click, above it the room is
+   * being dragged. Anything else would need a modifier key nobody discovers.
+   */
+  private onCanvasPointerDown = (e: MouseEvent) => {
+    if (e.button !== 0) return
+    this.pointer = { x: e.clientX, y: e.clientY, panX: this.panX, panY: this.panY, dragging: false }
+  }
+
+  private onWindowPointerUp = (e: MouseEvent) => {
+    const pointer = this.pointer
+    this.pointer = null
+    if (!pointer || e.button !== 0) return
+
+    if (!pointer.dragging) {
+      const { x, y } = this.getCanvasCoordinates(e)
+      this.handleClick(x, y, e)
+    } else {
+      this.canvas.style.cursor = ''
+    }
   }
 
   private onCanvasContextMenu = (e: MouseEvent) => {
@@ -272,13 +386,32 @@ export class GameEngine {
   }
 
   private onCanvasMouseMove = (e: MouseEvent) => {
+    const pointer = this.pointer
+    if (pointer) {
+      const dx = e.clientX - pointer.x
+      const dy = e.clientY - pointer.y
+      // A few pixels of slop, so a click with a shaky hand is still a click.
+      if (!pointer.dragging && Math.hypot(dx, dy) > 4) {
+        pointer.dragging = true
+        this.canvas.style.cursor = 'grabbing'
+      }
+      if (pointer.dragging) {
+        this.panX = pointer.panX + dx
+        this.panY = pointer.panY + dy
+        this.clampPan()
+        return
+      }
+    }
+
     const { x, y } = this.getCanvasCoordinates(e)
     this.handleMouseMove(x, y)
   }
 
   private setupEventListeners() {
     window.addEventListener('keydown', this.handleKeyDown)
-    this.canvas.addEventListener('click', this.onCanvasClick)
+    // Released on window, not the canvas: a drag often ends off the canvas.
+    window.addEventListener('mouseup', this.onWindowPointerUp)
+    this.canvas.addEventListener('mousedown', this.onCanvasPointerDown)
     this.canvas.addEventListener('contextmenu', this.onCanvasContextMenu)
     this.canvas.addEventListener('mousemove', this.onCanvasMouseMove)
   }
@@ -386,6 +519,7 @@ export class GameEngine {
       this.canvasHeight = this.canvas.height
       this.coordinateUtils.updateCanvasSize(this.canvas.width, this.canvas.height)
       this.applyZoom(this.calculateZoom())
+      this.clampPan()
     }
 
     // Clear canvas
@@ -510,6 +644,7 @@ export class GameEngine {
   }
 
   private calculateZoom(): number {
+    if (this.zoomOverride !== null) return this.zoomOverride
     if (!this.state.currentRoom) return this.zoom
 
     const { width, height } = this.state.currentRoom
@@ -669,7 +804,7 @@ export class GameEngine {
         const furnitureDefinition = this.getFurnitureDefinition(this.state.selectedFurniture)
         if (furnitureDefinition) {
           const furniture = {
-            id: `furniture-${Date.now()}`,
+            id: createId('furniture'),
             x: gridX,
             y: gridY,
             type: this.state.selectedFurniture,
@@ -702,6 +837,13 @@ export class GameEngine {
       if (!this.state.currentRoom) return
 
       if (gridX < 0 || gridX >= this.state.currentRoom.width || gridY < 0 || gridY >= this.state.currentRoom.height) {
+        return
+      }
+
+      // In window mode a click glazes the wall on that tile instead of
+      // toggling its floor.
+      if (this.state.styleMode === 'window') {
+        this.dispatch({ type: 'TOGGLE_WINDOW', payload: { x: gridX, y: gridY } })
         return
       }
 

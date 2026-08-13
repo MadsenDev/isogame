@@ -1,165 +1,107 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState } from 'react'
 import { useGame } from '../context/GameContext'
+import { getFloorSprite, getFloorTextureNames } from '../data/structureSprites'
 
-const FLOOR_TEXTURES = [
-  { id: 'grass', name: 'Grass', color: '#90EE90' },
-  { id: 'stone', name: 'Stone', color: '#A9A9A9' },
-  { id: 'wood', name: 'Wood', color: '#8B4513' },
-  { id: 'marble', name: 'Marble', color: '#F5F5DC' },
-  { id: 'carpet', name: 'Carpet', color: '#DC143C' },
-  { id: 'brick', name: 'Brick', color: '#CD853F' },
-  { id: 'sand', name: 'Sand', color: '#F4A460' },
-  { id: 'water', name: 'Water', color: '#4682B4' }
-]
+/**
+ * Floor textures, previewed with the sprite the game will actually draw.
+ *
+ * The swatches used to be sliced out of `tileset.jpg`, loaded from
+ * `/src/assets/...` - a path that only resolves because the dev server happens
+ * to serve the source tree, and which showed the *old* tilesheet rather than
+ * the generated floor. Reading the generated sprite means the preview and the
+ * room can no longer disagree.
+ */
+const LABELS: Record<string, string> = {
+  wood: 'Wood',
+  stone: 'Stone',
+  brick: 'Brick',
+  carpet: 'Carpet',
+  marble: 'Marble',
+  grass: 'Grass',
+  sand: 'Sand',
+  water: 'Water'
+}
 
 export const RoomCustomization: React.FC = () => {
-  const { state, roomManager } = useGame()
-  const [selectedTexture, setSelectedTexture] = useState<string>('wood')
-  const [isOpen, setIsOpen] = useState(true)
-  const [tilesetImage, setTilesetImage] = useState<HTMLImageElement | null>(null)
-
-  useEffect(() => {
-    const img = new Image()
-    img.src = '/src/assets/tileset.jpg'
-    img.onload = () => {
-      setTilesetImage(img)
-    }
-  }, [])
-
-  const getTextureCoordinates = (texture: string): { row: number; col: number } => {
-    const textureMap: Record<string, { row: number; col: number }> = {
-      'grass': { row: 1, col: 1 },
-      'stone': { row: 1, col: 2 },
-      'wood': { row: 1, col: 3 },
-      'marble': { row: 1, col: 4 },
-      'carpet': { row: 1, col: 5 },
-      'brick': { row: 1, col: 6 },
-      'sand': { row: 1, col: 7 },
-      'water': { row: 1, col: 8 },
-      'default': { row: 1, col: 3 }
-    }
-    return textureMap[texture] || textureMap['default']
-  }
-
-  const texturePreviews = useMemo(() => {
-    if (!tilesetImage) return {}
-
-    const previews: Record<string, string> = {}
-    const tileSize = 32
-
-    FLOOR_TEXTURES.forEach(texture => {
-      const coords = getTextureCoordinates(texture.id)
-      const sourceX = (coords.col - 1) * tileSize
-      const sourceY = (coords.row - 1) * tileSize
-
-      const canvas = document.createElement('canvas')
-      canvas.width = 32
-      canvas.height = 32
-      const ctx = canvas.getContext('2d')
-
-      if (ctx) {
-        ctx.drawImage(
-          tilesetImage,
-          sourceX, sourceY, tileSize, tileSize,
-          0, 0, 32, 32
-        )
-        previews[texture.id] = canvas.toDataURL()
-      }
-    })
-
-    return previews
-  }, [tilesetImage])
-
-  const renderTexturePreview = (texture: { id: string; name: string; color: string }) => {
-    const previewUrl = texturePreviews[texture.id]
-
-    if (previewUrl) {
-      return (
-        <div
-          className="iso-texture__preview"
-          style={{
-            backgroundImage: `url(${previewUrl})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center'
-          }}
-        />
-      )
-    }
-
-    return (
-      <div
-        className="iso-texture__preview"
-        style={{ backgroundColor: texture.color }}
-      />
-    )
-  }
+  const { state, dispatch, roomManager } = useGame()
+  const [selected, setSelected] = useState('wood')
 
   if (!state?.currentRoom || !roomManager) return null
 
-  const handleSetFloorTexture = () => {
-    roomManager.setFloorTexture(state.currentRoom!.id, selectedTexture)
-  }
+  const room = state.currentRoom
+  const textures = getFloorTextureNames()
+  const mode = state.styleMode
 
   return (
-    <div className="panel-content">
-      <div className="panel-section panel-section--split">
-        <h4 className="panel-subtitle">Floor textures</h4>
+    <div className="iso-styling">
+      {/* Floor painting and glazing both want the same click, so the tool has
+          to say which one it is doing. */}
+      <div className="iso-chips" role="tablist" aria-label="Style mode">
         <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="iso-button iso-button--ghost"
-          aria-expanded={isOpen}
-          aria-label="Toggle room styling"
+          role="tab"
+          aria-selected={mode === 'floor'}
+          className={`iso-chip ${mode === 'floor' ? 'is-active' : ''}`}
+          onClick={() => dispatch({ type: 'SET_STYLE_MODE', payload: 'floor' })}
         >
-          {isOpen ? 'Hide' : 'Show'}
+          <span aria-hidden="true">🧱</span> Floor
+        </button>
+        <button
+          role="tab"
+          aria-selected={mode === 'window'}
+          className={`iso-chip ${mode === 'window' ? 'is-active' : ''}`}
+          onClick={() => dispatch({ type: 'SET_STYLE_MODE', payload: 'window' })}
+        >
+          <span aria-hidden="true">🪟</span> Windows
         </button>
       </div>
+      <div className="iso-swatches">
+        {textures.map(texture => {
+          const sprite = getFloorSprite(texture)
+          return (
+            <button
+              key={texture}
+              onClick={() => setSelected(texture)}
+              className={`iso-swatch ${selected === texture ? 'is-active' : ''}`}
+              title={LABELS[texture] ?? texture}
+            >
+              {sprite && <img className="iso-sprite" src={sprite.url} alt="" />}
+              <span>{LABELS[texture] ?? texture}</span>
+            </button>
+          )
+        })}
+      </div>
 
-      {isOpen && (
-        <div className="panel-section">
-          <div className="iso-grid iso-grid--textures">
-            {FLOOR_TEXTURES.map(texture => (
-              <button
-                key={texture.id}
-                onClick={() => setSelectedTexture(texture.id)}
-                className={`iso-texture ${selectedTexture === texture.id ? 'is-active' : ''}`}
-                title={texture.name}
-              >
-                {renderTexturePreview(texture)}
-                <span>{texture.name}</span>
-              </button>
-            ))}
-          </div>
+      <button
+        className="iso-button iso-button--primary iso-button--full"
+        onClick={() => roomManager.setFloorTexture(room.id, selected)}
+      >
+        Apply to every tile
+      </button>
 
-          <button onClick={handleSetFloorTexture} className="iso-button iso-button--primary iso-button--full">
-            Apply to all tiles
-          </button>
-
-          <div className="panel-divider" />
-
-          <div className="iso-room-meta">
-            <div>
-              <span>Room</span>
-              <strong>{state.currentRoom.name}</strong>
-            </div>
-            <div>
-              <span>Size</span>
-              <strong>
-                {state.currentRoom.width} × {state.currentRoom.height}
-              </strong>
-            </div>
-            <div>
-              <span>Texture</span>
-              <strong>{state.currentRoom.floorTexture || 'Default'}</strong>
-            </div>
-          </div>
-
-          <ul className="iso-guidelines">
-            <li>Select a texture then tap the button above to recolour the room.</li>
-            <li>Use the Room tool with Shift+Click for precision painting.</li>
-            <li>Previews pull from the actual resort tileset for accuracy.</li>
-          </ul>
+      <dl className="iso-facts">
+        <div>
+          <dt>Room</dt>
+          <dd>{room.name}</dd>
         </div>
-      )}
+        <div>
+          <dt>Size</dt>
+          <dd>{room.width} × {room.height}</dd>
+        </div>
+        <div>
+          <dt>Floor</dt>
+          <dd>{LABELS[room.floorTexture ?? 'wood'] ?? room.floorTexture ?? 'Wood'}</dd>
+        </div>
+        <div>
+          <dt>Furniture</dt>
+          <dd>{room.furniture.length}</dd>
+        </div>
+      </dl>
+
+      <p className="iso-note">
+        {mode === 'floor'
+          ? 'Clicking a tile adds or removes floor.'
+          : 'Click a tile against a wall to glaze it. Click again to undo.'}
+      </p>
     </div>
   )
 }

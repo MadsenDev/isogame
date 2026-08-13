@@ -52,6 +52,12 @@ npm run sprites   # rebuild every furniture sprite and definition
   pipeline measured from the 3D model
 - context-menu interactions
 
+### Persistence
+
+Rooms, furniture, glazing and floor paint are saved locally and restored on
+load, behind a `WorldStore` interface so the backend can become a server without
+changing the game. See [`docs/ROADMAP.md`](docs/ROADMAP.md).
+
 ### Room management
 
 - create rooms

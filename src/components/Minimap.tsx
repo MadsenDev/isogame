@@ -49,8 +49,8 @@ const Minimap: React.FC = () => {
   }, [state])
 
   return (
-    <div className="neo-minimap">
-      <canvas ref={canvasRef} width={200} height={150} className="neo-minimap__canvas" />
+    <div className="iso-minimap">
+      <canvas ref={canvasRef} width={200} height={150} className="iso-minimap__canvas" />
     </div>
   )
 }

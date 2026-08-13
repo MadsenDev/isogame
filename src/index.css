@@ -21,102 +21,514 @@
 
 @layer components {
   :root {
-    --neo-surface: rgba(13, 19, 42, 0.92);
-    --neo-surface-soft: rgba(17, 24, 52, 0.85);
-    --neo-border: rgba(255, 255, 255, 0.08);
-    --neo-border-strong: rgba(255, 255, 255, 0.16);
-    --neo-primary: #6e8bff;
-    --neo-primary-strong: #88a6ff;
-    --neo-accent: #ffb347;
-    --neo-danger: #ff6b6b;
-    --neo-text-muted: rgba(239, 241, 255, 0.65);
+    /* Taken from the generated sprites, so the chrome belongs to the game:
+       the sprite outline colour, the contact-shadow colour, the lamp glow and
+       the linen used on the bed. */
+    --iso-bg: #17131e;
+    --iso-surface: #241d2b;
+    --iso-surface-soft: #2f2639;
+    --iso-surface-raised: #3a3046;
+    --iso-border: #3d3348;
+    --iso-border-strong: #574a66;
+    --iso-primary: #ffdf9e;
+    --iso-primary-strong: #ffe9bd;
+    --iso-accent: #c08f5e;
+    --iso-danger: #c4544c;
+    --iso-text: #e4ded2;
+    --iso-text-muted: #9d92ad;
   }
 
-  .neo-shell {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    padding: clamp(24px, 4vw, 48px);
-    gap: clamp(20px, 3vw, 36px);
+
+
+
+
+
+
+
+
+
+
+  /* ---- Stage-first shell -------------------------------------------------
+     The room is the interface. Everything else overlays it, so nothing shrinks
+     the playfield. One bar along the bottom replaces the old dock, and a single
+     contextual panel replaces seven floating windows that used to open on top
+     of each other and on top of the dock.
+
+     Chrome is deliberately hard-edged: square corners, solid 2px borders, flat
+     offset shadows, no blur and no gradients. A glassy dashboard next to 64x32
+     pixel art reads as two different products.
+  ------------------------------------------------------------------------- */
+
+  .iso-shell {
+    position: fixed;
+    inset: 0;
+    background: var(--iso-bg);
+    color: var(--iso-text);
     overflow: hidden;
   }
 
-  .neo-topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--neo-surface);
-    border: 1px solid var(--neo-border);
-    border-radius: 24px;
-    padding: 0.85rem 1.5rem;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
-    backdrop-filter: blur(18px);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-
-  .neo-topbar__branding {
-    display: flex;
-    align-items: baseline;
-    gap: 0.6rem;
-    font-size: clamp(1.2rem, 1.6vw, 1.6rem);
-    font-weight: 700;
-  }
-
-  .neo-topbar__mark {
-    color: var(--neo-primary);
-  }
-
-  .neo-topbar__name {
-    color: #ffffff;
-  }
-
-  .neo-topbar__status {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    font-size: 0.78rem;
-    text-transform: none;
-    color: var(--neo-text-muted);
-    background: rgba(255, 255, 255, 0.06);
-    border-radius: 999px;
-    padding: 0.35rem 0.75rem;
-  }
-
-  .neo-status-dot {
-    width: 0.6rem;
-    height: 0.6rem;
-    border-radius: 999px;
-    background: #4ade80;
-    box-shadow: 0 0 14px rgba(74, 222, 128, 0.85);
-  }
-
-  .neo-playfield {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 0;
-  }
-
-  .neo-stage {
-    position: relative;
-    width: min(86vw, 1200px);
-    height: min(70vh, 760px);
-    border-radius: 28px;
-    background: linear-gradient(180deg, rgba(27, 36, 70, 0.7), rgba(8, 10, 22, 0.8));
-    border: 1px solid var(--neo-border-strong);
-    box-shadow: 0 28px 60px rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: clamp(20px, 3vw, 36px);
+  .iso-stage {
+    position: absolute;
+    inset: 0;
+    bottom: 64px;
   }
 
   .iso-room-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--iso-bg);
+    image-rendering: pixelated;
+    cursor: crosshair;
+  }
+
+  .iso-brand {
+    position: absolute;
+    top: 14px;
+    left: 16px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 0.82rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--iso-text-muted);
+    pointer-events: none;
+  }
+
+  .iso-brand__mark {
+    color: var(--iso-primary);
+    font-weight: 700;
+  }
+
+  /* ---- Bottom bar ---- */
+
+  .iso-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+    background: var(--iso-surface);
+    border-top: 2px solid var(--iso-border);
+  }
+
+  .iso-bar__group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .iso-bar__spacer { flex: 1; }
+
+  .iso-tool {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 14px;
+    background: var(--iso-surface-soft);
+    border: 2px solid var(--iso-border);
+    color: var(--iso-text-muted);
+    font: inherit;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .iso-tool:hover {
+    border-color: var(--iso-border-strong);
+    color: var(--iso-text);
+  }
+
+  .iso-tool.is-active {
+    background: var(--iso-primary);
+    border-color: var(--iso-primary);
+    color: #241d2b;
+    font-weight: 700;
+  }
+
+  .iso-tool__icon {
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  .iso-tool--icon {
+    padding: 0 12px;
+  }
+
+
+  /* ---- Panel primitives --------------------------------------------------
+     A small shared set, rather than bespoke markup per panel. Everything is
+     flat and square-edged to match the room.
+  ------------------------------------------------------------------------ */
+
+  .iso-catalog,
+  .iso-styling,
+  .iso-rooms {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  /* Filter chips: one scrolling row. */
+  .iso-chips {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+  }
+
+  .iso-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    flex: 0 0 auto;
+    padding: 5px 9px;
+    background: var(--iso-surface-soft);
+    border: 2px solid var(--iso-border);
+    color: var(--iso-text-muted);
+    font: inherit;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+  }
+
+  .iso-chip:hover { color: var(--iso-text); border-color: var(--iso-border-strong); }
+
+  .iso-chip.is-active {
+    background: var(--iso-primary);
+    border-color: var(--iso-primary);
+    color: #241d2b;
+    font-weight: 700;
+  }
+
+  /* Item grid. */
+  .iso-catalog__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .iso-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 8px 4px 6px;
+    background: var(--iso-surface-soft);
+    border: 2px solid var(--iso-border);
+    color: var(--iso-text);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .iso-card:hover { border-color: var(--iso-border-strong); }
+
+  .iso-card.is-active {
+    border-color: var(--iso-primary);
+    background: var(--iso-surface-raised);
+  }
+
+  .iso-card__art {
+    width: 100%;
+    height: 44px;
+    object-fit: contain;
+  }
+
+  .iso-card__name {
+    font-size: 0.68rem;
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  .iso-card__meta {
+    font-size: 0.62rem;
+    color: var(--iso-text-muted);
+  }
+
+  .iso-catalog__selection {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    background: var(--iso-surface-soft);
+    border: 2px solid var(--iso-primary);
+  }
+
+  .iso-catalog__selection img { width: 32px; height: 32px; object-fit: contain; }
+
+  .iso-catalog__selection span {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    font-size: 0.72rem;
+  }
+
+  .iso-catalog__selection em {
+    color: var(--iso-text-muted);
+    font-style: normal;
+    font-size: 0.66rem;
+  }
+
+  /* Floor swatches. */
+  .iso-swatches {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+
+  .iso-swatch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 6px 2px 4px;
+    background: var(--iso-surface-soft);
+    border: 2px solid var(--iso-border);
+    color: var(--iso-text-muted);
+    font: inherit;
+    font-size: 0.62rem;
+    cursor: pointer;
+  }
+
+  .iso-swatch img { width: 100%; height: 22px; object-fit: contain; }
+  .iso-swatch:hover { border-color: var(--iso-border-strong); color: var(--iso-text); }
+
+  .iso-swatch.is-active {
+    border-color: var(--iso-primary);
+    color: var(--iso-text);
+    background: var(--iso-surface-raised);
+  }
+
+  /* Key/value facts. */
+  .iso-facts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin: 0;
+  }
+
+  .iso-facts div {
+    padding: 6px 8px;
+    background: var(--iso-surface-soft);
+    border: 2px solid var(--iso-border);
+  }
+
+  .iso-facts dt {
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--iso-text-muted);
+  }
+
+  .iso-facts dd { margin: 0; font-size: 0.8rem; }
+
+  /* Room rows. */
+  .iso-rows { display: flex; flex-direction: column; gap: 4px; }
+
+  .iso-row {
+    display: flex;
+    align-items: stretch;
+    gap: 4px;
+    border: 2px solid var(--iso-border);
+    background: var(--iso-surface-soft);
+  }
+
+  .iso-row.is-active { border-color: var(--iso-primary); }
+
+  .iso-row__main {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 1;
+    gap: 1px;
+    padding: 7px 9px;
+    background: transparent;
+    border: 0;
+    color: var(--iso-text);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .iso-row__name { font-size: 0.82rem; }
+  .iso-row__meta { font-size: 0.66rem; color: var(--iso-text-muted); }
+
+  .iso-icon-button {
+    width: 30px;
+    background: transparent;
+    border: 0;
+    border-left: 2px solid var(--iso-border);
+    color: var(--iso-text-muted);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .iso-icon-button:hover { background: var(--iso-surface-raised); color: var(--iso-text); }
+  .iso-icon-button.is-danger:hover { color: var(--iso-danger); }
+
+  /* Forms. */
+  .iso-form { display: flex; flex-direction: column; gap: 6px; }
+
+  .iso-form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+
+  .iso-form__row label {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 0.64rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--iso-text-muted);
+  }
+
+  .iso-input--code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.68rem;
+    resize: vertical;
+  }
+
+  .iso-note {
+    margin: 0;
+    font-size: 0.68rem;
+    line-height: 1.45;
+    color: var(--iso-text-muted);
+  }
+
+  .iso-zoom__level {
+    min-width: 52px;
+    justify-content: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .iso-tool:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  .iso-tool:disabled:hover {
+    border-color: var(--iso-border);
+    color: var(--iso-text-muted);
+  }
+
+  .iso-guest {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 12px;
+    border: 2px solid var(--iso-border);
+    background: var(--iso-surface-soft);
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+  }
+
+  .iso-guest__swatch {
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(0, 0, 0, 0.45);
+  }
+
+  /* ---- Contextual panel ---- */
+
+  .iso-panel {
+    position: absolute;
+    top: 48px;
+    right: 16px;
+    bottom: 80px;
+    width: 340px;
+    display: flex;
+    flex-direction: column;
+    background: var(--iso-surface);
+    border: 2px solid var(--iso-border);
+    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.35);
+  }
+
+  .iso-panel__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: var(--iso-surface-soft);
+    border-bottom: 2px solid var(--iso-border);
+    font-size: 0.74rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--iso-text-muted);
+  }
+
+  .iso-panel__close {
+    width: 24px;
+    height: 24px;
+    background: transparent;
+    border: 2px solid var(--iso-border);
+    color: var(--iso-text-muted);
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .iso-panel__close:hover {
+    border-color: var(--iso-danger);
+    color: var(--iso-danger);
+  }
+
+  .iso-panel__body {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  /* ---- Overlays ---- */
+
+  .iso-overlay {
+    position: absolute;
+    background: var(--iso-surface);
+    border: 2px solid var(--iso-border);
+    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.35);
+  }
+
+  .iso-overlay--map {
+    top: 48px;
+    left: 16px;
+    padding: 8px;
+  }
+
+  .iso-overlay--chat {
+    left: 16px;
+    bottom: 80px;
+    width: 320px;
+  }
+
+  .iso-hint {
+    position: absolute;
+    left: 50%;
+    bottom: 78px;
+    transform: translateX(-50%);
+    padding: 6px 12px;
+    background: var(--iso-surface);
+    border: 2px solid var(--iso-border);
+    font-size: 0.75rem;
+    color: var(--iso-text-muted);
+    pointer-events: none;
+  }
+
+  @media (max-width: 900px) {
+    .iso-panel {
+      left: 16px;
+      width: auto;
+    }
+
+    .iso-overlay--map { display: none; }
+  }
+
+  .iso-room-canvas--legacy {
     width: 100%;
     height: 100%;
     border-radius: 22px;
@@ -127,84 +539,14 @@
     cursor: crosshair;
   }
 
-  /* Above .neo-dock: the dock is a launcher, and when a window overlapped it
-     the dock swallowed every click on the window content beneath. */
-  .neo-window-layer {
-    pointer-events: none;
-    position: fixed;
-    inset: 0;
-    z-index: 20;
-  }
 
-  .floating-window {
-    position: fixed;
-    top: 0;
-    left: 0;
-    pointer-events: all;
-    background: var(--neo-surface-soft);
-    border-radius: 20px;
-    border: 1px solid var(--neo-border);
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
-    backdrop-filter: blur(16px);
-    overflow: hidden;
-    min-width: 260px;
-  }
 
-  .floating-window__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.9rem 1.1rem;
-    cursor: grab;
-    user-select: none;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0));
-    border-bottom: 1px solid var(--neo-border);
-  }
 
-  .floating-window__title {
-    font-size: 0.9rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    margin: 0;
-  }
 
-  .floating-window__actions {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
 
-  .floating-window__close {
-    border: 0;
-    background: rgba(255, 255, 255, 0.08);
-    color: #f9fbff;
-    border-radius: 50%;
-    width: 28px;
-    height: 28px;
-    font-size: 1rem;
-    line-height: 1;
-    cursor: pointer;
-    transition: background 0.2s ease, transform 0.2s ease;
-  }
 
-  .floating-window__close:hover {
-    background: rgba(255, 255, 255, 0.18);
-    transform: scale(1.04);
-  }
 
-  .floating-window__body {
-    padding: 1.1rem 1.25rem 1.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
 
-  .floating-window__footer {
-    padding: 0.75rem 1.25rem 1.15rem;
-    border-top: 1px solid var(--neo-border);
-    background: rgba(255, 255, 255, 0.02);
-  }
 
   .panel-content {
     display: flex;
@@ -242,7 +584,7 @@
 
   .panel-divider {
     height: 1px;
-    background: var(--neo-border);
+    background: var(--iso-border);
     margin: 0.75rem 0;
   }
 
@@ -251,14 +593,14 @@
     background: rgba(255, 255, 255, 0.04);
     border-radius: 999px;
     padding: 0.3rem;
-    border: 1px solid var(--neo-border);
+    border: 1px solid var(--iso-border);
     gap: 0.3rem;
   }
 
   .iso-pill {
     border: 0;
     background: transparent;
-    color: var(--neo-text-muted);
+    color: var(--iso-text-muted);
     font-size: 0.82rem;
     padding: 0.45rem 1rem;
     border-radius: 999px;
@@ -269,7 +611,7 @@
   }
 
   .iso-pill.is-active {
-    background: linear-gradient(120deg, var(--neo-primary), var(--neo-primary-strong));
+    background: linear-gradient(120deg, var(--iso-primary), var(--iso-primary-strong));
     color: #0a0d1c;
     box-shadow: 0 8px 16px rgba(110, 139, 255, 0.35);
   }
@@ -277,7 +619,7 @@
   .iso-window__muted {
     margin: 0;
     font-size: 0.85rem;
-    color: var(--neo-text-muted);
+    color: var(--iso-text-muted);
     line-height: 1.6;
   }
 
@@ -292,7 +634,7 @@
   }
 
   .iso-list__item {
-    border: 1px solid var(--neo-border);
+    border: 1px solid var(--iso-border);
     background: rgba(255, 255, 255, 0.04);
     border-radius: 14px;
     padding: 0.8rem 0.9rem;
@@ -341,15 +683,15 @@
   }
 
   .iso-button--primary {
-    background: linear-gradient(135deg, var(--neo-primary), var(--neo-primary-strong));
+    background: linear-gradient(135deg, var(--iso-primary), var(--iso-primary-strong));
     color: #0a0d1c;
     box-shadow: 0 10px 24px rgba(110, 139, 255, 0.35);
   }
 
   .iso-button--ghost {
     background: rgba(255, 255, 255, 0.05);
-    border-color: var(--neo-border);
-    color: var(--neo-text-muted);
+    border-color: var(--iso-border);
+    color: var(--iso-text-muted);
   }
 
   .iso-button--accent {
@@ -372,7 +714,7 @@
     gap: 0.4rem 0.75rem;
     margin: 0;
     font-size: 0.78rem;
-    color: var(--neo-text-muted);
+    color: var(--iso-text-muted);
   }
 
   .iso-stats dt {
@@ -402,12 +744,12 @@
     flex-direction: column;
     gap: 0.3rem;
     font-size: 0.8rem;
-    color: var(--neo-text-muted);
+    color: var(--iso-text-muted);
   }
 
   .iso-field input {
     border-radius: 10px;
-    border: 1px solid var(--neo-border);
+    border: 1px solid var(--iso-border);
     background: rgba(255, 255, 255, 0.04);
     color: #f5f7ff;
     padding: 0.45rem 0.6rem;
@@ -415,7 +757,7 @@
   }
 
   .iso-room-card {
-    border: 1px solid var(--neo-border);
+    border: 1px solid var(--iso-border);
     border-radius: 16px;
     background: rgba(10, 14, 31, 0.6);
     padding: 0.95rem 1rem;
@@ -445,7 +787,7 @@
     width: 100%;
     min-height: 200px;
     background: rgba(255, 255, 255, 0.04);
-    border: 1px solid var(--neo-border);
+    border: 1px solid var(--iso-border);
     border-radius: 12px;
     padding: 0.8rem;
     color: #f5f7ff;
@@ -460,7 +802,7 @@
     justify-content: space-between;
     gap: 1rem;
     font-size: 0.75rem;
-    color: var(--neo-text-muted);
+    color: var(--iso-text-muted);
   }
 
   .iso-room-card__status {
@@ -475,12 +817,12 @@
   }
 
   .iso-room-card__status.is-danger {
-    color: var(--neo-danger);
+    color: var(--iso-danger);
   }
 
   .iso-room-card__empty {
     font-size: 0.8rem;
-    color: var(--neo-text-muted);
+    color: var(--iso-text-muted);
   }
 
   .iso-room-card__content {
@@ -498,7 +840,7 @@
   .iso-input {
     flex: 1;
     border-radius: 10px;
-    border: 1px solid var(--neo-border);
+    border: 1px solid var(--iso-border);
     background: rgba(255, 255, 255, 0.05);
     color: #f5f7ff;
     padding: 0.45rem 0.6rem;
@@ -533,7 +875,7 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.3rem;
     font-size: 0.78rem;
-    color: var(--neo-text-muted);
+    color: var(--iso-text-muted);
   }
 
   .iso-room-card__name {
@@ -575,7 +917,7 @@
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 0.6rem;
     font-size: 0.78rem;
-    color: var(--neo-text-muted);
+    color: var(--iso-text-muted);
   }
 
   .iso-room-meta strong {
@@ -588,13 +930,13 @@
     margin: 0;
     padding-left: 1.1rem;
     font-size: 0.78rem;
-    color: var(--neo-text-muted);
+    color: var(--iso-text-muted);
     display: grid;
     gap: 0.35rem;
   }
 
   .iso-texture {
-    border: 1px solid var(--neo-border);
+    border: 1px solid var(--iso-border);
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.04);
     padding: 0.6rem 0.75rem;
@@ -628,7 +970,7 @@
 
   .iso-segmented__option {
     border-radius: 14px;
-    border: 1px solid var(--neo-border);
+    border: 1px solid var(--iso-border);
     background: rgba(255, 255, 255, 0.04);
     padding: 0.7rem 0.9rem;
     display: flex;
@@ -656,7 +998,7 @@
   }
 
   .iso-furniture__item {
-    border: 1px solid var(--neo-border);
+    border: 1px solid var(--iso-border);
     border-radius: 16px;
     background: rgba(10, 14, 31, 0.55);
     padding: 0.85rem 1rem;
@@ -692,7 +1034,7 @@
   .iso-furniture__label {
     font-size: 0.82rem;
     text-align: center;
-    color: var(--neo-text-muted);
+    color: var(--iso-text-muted);
   }
 
   .iso-furniture__selection {
@@ -722,7 +1064,7 @@
     max-height: 220px;
     overflow-y: auto;
     border-radius: 12px;
-    border: 1px solid var(--neo-border);
+    border: 1px solid var(--iso-border);
     background: rgba(10, 14, 31, 0.55);
     padding: 0.75rem;
     display: flex;
@@ -740,113 +1082,64 @@
 
   .iso-chat__input {
     border-radius: 12px;
-    border: 1px solid var(--neo-border);
+    border: 1px solid var(--iso-border);
     background: rgba(255, 255, 255, 0.08);
     color: #f5f7ff;
     padding: 0.55rem 0.75rem;
     font-size: 0.85rem;
   }
 
-  .neo-guide {
-    display: flex;
-    flex-direction: column;
-    gap: 0.9rem;
-  }
 
-  .neo-guide__card {
+  .iso-guide__card {
     border-radius: 16px;
     background: rgba(255, 255, 255, 0.04);
-    border: 1px solid var(--neo-border);
+    border: 1px solid var(--iso-border);
     padding: 0.75rem 0.85rem;
     display: flex;
     flex-direction: column;
     gap: 0.55rem;
   }
 
-  .neo-guide__label {
+  .iso-guide__label {
     font-size: 0.75rem;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: var(--neo-text-muted);
+    color: var(--iso-text-muted);
   }
 
-  .neo-guide__badge {
+  .iso-guide__badge {
     font-size: 1.05rem;
     font-weight: 600;
   }
 
-  .neo-guide__list {
+  .iso-guide__list {
     margin: 0;
     padding-left: 1.05rem;
     display: grid;
     gap: 0.35rem;
     font-size: 0.8rem;
-    color: var(--neo-text-muted);
+    color: var(--iso-text-muted);
   }
 
-  .neo-minimap {
-    padding: 0.4rem;
-    border-radius: 16px;
-    background: rgba(10, 14, 31, 0.55);
-    border: 1px solid var(--neo-border);
-    display: flex;
-    justify-content: center;
-  }
 
-  .neo-minimap__canvas {
+  .iso-minimap__canvas {
     width: 100%;
     height: auto;
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
-  .neo-dock {
-    position: fixed;
-    left: clamp(16px, 4vw, 48px);
-    bottom: clamp(16px, 4vw, 48px);
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    z-index: 12;
-    pointer-events: all;
-  }
 
-  .neo-dock__button {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.55rem 1rem;
-    background: rgba(10, 14, 31, 0.72);
-    border-radius: 999px;
-    border: 1px solid var(--neo-border);
-    color: var(--neo-text-muted);
-    font-size: 0.8rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
-  }
 
-  .neo-dock__button.is-active {
-    background: linear-gradient(135deg, rgba(110, 139, 255, 0.18), rgba(110, 139, 255, 0.35));
-    color: #f5f7ff;
-    transform: translateX(4px);
-  }
 
-  .neo-dock__icon {
-    font-size: 1.1rem;
-  }
 
-  .neo-dock__label {
-    font-size: 0.72rem;
-  }
 
   .iso-context-menu {
     position: absolute;
     pointer-events: all;
     background: rgba(10, 14, 31, 0.85);
     border-radius: 16px;
-    border: 1px solid var(--neo-border);
+    border: 1px solid var(--iso-border);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
     overflow: hidden;
   }
@@ -880,19 +1173,6 @@
       margin-bottom: 1rem;
     }
 
-    /* Above .neo-dock: the dock is a launcher, and when a window overlapped it
-     the dock swallowed every click on the window content beneath. */
-  .neo-window-layer {
-      position: static;
-      padding-bottom: 140px;
-      overflow-y: auto;
-    }
-
-    .neo-dock {
-      flex-direction: row;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
+  
   }
 }

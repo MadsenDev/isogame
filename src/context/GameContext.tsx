@@ -1,4 +1,7 @@
-import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react'
+import React, { createContext, useContext, useReducer, ReactNode, useEffect, useRef } from 'react'
+import { getWorldStore } from '../persistence/worldStore'
+import { fromPersistedRoom, toWorldDocument } from '../persistence/serialise'
+import type { WorldDocument } from '../persistence/types'
 import roomLayoutDefinitions from '../assets/roomLayouts.json'
 import type { WallEdge } from '../data/structureSprites'
 
@@ -134,6 +137,14 @@ export interface Room {
    * enclose means the sprite's own anchor positions them, with no fudge.
    */
   walls: Array<{ x: number; y: number; edge: WallEdge }>
+  /**
+   * Wall segments replaced by a window.
+   *
+   * Kept separate from `walls` so rebuilding the walls after a layout change
+   * does not discard them; a window with no wall left under it is simply not
+   * drawn.
+   */
+  windows?: Array<{ x: number; y: number; edge: WallEdge }>
   doorway?: { x: number; y: number; type: 'north-east' | 'north-west' }
   spawnPoint?: { x: number; y: number }
   floorTexture?: string
@@ -173,6 +184,8 @@ export interface GameState {
   previewFurniture: { x: number; y: number; type: string; direction?: FurnitureDirection } | null
   /** Orientation the next placed piece will use. Null means its default. */
   placementDirection: FurnitureDirection | null
+  /** What the Style tool does with a click. */
+  styleMode: 'floor' | 'window'
 }
 
 // Action types
@@ -189,6 +202,8 @@ export type GameAction =
       payload: { roomId: string } & RoomLayoutUpdate
     }
   | { type: 'TOGGLE_FLOOR_TILE'; payload: { x: number; y: number } }
+  | { type: 'TOGGLE_WINDOW'; payload: { x: number; y: number } }
+  | { type: 'SET_STYLE_MODE'; payload: 'floor' | 'window' }
   | { type: 'FILL_ROOM_FLOOR' }
   | { type: 'CLEAR_ROOM_FLOOR' }
   | { type: 'SET_FLOOR_TEXTURE'; payload: { roomId: string; texture: string } }
@@ -222,6 +237,7 @@ const initialState: GameState = {
   hoverGridPos: null,
   previewFurniture: null,
   placementDirection: null,
+  styleMode: 'floor',
 }
 
 // Reducer
@@ -242,6 +258,12 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       return { ...state, isPlacing: action.payload }
     
     case 'ADD_ROOM':
+      // Idempotent: React StrictMode runs the bootstrap effect twice in
+      // development, which otherwise loaded every predefined room a second
+      // time and left two rooms sharing an id.
+      if (state.rooms.some(room => room.id === action.payload.id)) {
+        return state
+      }
       return { ...state, rooms: [...state.rooms, ensureRoomFloorTiles(action.payload)] }
 
     case 'SET_CURRENT_ROOM':
@@ -513,18 +535,64 @@ function gameReducer(state: GameState, action: GameAction): GameState {
        }
      }
 
+    case 'SET_STYLE_MODE':
+      return { ...state, styleMode: action.payload }
+
+    case 'TOGGLE_WINDOW': {
+      if (!state.currentRoom) return state
+
+      // Every wall edge on the clicked tile flips together. Almost every tile
+      // has exactly one, and picking between two by cursor position at this
+      // scale would be a coin toss.
+      const edges = state.currentRoom.walls.filter(
+        wall => wall.x === action.payload.x && wall.y === action.payload.y
+      )
+      if (edges.length === 0) return state
+
+      const existing = state.currentRoom.windows ?? []
+      const isOpen = edges.every(edge =>
+        existing.some(w => w.x === edge.x && w.y === edge.y && w.edge === edge.edge)
+      )
+
+      const windows = isOpen
+        ? existing.filter(
+            w => !edges.some(edge => w.x === edge.x && w.y === edge.y && w.edge === edge.edge)
+          )
+        : [
+            ...existing.filter(
+              w => !edges.some(edge => w.x === edge.x && w.y === edge.y && w.edge === edge.edge)
+            ),
+            ...edges.map(edge => ({ x: edge.x, y: edge.y, edge: edge.edge }))
+          ]
+
+      const applyWindows = (room: Room) =>
+        room.id === state.currentRoom!.id ? { ...room, windows } : room
+
+      return {
+        ...state,
+        rooms: state.rooms.map(applyWindows),
+        currentRoom: { ...state.currentRoom, windows }
+      }
+    }
+
     case 'SET_PLACEMENT_DIRECTION':
       return { ...state, placementDirection: action.payload }
 
-    case 'ADD_FURNITURE':
+    case 'ADD_FURNITURE': {
       if (!state.currentRoom) return state
+
+      // Both copies, or the room in `rooms` stays empty: leaving the current
+      // room and coming back already lost the furniture, and saving would have
+      // persisted the empty one.
+      const furniture = [...state.currentRoom.furniture, action.payload]
+      const roomId = state.currentRoom.id
+
       return {
         ...state,
-        currentRoom: {
-          ...state.currentRoom,
-          furniture: [...state.currentRoom.furniture, action.payload]
-        }
+        rooms: state.rooms.map(room => (room.id === roomId ? { ...room, furniture } : room)),
+        currentRoom: { ...state.currentRoom, furniture }
       }
+    }
     
     case 'ADD_PLAYER':
       return {
@@ -609,6 +677,8 @@ const GameContext = createContext<{
     updateLayout: (roomId: string, layout: RoomLayoutUpdate) => void
     setFloorTexture: (roomId: string, texture: string) => void
     setTileTexture: (roomId: string, x: number, y: number, texture: string) => void
+    /** Discard the saved world and reload from the shipped layouts. */
+    resetWorld: () => void
   }
 } | null>(null)
 
@@ -694,7 +764,7 @@ const normalizeSpawnPoint = (width: number, height: number, spawnPoint?: { x: nu
   return { x, y }
 }
 
-function buildRoomWalls(
+export function buildRoomWalls(
   width: number,
   height: number,
   doorway?: { x: number; y: number; type: 'north-east' | 'north-west' },
@@ -904,6 +974,11 @@ const createRoom = (name: string, width: number, height: number, floorTexture?: 
 export function GameProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(gameReducer, initialState)
 
+  /** The last document we stored, so revisions increment rather than reset. */
+  const savedWorld = useRef<WorldDocument | null>(null)
+  /** Saving stays off until the world is loaded, or boot would overwrite it. */
+  const hydrated = useRef(false)
+
   // Dev-only inspection hook. Reading the live room and player state from the
   // console (or a browser test) beats inferring it from canvas pixels.
   useEffect(() => {
@@ -927,22 +1002,71 @@ export function GameProvider({ children }: { children: ReactNode }) {
     )
 
     const predefinedRooms = validLayoutDefinitions.map(createRoomFromLayoutDefinition)
-    const roomsToLoad = predefinedRooms.length > 0
+    const fallbackRooms = predefinedRooms.length > 0
       ? predefinedRooms
       : [createRoom('Main Room', 20, 15)]
 
-    roomsToLoad.forEach(room => {
-      dispatch({ type: 'ADD_ROOM', payload: room })
-    })
+    // A saved world wins over the shipped layouts; the layouts are the seed for
+    // a first visit, not the source of truth afterwards.
+    let cancelled = false
 
-    const defaultRoom = roomsToLoad[0]
-    if (!defaultRoom) {
-      return
+    const bootstrap = async () => {
+      const saved = await getWorldStore().load()
+      if (cancelled) return
+
+      const restored = saved?.rooms?.length
+        ? saved.rooms.map(fromPersistedRoom)
+        : null
+
+      if (restored) savedWorld.current = saved
+
+      const roomsToLoad = restored ?? fallbackRooms
+      roomsToLoad.forEach(room => {
+        dispatch({ type: 'ADD_ROOM', payload: room })
+      })
+
+      const defaultRoom =
+        roomsToLoad.find(room => room.id === saved?.currentRoomId) ?? roomsToLoad[0]
+      if (!defaultRoom) return
+
+      dispatch({ type: 'SET_CURRENT_ROOM', payload: defaultRoom })
+      startPlayers(defaultRoom)
+      hydrated.current = true
     }
 
-    dispatch({ type: 'SET_CURRENT_ROOM', payload: defaultRoom })
+    void bootstrap()
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
-    // Create players
+  /**
+   * Persist the world whenever the authored parts of it change.
+   *
+   * Debounced because painting a floor fires a dispatch per tile, and a save
+   * per tile would be pointless locally and abusive against a server.
+   */
+  useEffect(() => {
+    if (!hydrated.current || state.rooms.length === 0) return
+
+    const timer = window.setTimeout(() => {
+      const document = toWorldDocument(
+        state.rooms,
+        state.currentRoom?.id ?? null,
+        savedWorld.current
+      )
+      void getWorldStore()
+        .save(document)
+        .then(stored => {
+          savedWorld.current = stored
+        })
+    }, 600)
+
+    return () => window.clearTimeout(timer)
+  }, [state.rooms, state.currentRoom])
+
+  /** Seed the four guests at the room's spawn point. */
+  const startPlayers = (defaultRoom: Room) => {
     const players: Player[] = [
       {
         id: 0,
@@ -1022,14 +1146,20 @@ export function GameProvider({ children }: { children: ReactNode }) {
       }
     ]
 
-    // Add players to state (we'll need to add this action)
     players.forEach(player => {
       dispatch({ type: 'ADD_PLAYER', payload: player })
     })
-  }, [])
+  }
 
   // Room management functions
     const roomManager = {
+      /** Forget the saved world and reload from the shipped layouts. */
+      resetWorld: async () => {
+        hydrated.current = false
+        savedWorld.current = null
+        await getWorldStore().clear()
+        window.location.reload()
+      },
       createRoom: (name: string, width: number, height: number, floorTexture?: string) => {
         const newRoom = createRoom(name, width, height, floorTexture)
         dispatch({ type: 'ADD_ROOM', payload: newRoom })

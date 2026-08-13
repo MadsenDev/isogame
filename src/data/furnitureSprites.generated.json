@@ -1,7 +1,7 @@
 {
   "generator": {
     "version": 1,
-    "renderedAt": "2026-08-13T19:42:35.058Z",
+    "renderedAt": "2026-08-13T20:44:32.565Z",
     "config": {
       "supersample": 4,
       "padding": 2,
@@ -2253,9 +2253,9 @@
           "file": "south.png",
           "index": 0,
           "width": 21,
-          "height": 18,
+          "height": 17,
           "anchorX": 19,
-          "anchorY": 50,
+          "anchorY": 62,
           "footprint": {
             "width": 1,
             "height": 1
@@ -2282,9 +2282,9 @@
           "file": "east.png",
           "index": 3,
           "width": 21,
-          "height": 18,
+          "height": 17,
           "anchorX": 2,
-          "anchorY": 50,
+          "anchorY": 62,
           "footprint": {
             "width": 1,
             "height": 1
@@ -2311,7 +2311,7 @@
       "sheet": {
         "file": "sheet.png",
         "width": 43,
-        "height": 18,
+        "height": 17,
         "frames": [
           {
             "direction": "south",
@@ -2319,9 +2319,9 @@
             "x": 0,
             "y": 0,
             "width": 21,
-            "height": 18,
+            "height": 17,
             "anchorX": 19,
-            "anchorY": 50,
+            "anchorY": 62,
             "footprint": {
               "width": 1,
               "height": 1
@@ -2333,9 +2333,9 @@
             "x": 22,
             "y": 0,
             "width": 21,
-            "height": 18,
+            "height": 17,
             "anchorX": 2,
-            "anchorY": 50,
+            "anchorY": 62,
             "footprint": {
               "width": 1,
               "height": 1
@@ -2386,7 +2386,7 @@
           "width": 26,
           "height": 29,
           "anchorX": 13,
-          "anchorY": 58,
+          "anchorY": 77,
           "footprint": {
             "width": 1,
             "height": 1
@@ -2396,8 +2396,8 @@
             "file": "south-shadow.png",
             "width": 27,
             "height": 13,
-            "anchorX": -10,
-            "anchorY": 7
+            "anchorX": -22,
+            "anchorY": 8
           }
         },
         "west": {
@@ -2406,7 +2406,7 @@
           "width": 26,
           "height": 29,
           "anchorX": 13,
-          "anchorY": 58,
+          "anchorY": 77,
           "footprint": {
             "width": 1,
             "height": 1
@@ -2416,8 +2416,8 @@
             "file": "west-shadow.png",
             "width": 27,
             "height": 13,
-            "anchorX": -10,
-            "anchorY": 7
+            "anchorX": -22,
+            "anchorY": 8
           }
         },
         "north": {
@@ -2426,7 +2426,7 @@
           "width": 26,
           "height": 29,
           "anchorX": 13,
-          "anchorY": 58,
+          "anchorY": 77,
           "footprint": {
             "width": 1,
             "height": 1
@@ -2436,8 +2436,8 @@
             "file": "north-shadow.png",
             "width": 27,
             "height": 13,
-            "anchorX": -10,
-            "anchorY": 7
+            "anchorX": -22,
+            "anchorY": 8
           }
         },
         "east": {
@@ -2446,7 +2446,7 @@
           "width": 26,
           "height": 29,
           "anchorX": 13,
-          "anchorY": 58,
+          "anchorY": 77,
           "footprint": {
             "width": 1,
             "height": 1
@@ -2456,8 +2456,8 @@
             "file": "east-shadow.png",
             "width": 27,
             "height": 13,
-            "anchorX": -10,
-            "anchorY": 7
+            "anchorX": -22,
+            "anchorY": 8
           }
         }
       },
@@ -2474,7 +2474,7 @@
             "width": 26,
             "height": 29,
             "anchorX": 13,
-            "anchorY": 58,
+            "anchorY": 77,
             "footprint": {
               "width": 1,
               "height": 1
@@ -2488,7 +2488,7 @@
             "width": 26,
             "height": 29,
             "anchorX": 13,
-            "anchorY": 58,
+            "anchorY": 77,
             "footprint": {
               "width": 1,
               "height": 1
@@ -2502,7 +2502,7 @@
             "width": 26,
             "height": 29,
             "anchorX": 13,
-            "anchorY": 58,
+            "anchorY": 77,
             "footprint": {
               "width": 1,
               "height": 1
@@ -2516,7 +2516,7 @@
             "width": 26,
             "height": 29,
             "anchorX": 13,
-            "anchorY": 58,
+            "anchorY": 77,
             "footprint": {
               "width": 1,
               "height": 1

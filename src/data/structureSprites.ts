@@ -48,6 +48,8 @@ const EDGE_DIRECTION: Record<WallEdge, string> = {
 
 export const WALL_PANEL_ID = 'wall_panel'
 export const WALL_CORNER_ID = 'wall_corner'
+export const DOOR_ID = 'door'
+export const WINDOW_ID = 'window'
 
 /** Floor texture names, as rooms store them, mapped to generated tiles. */
 const FLOOR_TEXTURES: Record<string, string> = {
@@ -81,6 +83,32 @@ export function getWallSprite(edge: WallEdge): StructureSprite | null {
   return resolve(WALL_PANEL_ID, EDGE_DIRECTION[edge])
 }
 
+/** The doorway panel: the same wall, with an opening in it. */
+export function getDoorSprite(edge: WallEdge): StructureSprite | null {
+  return resolve(DOOR_ID, EDGE_DIRECTION[edge])
+}
+
+/** The window panel: the same wall, opened in its upper half. */
+export function getWindowSprite(edge: WallEdge): StructureSprite | null {
+  return resolve(WINDOW_ID, EDGE_DIRECTION[edge])
+}
+
+/**
+ * Where a doorway's panel belongs, as a tile and an edge.
+ *
+ * Doorways are stored on the empty tile *outside* the room - the same scheme
+ * walls used before they moved - so this converts to the tile-and-edge model
+ * the wall sprites are anchored by.
+ */
+export function doorwayWall(
+  doorway: { x: number; y: number; type: 'north-east' | 'north-west' } | undefined
+): { x: number; y: number; edge: WallEdge } | null {
+  if (!doorway) return null
+  return doorway.type === 'north-east'
+    ? { x: doorway.x, y: doorway.y + 1, edge: 'west' }
+    : { x: doorway.x + 1, y: doorway.y, edge: 'north' }
+}
+
 /** The post filling the square where two perpendicular runs meet. */
 export function getWallCornerSprite(): StructureSprite | null {
   return resolve(WALL_CORNER_ID, 'south')
@@ -93,7 +121,22 @@ export function getAllStructureUrls(): string[] {
   )
 }
 
-/** Floor textures the game can offer, in catalogue order. */
+/**
+ * Floor textures worth offering, one per distinct generated tile.
+ *
+ * Several legacy texture names map to the same sprite - brick and stone both
+ * resolve to floor_stone - so listing every name put visibly identical swatches
+ * side by side and implied choices that do not exist.
+ */
 export function getFloorTextureNames(): string[] {
-  return Object.keys(FLOOR_TEXTURES).filter(name => name !== 'default')
+  const seen = new Set<string>()
+  const names: string[] = []
+
+  for (const [name, id] of Object.entries(FLOOR_TEXTURES)) {
+    if (name === 'default' || seen.has(id)) continue
+    seen.add(id)
+    names.push(name)
+  }
+
+  return names
 }

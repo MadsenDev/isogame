@@ -245,6 +245,230 @@ const WALL_CORNER: AssetSpec = {
 
 STRUCTURES.push(WALL_CORNER)
 
+/**
+ * A doorway: the same wall, with a hole in it.
+ *
+ * Built to the wall's dimensions - same thickness, same face plane, same one
+ * tile long - so it drops into a run without a seam. The opening is tall enough
+ * to walk through, which is what forced WALL_HEIGHT up: at the old height a
+ * guest was taller than the wall containing the door.
+ */
+const DOOR_OPENING_WIDTH = 0.66
+const DOOR_OPENING_HEIGHT = 1.62
+const DOOR_POST_WIDTH = (1 - DOOR_OPENING_WIDTH) / 2
+
+const DOOR: AssetSpec = {
+  id: 'door',
+  name: 'Doorway',
+  facing: 'south',
+  placement: 'wall',
+  footprint: { width: 1, height: 1 },
+  behaviour: { ...STRUCTURE_BEHAVIOUR, category: 'wall', walkable: true },
+  outline: { enabled: false },
+  shadow: { enabled: false },
+  materials: {
+    face: { colour: '#b08152' },
+    skirting: { colour: '#7d5735' },
+    frame: { colour: '#8a5f38' },
+    // Unlit: what is past the door is not in this room's light.
+    beyond: { colour: '#241d2b', unlit: true },
+    threshold: { colour: '#9a7248' },
+  },
+  parts: [
+    // Posts either side of the opening.
+    {
+      type: 'box',
+      size: [WALL_THICKNESS, WALL_HEIGHT, DOOR_POST_WIDTH],
+      position: [-0.5 - WALL_THICKNESS / 2, WALL_HEIGHT / 2, -0.5 + DOOR_POST_WIDTH / 2],
+      material: 'face',
+    },
+    {
+      type: 'box',
+      size: [WALL_THICKNESS, WALL_HEIGHT, DOOR_POST_WIDTH],
+      position: [-0.5 - WALL_THICKNESS / 2, WALL_HEIGHT / 2, 0.5 - DOOR_POST_WIDTH / 2],
+      material: 'face',
+    },
+    // Lintel over the opening.
+    {
+      type: 'box',
+      size: [WALL_THICKNESS, WALL_HEIGHT - DOOR_OPENING_HEIGHT, 1],
+      position: [
+        -0.5 - WALL_THICKNESS / 2,
+        DOOR_OPENING_HEIGHT + (WALL_HEIGHT - DOOR_OPENING_HEIGHT) / 2,
+        0,
+      ],
+      material: 'face',
+    },
+    // Darkness beyond, set behind the wall so the opening reads as a hole
+    // rather than as a painted rectangle.
+    {
+      type: 'box',
+      size: [0.04, DOOR_OPENING_HEIGHT, DOOR_OPENING_WIDTH],
+      position: [-0.5 - WALL_THICKNESS - 0.02, DOOR_OPENING_HEIGHT / 2, 0],
+      material: 'beyond',
+    },
+    // Frame trim, standing slightly proud of the wall face.
+    {
+      type: 'box',
+      size: [WALL_THICKNESS + 0.05, DOOR_OPENING_HEIGHT + 0.08, 0.07],
+      position: [-0.5 - WALL_THICKNESS / 2 + 0.025, (DOOR_OPENING_HEIGHT + 0.08) / 2, -DOOR_OPENING_WIDTH / 2],
+      material: 'frame',
+    },
+    {
+      type: 'box',
+      size: [WALL_THICKNESS + 0.05, DOOR_OPENING_HEIGHT + 0.08, 0.07],
+      position: [-0.5 - WALL_THICKNESS / 2 + 0.025, (DOOR_OPENING_HEIGHT + 0.08) / 2, DOOR_OPENING_WIDTH / 2],
+      material: 'frame',
+    },
+    {
+      type: 'box',
+      size: [WALL_THICKNESS + 0.05, 0.08, DOOR_OPENING_WIDTH + 0.14],
+      position: [-0.5 - WALL_THICKNESS / 2 + 0.025, DOOR_OPENING_HEIGHT + 0.04, 0],
+      material: 'frame',
+    },
+    // Threshold across the floor of the opening.
+    {
+      type: 'box',
+      size: [WALL_THICKNESS + 0.06, 0.03, DOOR_OPENING_WIDTH],
+      position: [-0.5 - WALL_THICKNESS / 2 + 0.03, 0.015, 0],
+      material: 'threshold',
+    },
+    // Skirting continues across the posts only, so the run reads unbroken.
+    {
+      type: 'box',
+      size: [WALL_THICKNESS + 0.03, 0.1, DOOR_POST_WIDTH],
+      position: [-0.5 - WALL_THICKNESS / 2 + 0.015, 0.05, -0.5 + DOOR_POST_WIDTH / 2],
+      material: 'skirting',
+    },
+    {
+      type: 'box',
+      size: [WALL_THICKNESS + 0.03, 0.1, DOOR_POST_WIDTH],
+      position: [-0.5 - WALL_THICKNESS / 2 + 0.015, 0.05, 0.5 - DOOR_POST_WIDTH / 2],
+      material: 'skirting',
+    },
+  ],
+}
+
+STRUCTURES.push(DOOR)
+
+/**
+ * A window: the same wall again, opened in its upper half.
+ *
+ * Like the door it is built to the wall's own dimensions so it drops into a run
+ * without a seam. What is beyond is unlit and pale rather than dark - daylight
+ * is not this room's key light either, but it is not a void.
+ */
+const WINDOW_WIDTH = 0.62
+const WINDOW_SILL = 0.72
+const WINDOW_HEAD = 1.52
+const WINDOW_PIER = (1 - WINDOW_WIDTH) / 2
+
+const WINDOW: AssetSpec = {
+  id: 'window',
+  name: 'Window',
+  facing: 'south',
+  placement: 'wall',
+  footprint: { width: 1, height: 1 },
+  behaviour: { ...STRUCTURE_BEHAVIOUR, category: 'wall', walkable: false },
+  outline: { enabled: false },
+  shadow: { enabled: false },
+  materials: {
+    face: { colour: '#b08152' },
+    skirting: { colour: '#7d5735' },
+    frame: { colour: '#c49a68' },
+    sill: { colour: '#9a7248' },
+    sky: { colour: '#9fc6e0', unlit: true },
+    glint: { colour: '#d8ecf7', unlit: true },
+  },
+  parts: [
+    // Piers either side, plus the wall below the sill and above the head.
+    {
+      type: 'box',
+      size: [WALL_THICKNESS, WALL_HEIGHT, WINDOW_PIER],
+      position: [-0.5 - WALL_THICKNESS / 2, WALL_HEIGHT / 2, -0.5 + WINDOW_PIER / 2],
+      material: 'face',
+    },
+    {
+      type: 'box',
+      size: [WALL_THICKNESS, WALL_HEIGHT, WINDOW_PIER],
+      position: [-0.5 - WALL_THICKNESS / 2, WALL_HEIGHT / 2, 0.5 - WINDOW_PIER / 2],
+      material: 'face',
+    },
+    {
+      type: 'box',
+      size: [WALL_THICKNESS, WINDOW_SILL, 1],
+      position: [-0.5 - WALL_THICKNESS / 2, WINDOW_SILL / 2, 0],
+      material: 'face',
+    },
+    {
+      type: 'box',
+      size: [WALL_THICKNESS, WALL_HEIGHT - WINDOW_HEAD, 1],
+      position: [-0.5 - WALL_THICKNESS / 2, WINDOW_HEAD + (WALL_HEIGHT - WINDOW_HEAD) / 2, 0],
+      material: 'face',
+    },
+    // Daylight beyond, set behind the wall like the door's void.
+    {
+      type: 'box',
+      size: [0.04, WINDOW_HEAD - WINDOW_SILL, WINDOW_WIDTH],
+      position: [
+        -0.5 - WALL_THICKNESS - 0.02,
+        (WINDOW_SILL + WINDOW_HEAD) / 2,
+        0,
+      ],
+      material: 'sky',
+    },
+    // A diagonal glint, so the opening reads as glazed rather than empty.
+    {
+      type: 'box',
+      size: [0.02, (WINDOW_HEAD - WINDOW_SILL) * 0.8, 0.1],
+      position: [-0.5 - WALL_THICKNESS - 0.04, (WINDOW_SILL + WINDOW_HEAD) / 2, -0.1],
+      rotation: [18, 0, 0],
+      material: 'glint',
+    },
+    // Frame: jambs, head, and a mullion down the middle.
+    {
+      type: 'box',
+      size: [WALL_THICKNESS + 0.04, WINDOW_HEAD - WINDOW_SILL + 0.1, 0.06],
+      position: [-0.5 - WALL_THICKNESS / 2 + 0.02, (WINDOW_SILL + WINDOW_HEAD) / 2, -WINDOW_WIDTH / 2],
+      material: 'frame',
+    },
+    {
+      type: 'box',
+      size: [WALL_THICKNESS + 0.04, WINDOW_HEAD - WINDOW_SILL + 0.1, 0.06],
+      position: [-0.5 - WALL_THICKNESS / 2 + 0.02, (WINDOW_SILL + WINDOW_HEAD) / 2, WINDOW_WIDTH / 2],
+      material: 'frame',
+    },
+    {
+      type: 'box',
+      size: [WALL_THICKNESS + 0.04, 0.06, WINDOW_WIDTH + 0.12],
+      position: [-0.5 - WALL_THICKNESS / 2 + 0.02, WINDOW_HEAD + 0.03, 0],
+      material: 'frame',
+    },
+    {
+      type: 'box',
+      size: [WALL_THICKNESS + 0.02, WINDOW_HEAD - WINDOW_SILL, 0.045],
+      position: [-0.5 - WALL_THICKNESS / 2 + 0.01, (WINDOW_SILL + WINDOW_HEAD) / 2, 0],
+      material: 'frame',
+    },
+    // Sill, standing proud into the room.
+    {
+      type: 'box',
+      size: [WALL_THICKNESS + 0.12, 0.06, WINDOW_WIDTH + 0.18],
+      position: [-0.5 - WALL_THICKNESS / 2 + 0.06, WINDOW_SILL - 0.03, 0],
+      material: 'sill',
+    },
+    // Skirting runs unbroken: nothing interrupts it at floor level.
+    {
+      type: 'box',
+      size: [WALL_THICKNESS + 0.03, 0.1, 1],
+      position: [-0.5 - WALL_THICKNESS / 2 + 0.015, 0.05, 0],
+      material: 'skirting',
+    },
+  ],
+}
+
+STRUCTURES.push(WINDOW)
+
 export function findStructure(id: string): AssetSpec | undefined {
   return STRUCTURES.find((structure) => structure.id === id)
 }

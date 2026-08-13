@@ -3,97 +3,86 @@ import { useGame } from '../context/GameContext'
 import { getAllFurnitureDefinitions, getFurnitureByCategory } from '../data/furnitureDefinitions'
 import type { FurnitureDefinition } from '../context/GameContext'
 
+const CATEGORIES = [
+  { id: 'all', name: 'All', icon: '📦' },
+  { id: 'seating', name: 'Seating', icon: '🪑' },
+  { id: 'functional', name: 'Functional', icon: '⚙️' },
+  { id: 'decoration', name: 'Decor', icon: '🎨' },
+  { id: 'flooring', name: 'Floor', icon: '🏠' },
+  { id: 'wall', name: 'Wall', icon: '🧱' }
+] as const
+
 export const FurnitureSelector: React.FC = () => {
   const { state, dispatch } = useGame()
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
-  const categories = [
-    { id: 'all', name: 'All', icon: '📦' },
-    { id: 'seating', name: 'Seating', icon: '🪑' },
-    { id: 'decoration', name: 'Decoration', icon: '🎨' },
-    { id: 'functional', name: 'Functional', icon: '⚙️' },
-    { id: 'flooring', name: 'Flooring', icon: '🏠' },
-    { id: 'wall', name: 'Wall', icon: '🧱' }
-  ]
+  const [category, setCategory] = useState<string>('all')
 
-  const getFilteredFurniture = () => {
-    if (selectedCategory === 'all') {
-      return getAllFurnitureDefinitions()
-    }
-    return getFurnitureByCategory(selectedCategory as FurnitureDefinition['category'])
-  }
+  const furniture = category === 'all'
+    ? getAllFurnitureDefinitions()
+    : getFurnitureByCategory(category as FurnitureDefinition['category'])
 
-  const handleFurnitureSelect = (furnitureType: string) => {
-    dispatch({ type: 'SELECT_FURNITURE', payload: furnitureType })
-    dispatch({ type: 'SET_PLACING', payload: true })
-  }
-
-  /** Show the generated sprite itself, not a coloured placeholder. */
-  const renderFurniturePreview = (furniture: FurnitureDefinition) => (
-    <div className="iso-furniture__preview">
-      <img className="iso-sprite" src={furniture.sprite} alt={furniture.name} />
-    </div>
-  )
+  const selected = state.selectedFurniture
+    ? getAllFurnitureDefinitions().find(item => item.id === state.selectedFurniture)
+    : null
 
   return (
-    <div className="panel-content">
-      <div className="panel-section">
-        <div className="iso-segmented">
-          {categories.map(category => (
-            <button
-              key={category.id}
-              onClick={() => setSelectedCategory(category.id)}
-              className={`iso-segmented__option ${selectedCategory === category.id ? 'is-active' : ''}`}
-            >
-              <span className="iso-segmented__icon">{category.icon}</span>
-              <span className="iso-segmented__label">{category.name}</span>
-            </button>
-          ))}
-        </div>
+    <div className="iso-catalog">
+      {/* One scrolling row rather than a six-cell grid: the filter is a
+          secondary control and should not cost three rows of the panel. */}
+      <div className="iso-chips" role="tablist" aria-label="Category">
+        {CATEGORIES.map(entry => (
+          <button
+            key={entry.id}
+            role="tab"
+            aria-selected={category === entry.id}
+            className={`iso-chip ${category === entry.id ? 'is-active' : ''}`}
+            onClick={() => setCategory(entry.id)}
+          >
+            <span aria-hidden="true">{entry.icon}</span>
+            {entry.name}
+          </button>
+        ))}
       </div>
 
-      <div className="panel-section">
-        <div className="iso-furniture__grid">
-          {getFilteredFurniture().map(furniture => (
-            <button
-              key={furniture.id}
-              onClick={() => handleFurnitureSelect(furniture.id)}
-              className={`iso-furniture__item ${state.selectedFurniture === furniture.id ? 'is-active' : ''}`}
-              title={`${furniture.name} (${furniture.width}×${furniture.height})`}
-            >
-              {renderFurniturePreview(furniture)}
-              <span className="iso-furniture__label">{furniture.name}</span>
-            </button>
-          ))}
-        </div>
+      <div className="iso-catalog__grid">
+        {furniture.map(item => (
+          <button
+            key={item.id}
+            onClick={() => {
+              dispatch({ type: 'SELECT_FURNITURE', payload: item.id })
+              dispatch({ type: 'SET_PLACING', payload: true })
+            }}
+            className={`iso-card ${state.selectedFurniture === item.id ? 'is-active' : ''}`}
+            title={`${item.name} — ${item.width}×${item.height}`}
+          >
+            <img className="iso-card__art iso-sprite" src={item.sprite} alt="" />
+            <span className="iso-card__name">{item.name}</span>
+            <span className="iso-card__meta">{item.width}×{item.height}</span>
+          </button>
+        ))}
+
+        {furniture.length === 0 && (
+          <p className="iso-note">Nothing in this category yet.</p>
+        )}
       </div>
 
-      {state.selectedFurniture && (
-        <div className="panel-section">
-          <div className="iso-furniture__selection">
-            <div className="iso-furniture__selection-title">
-              Selected: <strong>{state.selectedFurniture}</strong>
-            </div>
-            <p>Click on the floor to place the item.</p>
-            <button
-              onClick={() => {
-                dispatch({ type: 'SELECT_FURNITURE', payload: null })
-                dispatch({ type: 'SET_PLACING', payload: false })
-              }}
-              className="iso-button iso-button--ghost iso-button--full"
-            >
-              Cancel placement
-            </button>
-          </div>
-        </div>
+      {selected && (
+        <footer className="iso-catalog__selection">
+          <img className="iso-sprite" src={selected.sprite} alt="" />
+          <span>
+            <strong>{selected.name}</strong>
+            <em>Click a tile to place · R rotates</em>
+          </span>
+          <button
+            className="iso-button iso-button--ghost"
+            onClick={() => {
+              dispatch({ type: 'SELECT_FURNITURE', payload: null })
+              dispatch({ type: 'SET_PLACING', payload: false })
+            }}
+          >
+            Cancel
+          </button>
+        </footer>
       )}
-
-      <div className="panel-section">
-        <ul className="iso-guidelines">
-          <li>Choose a category to focus the catalog.</li>
-          <li>Click an item to start placing it in the room.</li>
-          <li>Furniture blocks movement and can be interacted with.</li>
-        </ul>
-      </div>
     </div>
   )
 }

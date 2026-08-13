@@ -37,9 +37,9 @@
       "file": "south.png",
       "index": 0,
       "width": 21,
-      "height": 18,
+      "height": 17,
       "anchorX": 19,
-      "anchorY": 50,
+      "anchorY": 62,
       "footprint": {
         "width": 1,
         "height": 1
@@ -66,9 +66,9 @@
       "file": "east.png",
       "index": 3,
       "width": 21,
-      "height": 18,
+      "height": 17,
       "anchorX": 2,
-      "anchorY": 50,
+      "anchorY": 62,
       "footprint": {
         "width": 1,
         "height": 1
@@ -95,7 +95,7 @@
   "sheet": {
     "file": "sheet.png",
     "width": 43,
-    "height": 18,
+    "height": 17,
     "frames": [
       {
         "direction": "south",
@@ -103,9 +103,9 @@
         "x": 0,
         "y": 0,
         "width": 21,
-        "height": 18,
+        "height": 17,
         "anchorX": 19,
-        "anchorY": 50,
+        "anchorY": 62,
         "footprint": {
           "width": 1,
           "height": 1
@@ -117,9 +117,9 @@
         "x": 22,
         "y": 0,
         "width": 21,
-        "height": 18,
+        "height": 17,
         "anchorX": 2,
-        "anchorY": 50,
+        "anchorY": 62,
         "footprint": {
           "width": 1,
           "height": 1

@@ -39,12 +39,20 @@ export const PIXELS_PER_UNIT = TILE_WIDTH / Math.SQRT2
 /**
  * Room height in world units.
  *
- * IsoGame draws wall segments `tileHeight * 2` pixels tall, which works out to
- * exactly sqrt(2) units at this projection. Wall- and ceiling-mounted assets are
- * authored against this, so they keep meeting the walls if the wall *rendering*
- * is ever rebuilt - the number is the contract, not the drawing code.
+ * This used to be sqrt(2) - exactly `tileHeight * 2` pixels - because that is
+ * what the hand-drawn wall code happened to draw. Nothing binds it to that any
+ * more: walls are generated, so the constant *is* the contract and the drawing
+ * follows it.
+ *
+ * It had to move, because at sqrt(2) a wall stood 64px while a guest stands
+ * ~69px: the room was shorter than the people in it, and a doorway could not be
+ * tall enough to walk through. 1.9 units gives a guest headroom and leaves room
+ * for a door lintel.
+ *
+ * Wall- and ceiling-mounted assets are authored against this, so they follow
+ * automatically.
  */
-export const WALL_HEIGHT = (2 * TILE_HEIGHT) / PIXELS_PER_UNIT
+export const WALL_HEIGHT = 1.9
 
 /**
  * The two wall planes visible in an isometric room, as offsets from the centre
