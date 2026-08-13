@@ -1,5 +1,6 @@
 import React from 'react'
 import { useGame } from '../context/GameContext'
+import { getAllFurnitureDefinitions } from '../data/furnitureDefinitions'
 
 const Toolbar: React.FC = () => {
   const { state, dispatch, roomManager } = useGame()
@@ -66,19 +67,13 @@ const Toolbar: React.FC = () => {
         <div className="panel-section">
           <h4 className="panel-subtitle">Quick pieces</h4>
           <div className="habbo-list habbo-list--compact">
-            {[
-              { type: 'chair', emoji: '🪑', name: 'Club Chair' },
-              { type: 'table', emoji: '🛎️', name: 'Lobby Table' },
-              { type: 'bed', emoji: '🛏️', name: 'Suite Bed' },
-              { type: 'sofa', emoji: '🛋️', name: 'Lounger' },
-              { type: 'tv', emoji: '📺', name: 'Retro TV' }
-            ].map(item => (
+            {getAllFurnitureDefinitions().slice(0, 5).map(item => (
               <button
-                key={item.type}
-                className={`habbo-list__item ${state.selectedFurniture === item.type ? 'is-selected' : ''}`}
-                onClick={() => dispatch({ type: 'SELECT_FURNITURE', payload: item.type })}
+                key={item.id}
+                className={`habbo-list__item ${state.selectedFurniture === item.id ? 'is-selected' : ''}`}
+                onClick={() => dispatch({ type: 'SELECT_FURNITURE', payload: item.id })}
               >
-                <span className="habbo-list__icon">{item.emoji}</span>
+                <img className="habbo-list__icon habbo-sprite" src={item.sprite} alt="" />
                 <span>{item.name}</span>
               </button>
             ))}

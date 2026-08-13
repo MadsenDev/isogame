@@ -1,0 +1,218 @@
+{
+  "id": "lamp",
+  "name": "Lamp",
+  "defaultDirection": "south",
+  "placement": "floor",
+  "behaviour": {
+    "category": "functional",
+    "walkable": false,
+    "stackable": false,
+    "rotatable": true,
+    "collision": {
+      "blocksMovement": true,
+      "blocksVision": false,
+      "height": 2,
+      "shape": "circle"
+    }
+  },
+  "footprint": {
+    "width": 1,
+    "height": 1
+  },
+  "tile": {
+    "width": 64,
+    "height": 32
+  },
+  "pixelsPerUnit": 45.2548,
+  "palette": [
+    "#fef5d7",
+    "#241d2b",
+    "#babdc3",
+    "#7d858f",
+    "#586671",
+    "#98a2ad",
+    "#6d8596",
+    "#9fa1a5"
+  ],
+  "directions": {
+    "south": {
+      "file": "south.png",
+      "index": 0,
+      "width": 24,
+      "height": 61,
+      "anchorX": 12,
+      "anchorY": 56,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [
+        {
+          "type": "use",
+          "animation": "use",
+          "duration": 2000,
+          "spots": [
+            {
+              "x": 0,
+              "y": 0,
+              "direction": "south",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "front"
+            }
+          ]
+        }
+      ]
+    },
+    "west": {
+      "file": "west.png",
+      "index": 1,
+      "width": 24,
+      "height": 61,
+      "anchorX": 12,
+      "anchorY": 56,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [
+        {
+          "type": "use",
+          "animation": "use",
+          "duration": 2000,
+          "spots": [
+            {
+              "x": 0,
+              "y": 0,
+              "direction": "west",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "behind"
+            }
+          ]
+        }
+      ]
+    },
+    "north": {
+      "file": "north.png",
+      "index": 2,
+      "width": 24,
+      "height": 61,
+      "anchorX": 12,
+      "anchorY": 56,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [
+        {
+          "type": "use",
+          "animation": "use",
+          "duration": 2000,
+          "spots": [
+            {
+              "x": 0,
+              "y": 0,
+              "direction": "north",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "behind"
+            }
+          ]
+        }
+      ]
+    },
+    "east": {
+      "file": "east.png",
+      "index": 3,
+      "width": 24,
+      "height": 61,
+      "anchorX": 12,
+      "anchorY": 56,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [
+        {
+          "type": "use",
+          "animation": "use",
+          "duration": 2000,
+          "spots": [
+            {
+              "x": 0,
+              "y": 0,
+              "direction": "east",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "front"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "sheet": {
+    "file": "sheet.png",
+    "width": 99,
+    "height": 61,
+    "frames": [
+      {
+        "direction": "south",
+        "index": 0,
+        "x": 0,
+        "y": 0,
+        "width": 24,
+        "height": 61,
+        "anchorX": 12,
+        "anchorY": 56,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      },
+      {
+        "direction": "west",
+        "index": 1,
+        "x": 25,
+        "y": 0,
+        "width": 24,
+        "height": 61,
+        "anchorX": 12,
+        "anchorY": 56,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      },
+      {
+        "direction": "north",
+        "index": 2,
+        "x": 50,
+        "y": 0,
+        "width": 24,
+        "height": 61,
+        "anchorX": 12,
+        "anchorY": 56,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      },
+      {
+        "direction": "east",
+        "index": 3,
+        "x": 75,
+        "y": 0,
+        "width": 24,
+        "height": 61,
+        "anchorX": 12,
+        "anchorY": 56,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      }
+    ]
+  }
+}

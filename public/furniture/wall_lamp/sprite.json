@@ -1,0 +1,130 @@
+{
+  "id": "wall_lamp",
+  "name": "Wall Lamp",
+  "defaultDirection": "south",
+  "placement": "wall",
+  "behaviour": {
+    "category": "wall",
+    "walkable": true,
+    "stackable": false,
+    "rotatable": false,
+    "collision": {
+      "blocksMovement": false,
+      "blocksVision": false,
+      "height": 0,
+      "shape": "rectangle"
+    }
+  },
+  "footprint": {
+    "width": 1,
+    "height": 1
+  },
+  "tile": {
+    "width": 64,
+    "height": 32
+  },
+  "pixelsPerUnit": 45.2548,
+  "palette": [
+    "#fef5d7",
+    "#241d2b",
+    "#586671",
+    "#7d858f",
+    "#9fa1a5",
+    "#ffdf9e"
+  ],
+  "directions": {
+    "south": {
+      "file": "south.png",
+      "index": 0,
+      "width": 21,
+      "height": 18,
+      "anchorX": 19,
+      "anchorY": 50,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [
+        {
+          "type": "use",
+          "animation": "use",
+          "duration": 2000,
+          "spots": [
+            {
+              "x": 0,
+              "y": 0,
+              "direction": "south",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "front"
+            }
+          ]
+        }
+      ]
+    },
+    "east": {
+      "file": "east.png",
+      "index": 3,
+      "width": 21,
+      "height": 18,
+      "anchorX": 2,
+      "anchorY": 50,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [
+        {
+          "type": "use",
+          "animation": "use",
+          "duration": 2000,
+          "spots": [
+            {
+              "x": 0,
+              "y": 0,
+              "direction": "east",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "front"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "sheet": {
+    "file": "sheet.png",
+    "width": 43,
+    "height": 18,
+    "frames": [
+      {
+        "direction": "south",
+        "index": 0,
+        "x": 0,
+        "y": 0,
+        "width": 21,
+        "height": 18,
+        "anchorX": 19,
+        "anchorY": 50,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      },
+      {
+        "direction": "east",
+        "index": 3,
+        "x": 22,
+        "y": 0,
+        "width": 21,
+        "height": 18,
+        "anchorX": 2,
+        "anchorY": 50,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      }
+    ]
+  }
+}

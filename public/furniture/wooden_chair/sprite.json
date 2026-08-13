@@ -1,0 +1,217 @@
+{
+  "id": "wooden_chair",
+  "name": "Wooden Chair",
+  "defaultDirection": "south",
+  "placement": "floor",
+  "behaviour": {
+    "category": "seating",
+    "walkable": false,
+    "stackable": false,
+    "rotatable": true,
+    "collision": {
+      "blocksMovement": true,
+      "blocksVision": false,
+      "height": 1,
+      "shape": "rectangle"
+    }
+  },
+  "footprint": {
+    "width": 1,
+    "height": 1
+  },
+  "tile": {
+    "width": 64,
+    "height": 32
+  },
+  "pixelsPerUnit": 45.2548,
+  "palette": [
+    "#844e2c",
+    "#c19e69",
+    "#241d2b",
+    "#875531",
+    "#b07a42",
+    "#592f1c",
+    "#ab7945"
+  ],
+  "directions": {
+    "south": {
+      "file": "south.png",
+      "index": 0,
+      "width": 34,
+      "height": 55,
+      "anchorX": 17,
+      "anchorY": 48,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [
+        {
+          "type": "sit",
+          "animation": "sit",
+          "duration": 0,
+          "spots": [
+            {
+              "x": 0,
+              "y": 0,
+              "direction": "south",
+              "offsetX": 1,
+              "offsetY": -18,
+              "layer": "front"
+            }
+          ]
+        }
+      ]
+    },
+    "west": {
+      "file": "west.png",
+      "index": 1,
+      "width": 34,
+      "height": 49,
+      "anchorX": 17,
+      "anchorY": 42,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [
+        {
+          "type": "sit",
+          "animation": "sit",
+          "duration": 0,
+          "spots": [
+            {
+              "x": 0,
+              "y": 0,
+              "direction": "west",
+              "offsetX": 1,
+              "offsetY": -19,
+              "layer": "behind"
+            }
+          ]
+        }
+      ]
+    },
+    "north": {
+      "file": "north.png",
+      "index": 2,
+      "width": 34,
+      "height": 49,
+      "anchorX": 17,
+      "anchorY": 42,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [
+        {
+          "type": "sit",
+          "animation": "sit",
+          "duration": 0,
+          "spots": [
+            {
+              "x": 0,
+              "y": 0,
+              "direction": "north",
+              "offsetX": -1,
+              "offsetY": -19,
+              "layer": "behind"
+            }
+          ]
+        }
+      ]
+    },
+    "east": {
+      "file": "east.png",
+      "index": 3,
+      "width": 34,
+      "height": 55,
+      "anchorX": 17,
+      "anchorY": 48,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [
+        {
+          "type": "sit",
+          "animation": "sit",
+          "duration": 0,
+          "spots": [
+            {
+              "x": 0,
+              "y": 0,
+              "direction": "east",
+              "offsetX": -1,
+              "offsetY": -18,
+              "layer": "front"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "sheet": {
+    "file": "sheet.png",
+    "width": 139,
+    "height": 55,
+    "frames": [
+      {
+        "direction": "south",
+        "index": 0,
+        "x": 0,
+        "y": 0,
+        "width": 34,
+        "height": 55,
+        "anchorX": 17,
+        "anchorY": 48,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      },
+      {
+        "direction": "west",
+        "index": 1,
+        "x": 35,
+        "y": 0,
+        "width": 34,
+        "height": 49,
+        "anchorX": 17,
+        "anchorY": 42,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      },
+      {
+        "direction": "north",
+        "index": 2,
+        "x": 70,
+        "y": 0,
+        "width": 34,
+        "height": 49,
+        "anchorX": 17,
+        "anchorY": 42,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      },
+      {
+        "direction": "east",
+        "index": 3,
+        "x": 105,
+        "y": 0,
+        "width": 34,
+        "height": 55,
+        "anchorX": 17,
+        "anchorY": 48,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      }
+    ]
+  }
+}

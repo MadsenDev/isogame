@@ -19,7 +19,7 @@ export const FurnitureSelector: React.FC = () => {
     if (selectedCategory === 'all') {
       return getAllFurnitureDefinitions()
     }
-    return getFurnitureByCategory(selectedCategory as any)
+    return getFurnitureByCategory(selectedCategory as FurnitureDefinition['category'])
   }
 
   const handleFurnitureSelect = (furnitureType: string) => {
@@ -27,24 +27,12 @@ export const FurnitureSelector: React.FC = () => {
     dispatch({ type: 'SET_PLACING', payload: true })
   }
 
-  const renderFurniturePreview = (furniture: FurnitureDefinition) => {
-    const colors: Record<FurnitureDefinition['category'], string> = {
-      'seating': '#8B4513',
-      'decoration': '#90EE90',
-      'functional': '#4682B4',
-      'flooring': '#CD853F',
-      'wall': '#A0522D'
-    }
-
-    return (
-      <div
-        className="habbo-furniture__preview"
-        style={{ backgroundColor: colors[furniture.category] || '#808080' }}
-      >
-        {furniture.name.charAt(0)}
-      </div>
-    )
-  }
+  /** Show the generated sprite itself, not a coloured placeholder. */
+  const renderFurniturePreview = (furniture: FurnitureDefinition) => (
+    <div className="habbo-furniture__preview">
+      <img className="habbo-sprite" src={furniture.sprite} alt={furniture.name} />
+    </div>
+  )
 
   return (
     <div className="panel-content">
