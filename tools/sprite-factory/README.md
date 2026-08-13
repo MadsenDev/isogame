@@ -200,6 +200,26 @@ npm run sprites -- --no-characters   # skip it
 Proportions are in tile units, so a 1.7-unit guest stands ~77px against a 64px
 tile. Scale is correct by construction rather than by eye.
 
+## Room structures
+
+Floor tiles and wall panels come out of the same pipeline (`src/structures.ts`),
+which is what makes a wall-mounted lamp line up with the wall it hangs on: both
+are authored against the same plane in the same 3D space.
+
+- A floor tile is a 1x1 slab whose top face is exactly the 64x32 diamond. Detail
+  comes from separate materials, not lighting - every top face has the same
+  normal and lands in the same shade band.
+- A wall panel is one tile long, with its **thickness outside the tile
+  boundary**. That is load-bearing: with the thickness inside, each run's face
+  overshoots the corner and the two faces overlap.
+- `wall_corner` fills the square outside the boundary that neither run reaches.
+
+Segments tile seamlessly because each is identical geometry offset by exactly one
+tile, and one tile is an integer pixel offset (+32, +16). No seam fudging.
+
+Output: `public/structures/<id>/<direction>.png` plus
+`src/data/structureSprites.generated.json`.
+
 ## Requirements
 
 Playwright's Chromium. If the bundled download is missing, the exporter falls back
@@ -207,5 +227,4 @@ to `CHROMIUM_EXECUTABLE` or a system Chromium before failing.
 
 ## Known gaps
 
-- Walls and floor tiles are still drawn by hand in canvas rather than generated.
 - No contact shadows; the game draws no shadow under furniture either.

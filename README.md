@@ -10,7 +10,8 @@ The project is a prototype rather than a finished online game. There is no produ
 
 ### Isometric room engine
 
-- canvas-based isometric rendering
+- canvas-based isometric rendering at 1:1 pixel scale
+- generated floor tiles and wall panels, sharing one light and palette
 - grid/world-to-screen coordinate conversion
 - click-to-move player controls
 - scaled pointer handling for accurate canvas interaction

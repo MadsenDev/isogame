@@ -8,6 +8,7 @@
 
 import * as THREE from 'three'
 import { CATALOG } from './catalog'
+import { STRUCTURES } from './structures'
 import { CharacterSpec, DEFAULT_CHARACTER, poseAsset } from './character'
 import { AssetSpec } from './model'
 import { ModelSource } from './loaders'
@@ -232,6 +233,21 @@ export async function renderCharacter(
   } finally {
     renderer.dispose()
   }
+}
+
+/** Where the game serves room structure sprites from. */
+export const STRUCTURE_BASE_PATH = '/structures'
+
+/**
+ * Render floor tiles and wall panels.
+ *
+ * Structures reuse the furniture path wholesale - same camera, same anchors -
+ * so a wall panel and a lamp hung on it are positioned by identical maths.
+ */
+export async function renderStructures(
+  config: Partial<RenderConfig> = {}
+): Promise<ExportPayload> {
+  return renderAll(config, STRUCTURES)
 }
 
 /** Render the whole catalogue. This is what the CLI calls. */

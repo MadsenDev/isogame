@@ -32,6 +32,8 @@ const REPO_ROOT = resolve(HERE, '../../..')
 const SPRITE_DIR = join(REPO_ROOT, 'public/furniture')
 const GAME_DATA = join(REPO_ROOT, 'src/data/furnitureSprites.generated.json')
 const GAME_DEFINITIONS = join(REPO_ROOT, 'src/data/furnitureDefinitions.generated.json')
+const STRUCTURE_DIR = join(REPO_ROOT, 'public/structures')
+const GAME_STRUCTURES = join(REPO_ROOT, 'src/data/structureSprites.generated.json')
 const CHARACTER_DIR = join(REPO_ROOT, 'public/character')
 const GAME_CHARACTERS = join(REPO_ROOT, 'src/data/characterSprites.generated.json')
 const PAGE = '/tools/sprite-factory/headless.html'
@@ -297,6 +299,45 @@ async function main() {
       await writeFile(join(SPRITE_DIR, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`)
       await writeFile(GAME_DATA, `${JSON.stringify(manifest, null, 2)}\n`)
       await writeFile(GAME_DEFINITIONS, `${JSON.stringify(definitions, null, 2)}\n`)
+    }
+
+    // Structures: floor tiles and wall panels. Same shape as furniture, but a
+    // separate output tree because the game consumes them differently.
+    if (!options.model && !options.only && !options.charactersOnly) {
+      console.log('\nRendering structures...')
+      const structures = await page.evaluate(async (config) => {
+        const result = await window.spriteFactory.renderStructures(config)
+        return JSON.parse(JSON.stringify(result))
+      }, options.config)
+
+      await rm(STRUCTURE_DIR, { recursive: true, force: true })
+      await mkdir(STRUCTURE_DIR, { recursive: true })
+
+      for (const asset of structures.assets) {
+        for (const file of asset.files) {
+          const target = join(STRUCTURE_DIR, file.path)
+          await mkdir(dirname(target), { recursive: true })
+          await writeFile(target, decodeDataUrl(file.dataUrl))
+        }
+        const frames = Object.values(asset.metadata.directions)
+        console.log(
+          `  ${asset.metadata.id.padEnd(16)} ${frames[0].width}x${frames[0].height}`.padEnd(32) +
+            `${asset.metadata.palette.length} colours, ${frames.length} directions`
+        )
+      }
+
+      const structureManifest = {
+        generator: structures.generator,
+        basePath: '/structures',
+        structures: Object.fromEntries(
+          structures.assets.map((asset) => [asset.metadata.id, asset.definition])
+        ),
+      }
+      await writeFile(
+        join(STRUCTURE_DIR, 'manifest.json'),
+        `${JSON.stringify(structureManifest, null, 2)}\n`
+      )
+      await writeFile(GAME_STRUCTURES, `${JSON.stringify(structureManifest, null, 2)}\n`)
     }
 
     // Characters: rendered from poses, so they get their own layout of

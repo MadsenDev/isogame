@@ -38,10 +38,10 @@ const ChatSystem: React.FC<ChatSystemProps> = ({ visible }) => {
   if (!isVisible) return null
 
   return (
-    <div className="habbo-chat">
-      <div ref={messagesRef} className="habbo-chat__messages">
+    <div className="iso-chat">
+      <div ref={messagesRef} className="iso-chat__messages">
         {state.chatMessages.slice(-10).map((msg, index) => (
-          <div key={index} className="habbo-chat__message">
+          <div key={index} className="iso-chat__message">
             {msg.text}
           </div>
         ))}
@@ -49,7 +49,7 @@ const ChatSystem: React.FC<ChatSystemProps> = ({ visible }) => {
       <input
         ref={inputRef}
         type="text"
-        className="habbo-chat__input"
+        className="iso-chat__input"
         placeholder="Type a message..."
         onKeyPress={handleKeyPress}
       />

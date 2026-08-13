@@ -14,32 +14,22 @@ for us.** See [`tools/sprite-factory`](../tools/sprite-factory).
 - **Characters through the factory.** Eight directions, idle/walk/sit poses, at
   correct scale against the furniture. Direction naming unified on the
   world-axis convention across furniture and characters.
+- **Walls and floors through the factory.** Floor tiles and wall panels are
+  generated, walls belong to a tile edge instead of a phantom tile outside the
+  room, and they join the depth-sorted pass so you can walk behind one.
+- **Pixel-perfect rendering.** The canvas backing store matches its displayed
+  size and zoom snaps to whole multiples, so sprites are never resampled.
 
 ## Next
 
-### 1. Walls and floor tiles as generated assets
-
-`WallComponent` has been patched rather than designed: a `wallBorderOffset = 2`
-fudge, per-face colour constants, manual seam overlaps, and separate code paths
-for the two wall orientations. It does not share a light direction or palette
-with the generated furniture.
-
-Generating wall segments and floor tiles through the pipeline would make
-wall-mounted furniture align with walls *by construction* instead of by matching
-constants in two places. `WALL_HEIGHT` already exists in `iso.ts` (√2 units,
-derived from the game's `tileHeight * 2`) so a rewrite has a fixed contract to
-land on.
-
-This is the change most likely to alter how the game looks overall.
-
-### 2. Expand the catalogue
+### 1. Expand the catalogue
 
 Pure content, no engine work: doors, windows, shelving, seating variants, more
 plants and lighting. Also the honest stress test of whether authoring furniture
 as primitives actually scales past ten pieces, or whether it needs a visual
 editor.
 
-### 3. Character variety
+### 2. Character variety
 
 One `guest` exists. The rig takes a palette (skin, hair, shirt, trousers, shoes)
 and proportions, so per-player appearance is mostly a matter of passing different
@@ -53,9 +43,6 @@ Found while wiring up the pipeline, not yet fixed:
 - **Frame-rate-dependent movement.** `GameEngine.update()` adds a hardcoded
   `16` ms per frame instead of a real delta, so walking speed tracks the frame
   rate. Under software rendering a step takes ~2.5s instead of 400ms.
-- **Layout reflow shifts the canvas.** Opening or switching tool panels resizes
-  the canvas element, so the same screen point maps to a different tile before
-  and after. Suspect this is behind past hover-alignment fixes.
 - **The dock and floating windows fight for space.** Windows now render above the
   dock (fixed), but the default window positions still stack on top of each other
   and on top of the dock.
@@ -64,11 +51,15 @@ Found while wiring up the pipeline, not yet fixed:
 - **No multi-tile furniture preview.** The placement preview draws the sprite,
   but the validity highlight only tints the origin tile.
 - **Room persistence.** Furniture is lost on reload; there is no serialisation.
-- **Old character art is now unused.** `src/assets/character/` and
-  `public/character/A_completely_normal_habbo_hotel_-like_character._Isometric/`
-  are superseded by the generated `guest`, and were loaded from `/src/assets/...`
-  which would not have survived a production build. Left in place rather than
-  deleted unprompted.
+- **Doorways are a plain gap.** The old wall code drew a door frame; the new one
+  simply omits that segment. A generated door asset would close this.
+- **`tileset.jpg` is now only a fallback.** Floors use generated sprites; the
+  skewed-tilesheet path remains until they load.
+
+### 3. Room persistence
+
+Nothing is saved. With furniture, walls and floors all now described by plain
+data, serialising a room is mostly a matter of deciding where to put it.
 
 ## Design notes worth keeping
 
@@ -78,6 +69,15 @@ Found while wiring up the pipeline, not yet fixed:
 - **Anchors, not centring.** Sprites record where tile (0,0) sits inside the
   frame. This is what lets assets of wildly different heights share one
   coordinate.
+- **Wall thickness lives outside the tile boundary.** With it inside, each run's
+  visible face overshoots the corner by half the thickness, the two faces
+  overlap, and whichever draws last puts the corner line off-centre. Faces flush
+  with the boundary meet at exactly one point; the square outside it that
+  neither run reaches is filled by `wall_corner`.
+- **Never scale sprites by a fraction.** Nearest-neighbour at 1.2x makes some
+  source pixels one screen pixel wide and others two. Zoom snaps to whole
+  multiples, and the canvas backing store matches its CSS size so the browser
+  never resamples the finished frame either.
 - **`layer` is decided by facing, not by centroid.** Furniture facing north or
   west shows its back to the camera, so its occupant is drawn underneath it.
   Comparing against a model centroid puts the two seats of one sofa on different

@@ -27,6 +27,8 @@ export class GameEngine {
   private readonly baseTileHeight = this.gridSize
   private zoom = 1
   private frameHandle: number | null = null
+  private canvasWidth = 0
+  private canvasHeight = 0
   private readonly minZoom = 0.35
   private readonly maxZoom = 2
 
@@ -98,6 +100,32 @@ export class GameEngine {
     if (!this.state.currentRoom) return
 
     const drawables: Array<{ depth: number; order: number; draw: () => void }> = []
+
+    // Walls sort half a tile behind the tile they enclose, which is where they
+    // physically are. That is what lets a guest walk behind an interior wall
+    // and be hidden by it, instead of always painting on top.
+    const wallsByTile = new Set<string>()
+    this.state.currentRoom.walls.forEach(wall => {
+      wallsByTile.add(`${wall.x},${wall.y},${wall.edge}`)
+      drawables.push({
+        depth: wall.x + wall.y - 0.5,
+        order: 0,
+        draw: () => this.wallComponent.drawWall(wall)
+      })
+    })
+
+    // A tile carrying both edges is an inside corner; the post fills the square
+    // outside the boundary that neither run reaches. Drawn fractionally further
+    // back so it never covers either face.
+    this.state.currentRoom.walls.forEach(wall => {
+      if (wall.edge !== 'north') return
+      if (!wallsByTile.has(`${wall.x},${wall.y},west`)) return
+      drawables.push({
+        depth: wall.x + wall.y - 0.6,
+        order: 0,
+        draw: () => this.wallComponent.drawCorner(wall.x, wall.y)
+      })
+    })
 
     this.state.currentRoom.furniture.forEach(furniture => {
       const footprint = this.getFurnitureFootprint(furniture)
@@ -327,23 +355,33 @@ export class GameEngine {
   }
 
   public render() {
+    // The canvas resizes with its container; pick that up before drawing so the
+    // room stays centred and clicks keep mapping to the right tile.
+    if (
+      this.canvasWidth !== this.canvas.width ||
+      this.canvasHeight !== this.canvas.height
+    ) {
+      this.canvasWidth = this.canvas.width
+      this.canvasHeight = this.canvas.height
+      this.coordinateUtils.updateCanvasSize(this.canvas.width, this.canvas.height)
+      this.applyZoom(this.calculateZoom())
+    }
+
     // Clear canvas
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 
     if (!this.state.currentRoom) return
 
-    // Draw floor tiles
-    this.state.currentRoom.floorTiles.forEach(tile => {
+    // Draw floor tiles back to front, so the 1px lip of the tile in front
+    // covers the one behind it.
+    const floorTiles = [...this.state.currentRoom.floorTiles].sort(
+      (a, b) => a.x + a.y - (b.x + b.y)
+    )
+    floorTiles.forEach(tile => {
       const screenPos = this.coordinateUtils.worldToScreen(tile.x, tile.y)
       const texture = tile.texture || this.state.currentRoom?.floorTexture || 'default'
       this.tileComponent.drawIsometricTile(tile.x, tile.y, '#90EE90', 1, 2, 1, screenPos, texture)
     })
-
-    // Draw walls that follow the current floor layout
-    this.wallComponent.drawRoomWalls(
-      this.state.currentRoom.walls,
-      this.state.currentRoom.doorway
-    )
 
     // Furniture and players share one depth-sorted pass; drawing all furniture
     // and then all players puts a standing guest on top of a wall they are
@@ -474,7 +512,24 @@ export class GameEngine {
       return this.zoom
     }
 
-    return Math.min(this.maxZoom, Math.max(this.minZoom, desiredZoom))
+    return this.snapZoom(Math.min(this.maxZoom, Math.max(this.minZoom, desiredZoom)))
+  }
+
+  /**
+   * Snap to a scale that keeps the pixel grid intact.
+   *
+   * Nearest-neighbour at 1.2x renders some source pixels one screen pixel wide
+   * and others two, which reads as banding and makes clean sprites look like
+   * low-resolution mush. Only whole multiples - and clean halves below 1:1 -
+   * preserve the grid.
+   */
+  private snapZoom(zoom: number): number {
+    const steps = [0.25, 0.5, 1, 2, 3, 4]
+    let best = steps[0]
+    for (const step of steps) {
+      if (step <= zoom + 1e-6) best = step
+    }
+    return best
   }
 
   private applyZoom(zoom: number) {
@@ -507,11 +562,6 @@ export class GameEngine {
 
     const hasFloorTile = this.state.currentRoom.floorTiles.some(tile => tile.x === x && tile.y === y)
     if (!hasFloorTile) {
-      return false
-    }
-
-    // Check wall collision (but allow doorway)
-    if (this.state.currentRoom.walls.some(wall => wall.x === x && wall.y === y)) {
       return false
     }
 

@@ -29,39 +29,39 @@ export const FurnitureSelector: React.FC = () => {
 
   /** Show the generated sprite itself, not a coloured placeholder. */
   const renderFurniturePreview = (furniture: FurnitureDefinition) => (
-    <div className="habbo-furniture__preview">
-      <img className="habbo-sprite" src={furniture.sprite} alt={furniture.name} />
+    <div className="iso-furniture__preview">
+      <img className="iso-sprite" src={furniture.sprite} alt={furniture.name} />
     </div>
   )
 
   return (
     <div className="panel-content">
       <div className="panel-section">
-        <div className="habbo-segmented">
+        <div className="iso-segmented">
           {categories.map(category => (
             <button
               key={category.id}
               onClick={() => setSelectedCategory(category.id)}
-              className={`habbo-segmented__option ${selectedCategory === category.id ? 'is-active' : ''}`}
+              className={`iso-segmented__option ${selectedCategory === category.id ? 'is-active' : ''}`}
             >
-              <span className="habbo-segmented__icon">{category.icon}</span>
-              <span className="habbo-segmented__label">{category.name}</span>
+              <span className="iso-segmented__icon">{category.icon}</span>
+              <span className="iso-segmented__label">{category.name}</span>
             </button>
           ))}
         </div>
       </div>
 
       <div className="panel-section">
-        <div className="habbo-furniture__grid">
+        <div className="iso-furniture__grid">
           {getFilteredFurniture().map(furniture => (
             <button
               key={furniture.id}
               onClick={() => handleFurnitureSelect(furniture.id)}
-              className={`habbo-furniture__item ${state.selectedFurniture === furniture.id ? 'is-active' : ''}`}
+              className={`iso-furniture__item ${state.selectedFurniture === furniture.id ? 'is-active' : ''}`}
               title={`${furniture.name} (${furniture.width}×${furniture.height})`}
             >
               {renderFurniturePreview(furniture)}
-              <span className="habbo-furniture__label">{furniture.name}</span>
+              <span className="iso-furniture__label">{furniture.name}</span>
             </button>
           ))}
         </div>
@@ -69,8 +69,8 @@ export const FurnitureSelector: React.FC = () => {
 
       {state.selectedFurniture && (
         <div className="panel-section">
-          <div className="habbo-furniture__selection">
-            <div className="habbo-furniture__selection-title">
+          <div className="iso-furniture__selection">
+            <div className="iso-furniture__selection-title">
               Selected: <strong>{state.selectedFurniture}</strong>
             </div>
             <p>Click on the floor to place the item.</p>
@@ -79,7 +79,7 @@ export const FurnitureSelector: React.FC = () => {
                 dispatch({ type: 'SELECT_FURNITURE', payload: null })
                 dispatch({ type: 'SET_PLACING', payload: false })
               }}
-              className="habbo-button habbo-button--ghost habbo-button--full"
+              className="iso-button iso-button--ghost iso-button--full"
             >
               Cancel placement
             </button>
@@ -88,7 +88,7 @@ export const FurnitureSelector: React.FC = () => {
       )}
 
       <div className="panel-section">
-        <ul className="habbo-guidelines">
+        <ul className="iso-guidelines">
           <li>Choose a category to focus the catalog.</li>
           <li>Click an item to start placing it in the room.</li>
           <li>Furniture blocks movement and can be interacted with.</li>

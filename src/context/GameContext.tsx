@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react'
 import roomLayoutDefinitions from '../assets/roomLayouts.json'
+import type { WallEdge } from '../data/structureSprites'
 
 // Types
 export interface Player {
@@ -114,7 +115,14 @@ export interface Room {
   height: number
   floorTiles: Array<{ x: number; y: number; texture?: string }>
   furniture: Furniture[]
-  walls: Array<{ x: number; y: number; type: 'north-east' | 'north-west' }>
+  /**
+   * Wall panels, each on the edge of a floor tile it belongs to.
+   *
+   * Previously walls were stored on the empty tile *outside* the floor and then
+   * drawn back two tiles with a magic offset. Anchoring them to the tile they
+   * enclose means the sprite's own anchor positions them, with no fudge.
+   */
+  walls: Array<{ x: number; y: number; edge: WallEdge }>
   doorway?: { x: number; y: number; type: 'north-east' | 'north-west' }
   spawnPoint?: { x: number; y: number }
   floorTexture?: string
@@ -686,20 +694,22 @@ function buildRoomWalls(
     : createFullFloorTiles(width, height)
 
   const tileSet = new Set(effectiveFloorTiles.map(tile => `${tile.x},${tile.y}`))
-  const walls: Array<{ x: number; y: number; type: 'north-east' | 'north-west' }> = []
+  const walls: Array<{ x: number; y: number; edge: WallEdge }> = []
 
   effectiveFloorTiles.forEach(tile => {
-    const northKey = `${tile.x},${tile.y - 1}`
-    if (!tileSet.has(northKey)) {
+    // A tile with no floor to its -y gets a panel on that edge, and so on. The
+    // doorway is simply a segment we skip.
+    const westKey = `${tile.x},${tile.y - 1}`
+    if (!tileSet.has(westKey)) {
       if (!(doorway?.type === 'north-east' && doorway.x === tile.x && doorway.y === tile.y - 1)) {
-        walls.push({ x: tile.x, y: tile.y - 1, type: 'north-east' })
+        walls.push({ x: tile.x, y: tile.y, edge: 'west' })
       }
     }
 
-    const westKey = `${tile.x - 1},${tile.y}`
-    if (!tileSet.has(westKey)) {
+    const northKey = `${tile.x - 1},${tile.y}`
+    if (!tileSet.has(northKey)) {
       if (!(doorway?.type === 'north-west' && doorway.x === tile.x - 1 && doorway.y === tile.y)) {
-        walls.push({ x: tile.x - 1, y: tile.y, type: 'north-west' })
+        walls.push({ x: tile.x, y: tile.y, edge: 'north' })
       }
     }
   })

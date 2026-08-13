@@ -3,7 +3,7 @@
  * driver in scripts/render-sprites.mjs can call it inside a real GPU context.
  */
 
-import { renderAll, renderCharacter, renderModelFile } from './factory'
+import { renderAll, renderCharacter, renderModelFile, renderStructures } from './factory'
 import { CATALOG } from './catalog'
 import { exportExampleGlb } from './example-model'
 
@@ -12,6 +12,7 @@ declare global {
     spriteFactory?: {
       renderAll: typeof renderAll
       renderCharacter: typeof renderCharacter
+      renderStructures: typeof renderStructures
       renderModelFile: typeof renderModelFile
       exportExampleGlb: typeof exportExampleGlb
       assetIds: string[]
@@ -24,6 +25,7 @@ try {
   window.spriteFactory = {
     renderAll,
     renderCharacter,
+    renderStructures,
     renderModelFile,
     exportExampleGlb,
     assetIds: CATALOG.map((asset) => asset.id),

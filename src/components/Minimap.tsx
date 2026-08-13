@@ -18,9 +18,17 @@ const Minimap: React.FC = () => {
     ctx.fillStyle = '#141a2b'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
+    // Walls belong to a tile edge now, not to a tile of their own, so they are
+    // drawn as a tick along that edge rather than as a filled cell.
     ctx.fillStyle = '#1f2a44'
     state.currentRoom.walls.forEach(wall => {
-      ctx.fillRect(wall.x * scaleX, wall.y * scaleY, scaleX, scaleY)
+      const x = wall.x * scaleX
+      const y = wall.y * scaleY
+      if (wall.edge === 'north') {
+        ctx.fillRect(x, y, Math.max(1, scaleX * 0.2), scaleY)
+      } else {
+        ctx.fillRect(x, y, scaleX, Math.max(1, scaleY * 0.2))
+      }
     })
 
     ctx.fillStyle = '#8B4513'
