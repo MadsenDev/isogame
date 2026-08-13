@@ -17,6 +17,17 @@ The project is a prototype rather than a finished online game. There is no produ
 - floor and wall rendering
 - movement and placement collision checks
 
+### Sprite pipeline
+
+Furniture art is generated rather than drawn. Simple 3D models go through one
+fixed isometric camera to produce sprites, anchors and game object definitions in
+a single pass, so a piece's artwork, footprint, collision box and interaction
+spots cannot drift apart. See [`tools/sprite-factory`](tools/sprite-factory).
+
+```bash
+npm run sprites   # rebuild every furniture sprite and definition
+```
+
 ### Room building
 
 - add and remove floor tiles
@@ -97,7 +108,11 @@ npm run dev       # start the Vite development server
 npm run build     # type-check and create a production build
 npm run preview   # preview the production build locally
 npm run lint      # run ESLint
+npm run sprites   # regenerate furniture sprites and definitions
 ```
+
+With the dev server running, the interactive Sprite Factory lives at
+`/tools/sprite-factory/`.
 
 ## Tech stack
 
@@ -107,6 +122,7 @@ npm run lint      # run ESLint
 - HTML Canvas
 - Tailwind CSS tooling
 - custom isometric coordinate and rendering utilities
+- Three.js, confined to the offline sprite pipeline (the game itself stays canvas 2D)
 
 There is deliberately no full game engine dependency. Much of the interesting part of the project is the home-grown rendering, coordinate, room, player, and furniture logic.
 
@@ -118,9 +134,15 @@ The codebase broadly separates the React interface from the canvas/game systems:
 src/
 ├── components/     # UI, room controls, chat, furniture and player views
 ├── context/        # shared game state and actions
-├── data/           # furniture definitions and game data
+├── data/           # furniture definitions (generated) and game data
 ├── utils/          # game engine, coordinates and rendering helpers
 └── assets/         # visual assets
+
+tools/
+└── sprite-factory/ # 3D → isometric pixel-art asset pipeline
+
+public/
+└── furniture/      # generated sprites, sheets and per-asset metadata
 ```
 
 The React layer controls application state and tooling, while the canvas engine handles room rendering and pointer/game interactions.

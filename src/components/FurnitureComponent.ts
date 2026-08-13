@@ -6,6 +6,7 @@ export interface PreviewFurniture {
   x: number
   y: number
   type: string
+  direction?: string
 }
 
 export class FurnitureComponent {
@@ -14,6 +15,7 @@ export class FurnitureComponent {
   private tileHeight: number
   private coordinateUtils: CoordinateUtils
   private furnitureSprites: Map<string, HTMLImageElement> = new Map()
+  private zoom = 1
 
   constructor(ctx: CanvasRenderingContext2D, tileWidth: number, tileHeight: number, coordinateUtils: CoordinateUtils) {
     this.ctx = ctx
@@ -22,26 +24,48 @@ export class FurnitureComponent {
     this.coordinateUtils = coordinateUtils
   }
 
-  public setZoom(_zoom: number) {
-    // Zoom is handled by coordinateUtils, no need to store it here
+  public setZoom(zoom: number) {
+    // coordinateUtils handles tile positions, but sprites are scaled here.
+    this.zoom = zoom
   }
 
+  /**
+   * Pick the rendered orientation to draw.
+   *
+   * Falls back to the definition's default direction, which is the one whose
+   * footprint matches the collision box the game already reasons about.
+   */
+  private getSprite(definition: FurnitureDefinition, direction?: string) {
+    const sprites = definition.sprites
+    if (!sprites) return null
+    return sprites[direction ?? ''] ?? sprites[definition.defaultDirection ?? 'south'] ?? null
+  }
+
+  /** Load every rendered orientation of a piece, so rotation never stutters. */
   private loadFurnitureSprite(definition: FurnitureDefinition): Promise<void> {
+    const urls = definition.sprites
+      ? Object.values(definition.sprites).map(sprite => sprite.url)
+      : [definition.sprite]
+
+    return Promise.all(urls.map(url => this.loadImage(url))).then(() => undefined)
+  }
+
+  private loadImage(url: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      if (this.furnitureSprites.has(definition.id)) {
+      if (this.furnitureSprites.has(url)) {
         resolve()
         return
       }
 
       const img = new Image()
-      img.src = definition.sprite
+      img.src = url
       img.onload = () => {
-        this.furnitureSprites.set(definition.id, img)
+        this.furnitureSprites.set(url, img)
         resolve()
       }
       img.onerror = () => {
-        console.error(`Failed to load furniture sprite: ${definition.sprite}`)
-        reject(new Error(`Failed to load furniture sprite: ${definition.sprite}`))
+        console.error(`Failed to load furniture sprite: ${url}`)
+        reject(new Error(`Failed to load furniture sprite: ${url}`))
       }
     })
   }
@@ -66,32 +90,49 @@ export class FurnitureComponent {
     const definition = furniture.definition
     if (!definition) return
 
-    const sprite = this.furnitureSprites.get(definition.id)
-    if (!sprite) {
-      // Fallback to colored rectangle if sprite not loaded
+    if (!this.drawSprite(definition, furniture.x, furniture.y, furniture.direction)) {
       this.drawFurnitureFallback(furniture, definition)
-      return
     }
+  }
 
-    const screenPos = this.coordinateUtils.worldToScreen(furniture.x, furniture.y)
-    
+  /**
+   * Draw a generated sprite anchored to its origin tile.
+   *
+   * The sprite is not centred on the tile: the pipeline records where tile (0,0)
+   * sits inside each frame, so a tall bookshelf and a flat rug both line up from
+   * the same coordinate. Sprites are drawn at their native pixel size times the
+   * zoom, with smoothing off, so the pixel art stays pixel art.
+   */
+  private drawSprite(
+    definition: FurnitureDefinition,
+    x: number,
+    y: number,
+    direction?: string,
+    alpha = 1
+  ): boolean {
+    const frame = this.getSprite(definition, direction)
+    if (!frame) return false
+
+    const image = this.furnitureSprites.get(frame.url)
+    if (!image) return false
+
+    const screenPos = this.coordinateUtils.worldToScreen(x, y)
+    const smoothing = this.ctx.imageSmoothingEnabled
+
     this.ctx.save()
-    this.ctx.translate(screenPos.x, screenPos.y)
-    
-    // Calculate sprite dimensions
-    const spriteWidth = definition.width * this.tileWidth
-    const spriteHeight = definition.height * this.tileHeight
-    
-    // Draw the furniture sprite
+    this.ctx.globalAlpha = alpha
+    this.ctx.imageSmoothingEnabled = false
     this.ctx.drawImage(
-      sprite,
-      -spriteWidth / 2, // Center horizontally
-      -spriteHeight / 2, // Center vertically
-      spriteWidth,
-      spriteHeight
+      image,
+      Math.round(screenPos.x - frame.anchorX * this.zoom),
+      Math.round(screenPos.y - frame.anchorY * this.zoom),
+      Math.round(frame.width * this.zoom),
+      Math.round(frame.height * this.zoom)
     )
-    
     this.ctx.restore()
+    this.ctx.imageSmoothingEnabled = smoothing
+
+    return true
   }
 
   private drawFurnitureFallback(furniture: Furniture, definition: FurnitureDefinition) {
@@ -136,36 +177,23 @@ export class FurnitureComponent {
     const definition = this.getFurnitureDefinition(preview.type)
     if (!definition) return
 
+    if (this.drawSprite(definition, preview.x, preview.y, preview.direction, 0.7)) return
+
     const screenPos = this.coordinateUtils.worldToScreen(preview.x, preview.y)
-    
+
     this.ctx.save()
     this.ctx.translate(screenPos.x, screenPos.y)
-    
-    const sprite = this.furnitureSprites.get(definition.id)
-    if (sprite) {
-      const spriteWidth = definition.width * this.tileWidth
-      const spriteHeight = definition.height * this.tileHeight
-      
-      this.ctx.drawImage(
-        sprite,
-        -spriteWidth / 2,
-        -spriteHeight / 2,
-        spriteWidth,
-        spriteHeight
-      )
-    } else {
-      // Fallback to colored rectangle
-      const width = definition.width * this.tileWidth
-      const height = definition.height * this.tileHeight
-      
-      this.ctx.fillStyle = this.getFurnitureColor(definition.category)
-      this.ctx.fillRect(-width / 2, -height / 2, width, height)
-      
-      this.ctx.strokeStyle = '#333'
-      this.ctx.lineWidth = 2
-      this.ctx.strokeRect(-width / 2, -height / 2, width, height)
-    }
-    
+
+    const width = definition.width * this.tileWidth
+    const height = definition.height * this.tileHeight
+
+    this.ctx.fillStyle = this.getFurnitureColor(definition.category)
+    this.ctx.fillRect(-width / 2, -height / 2, width, height)
+
+    this.ctx.strokeStyle = '#333'
+    this.ctx.lineWidth = 2
+    this.ctx.strokeRect(-width / 2, -height / 2, width, height)
+
     this.ctx.restore()
   }
 
@@ -175,7 +203,7 @@ export class FurnitureComponent {
     roomWidth: number, 
     roomHeight: number, 
     existingFurniture: Furniture[], 
-    players: any[],
+    players: Array<{ x: number; y: number }>,
     floorTiles: Array<{ x: number; y: number }>,
     furnitureType: string
   ): boolean {

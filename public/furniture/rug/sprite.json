@@ -1,0 +1,247 @@
+{
+  "id": "rug",
+  "name": "Rug",
+  "defaultDirection": "south",
+  "placement": "floor",
+  "behaviour": {
+    "category": "flooring",
+    "walkable": true,
+    "stackable": true,
+    "rotatable": true,
+    "collision": {
+      "blocksMovement": false,
+      "blocksVision": false,
+      "height": 0,
+      "shape": "rectangle"
+    }
+  },
+  "footprint": {
+    "width": 3,
+    "height": 2
+  },
+  "tile": {
+    "width": 64,
+    "height": 32
+  },
+  "pixelsPerUnit": 45.2548,
+  "palette": [
+    "#d0a7af",
+    "#a86c7a",
+    "#8f4d63",
+    "#c07f92",
+    "#68324a"
+  ],
+  "directions": {
+    "south": {
+      "file": "south.png",
+      "index": 0,
+      "width": 156,
+      "height": 79,
+      "anchorX": 62,
+      "anchorY": 16,
+      "footprint": {
+        "width": 3,
+        "height": 2
+      },
+      "interactions": [
+        {
+          "type": "dance",
+          "animation": "dance",
+          "duration": 10000,
+          "spots": [
+            {
+              "x": 1,
+              "y": 0,
+              "direction": "south",
+              "offsetX": 0,
+              "offsetY": -2,
+              "layer": "front"
+            },
+            {
+              "x": 1,
+              "y": 1,
+              "direction": "north",
+              "offsetX": 0,
+              "offsetY": -2,
+              "layer": "behind"
+            }
+          ]
+        }
+      ]
+    },
+    "west": {
+      "file": "west.png",
+      "index": 1,
+      "width": 156,
+      "height": 79,
+      "anchorX": 94,
+      "anchorY": 16,
+      "footprint": {
+        "width": 2,
+        "height": 3
+      },
+      "interactions": [
+        {
+          "type": "dance",
+          "animation": "dance",
+          "duration": 10000,
+          "spots": [
+            {
+              "x": 0,
+              "y": 1,
+              "direction": "west",
+              "offsetX": 0,
+              "offsetY": -2,
+              "layer": "behind"
+            },
+            {
+              "x": 1,
+              "y": 1,
+              "direction": "east",
+              "offsetX": 0,
+              "offsetY": -2,
+              "layer": "front"
+            }
+          ]
+        }
+      ]
+    },
+    "north": {
+      "file": "north.png",
+      "index": 2,
+      "width": 156,
+      "height": 79,
+      "anchorX": 62,
+      "anchorY": 16,
+      "footprint": {
+        "width": 3,
+        "height": 2
+      },
+      "interactions": [
+        {
+          "type": "dance",
+          "animation": "dance",
+          "duration": 10000,
+          "spots": [
+            {
+              "x": 1,
+              "y": 1,
+              "direction": "north",
+              "offsetX": 0,
+              "offsetY": -2,
+              "layer": "behind"
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "direction": "south",
+              "offsetX": 0,
+              "offsetY": -2,
+              "layer": "front"
+            }
+          ]
+        }
+      ]
+    },
+    "east": {
+      "file": "east.png",
+      "index": 3,
+      "width": 156,
+      "height": 79,
+      "anchorX": 94,
+      "anchorY": 16,
+      "footprint": {
+        "width": 2,
+        "height": 3
+      },
+      "interactions": [
+        {
+          "type": "dance",
+          "animation": "dance",
+          "duration": 10000,
+          "spots": [
+            {
+              "x": 1,
+              "y": 1,
+              "direction": "east",
+              "offsetX": 0,
+              "offsetY": -2,
+              "layer": "front"
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "direction": "west",
+              "offsetX": 0,
+              "offsetY": -2,
+              "layer": "behind"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "sheet": {
+    "file": "sheet.png",
+    "width": 627,
+    "height": 79,
+    "frames": [
+      {
+        "direction": "south",
+        "index": 0,
+        "x": 0,
+        "y": 0,
+        "width": 156,
+        "height": 79,
+        "anchorX": 62,
+        "anchorY": 16,
+        "footprint": {
+          "width": 3,
+          "height": 2
+        }
+      },
+      {
+        "direction": "west",
+        "index": 1,
+        "x": 157,
+        "y": 0,
+        "width": 156,
+        "height": 79,
+        "anchorX": 94,
+        "anchorY": 16,
+        "footprint": {
+          "width": 2,
+          "height": 3
+        }
+      },
+      {
+        "direction": "north",
+        "index": 2,
+        "x": 314,
+        "y": 0,
+        "width": 156,
+        "height": 79,
+        "anchorX": 62,
+        "anchorY": 16,
+        "footprint": {
+          "width": 3,
+          "height": 2
+        }
+      },
+      {
+        "direction": "east",
+        "index": 3,
+        "x": 471,
+        "y": 0,
+        "width": 156,
+        "height": 79,
+        "anchorX": 94,
+        "anchorY": 16,
+        "footprint": {
+          "width": 2,
+          "height": 3
+        }
+      }
+    ]
+  }
+}

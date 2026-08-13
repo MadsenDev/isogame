@@ -1,0 +1,1794 @@
+{
+  "wooden_chair": {
+    "id": "wooden_chair",
+    "name": "Wooden Chair",
+    "sprite": "/furniture/wooden_chair/south.png",
+    "width": 1,
+    "height": 1,
+    "placement": "floor",
+    "category": "seating",
+    "walkable": false,
+    "stackable": false,
+    "rotatable": true,
+    "collision": {
+      "blocksMovement": true,
+      "blocksVision": false,
+      "height": 1,
+      "shape": "rectangle"
+    },
+    "interactions": [
+      {
+        "type": "sit",
+        "animation": "sit",
+        "duration": 0,
+        "positions": [
+          {
+            "x": 0,
+            "y": 0,
+            "direction": "south",
+            "offsetX": 1,
+            "offsetY": -18,
+            "layer": "front"
+          }
+        ]
+      }
+    ],
+    "defaultDirection": "south",
+    "sprites": {
+      "south": {
+        "file": "south.png",
+        "index": 0,
+        "width": 34,
+        "height": 55,
+        "anchorX": 17,
+        "anchorY": 48,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "sit",
+            "animation": "sit",
+            "duration": 0,
+            "spots": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "south",
+                "offsetX": 1,
+                "offsetY": -18,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/wooden_chair/south.png"
+      },
+      "west": {
+        "file": "west.png",
+        "index": 1,
+        "width": 34,
+        "height": 49,
+        "anchorX": 17,
+        "anchorY": 42,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "sit",
+            "animation": "sit",
+            "duration": 0,
+            "spots": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "west",
+                "offsetX": 1,
+                "offsetY": -19,
+                "layer": "behind"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/wooden_chair/west.png"
+      },
+      "north": {
+        "file": "north.png",
+        "index": 2,
+        "width": 34,
+        "height": 49,
+        "anchorX": 17,
+        "anchorY": 42,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "sit",
+            "animation": "sit",
+            "duration": 0,
+            "spots": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "north",
+                "offsetX": -1,
+                "offsetY": -19,
+                "layer": "behind"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/wooden_chair/north.png"
+      },
+      "east": {
+        "file": "east.png",
+        "index": 3,
+        "width": 34,
+        "height": 55,
+        "anchorX": 17,
+        "anchorY": 48,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "sit",
+            "animation": "sit",
+            "duration": 0,
+            "spots": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "east",
+                "offsetX": -1,
+                "offsetY": -18,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/wooden_chair/east.png"
+      }
+    },
+    "palette": [
+      "#844e2c",
+      "#c19e69",
+      "#241d2b",
+      "#875531",
+      "#b07a42",
+      "#592f1c",
+      "#ab7945"
+    ]
+  },
+  "club_sofa": {
+    "id": "club_sofa",
+    "name": "Club Sofa",
+    "sprite": "/furniture/club_sofa/east.png",
+    "width": 2,
+    "height": 1,
+    "placement": "floor",
+    "category": "seating",
+    "walkable": false,
+    "stackable": false,
+    "rotatable": true,
+    "collision": {
+      "blocksMovement": true,
+      "blocksVision": false,
+      "height": 1,
+      "shape": "rectangle"
+    },
+    "interactions": [
+      {
+        "type": "sit",
+        "animation": "sit",
+        "duration": 0,
+        "positions": [
+          {
+            "x": 0,
+            "y": 0,
+            "direction": "east",
+            "offsetX": -1,
+            "offsetY": -17,
+            "layer": "front"
+          },
+          {
+            "x": 1,
+            "y": 0,
+            "direction": "east",
+            "offsetX": -3,
+            "offsetY": -18,
+            "layer": "front"
+          }
+        ]
+      }
+    ],
+    "defaultDirection": "east",
+    "sprites": {
+      "east": {
+        "file": "east.png",
+        "index": 0,
+        "width": 87,
+        "height": 73,
+        "anchorX": 28,
+        "anchorY": 43,
+        "footprint": {
+          "width": 2,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "sit",
+            "animation": "sit",
+            "duration": 0,
+            "spots": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "east",
+                "offsetX": -1,
+                "offsetY": -17,
+                "layer": "front"
+              },
+              {
+                "x": 1,
+                "y": 0,
+                "direction": "east",
+                "offsetX": -3,
+                "offsetY": -18,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/club_sofa/east.png"
+      },
+      "south": {
+        "file": "south.png",
+        "index": 1,
+        "width": 87,
+        "height": 73,
+        "anchorX": 59,
+        "anchorY": 43,
+        "footprint": {
+          "width": 1,
+          "height": 2
+        },
+        "interactions": [
+          {
+            "type": "sit",
+            "animation": "sit",
+            "duration": 0,
+            "spots": [
+              {
+                "x": 0,
+                "y": 1,
+                "direction": "south",
+                "offsetX": 3,
+                "offsetY": -18,
+                "layer": "front"
+              },
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "south",
+                "offsetX": 1,
+                "offsetY": -17,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/club_sofa/south.png"
+      },
+      "west": {
+        "file": "west.png",
+        "index": 2,
+        "width": 87,
+        "height": 66,
+        "anchorX": 27,
+        "anchorY": 37,
+        "footprint": {
+          "width": 2,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "sit",
+            "animation": "sit",
+            "duration": 0,
+            "spots": [
+              {
+                "x": 1,
+                "y": 0,
+                "direction": "west",
+                "offsetX": 1,
+                "offsetY": -19,
+                "layer": "behind"
+              },
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "west",
+                "offsetX": 3,
+                "offsetY": -19,
+                "layer": "behind"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/club_sofa/west.png"
+      },
+      "north": {
+        "file": "north.png",
+        "index": 3,
+        "width": 87,
+        "height": 66,
+        "anchorX": 60,
+        "anchorY": 37,
+        "footprint": {
+          "width": 1,
+          "height": 2
+        },
+        "interactions": [
+          {
+            "type": "sit",
+            "animation": "sit",
+            "duration": 0,
+            "spots": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "north",
+                "offsetX": -3,
+                "offsetY": -19,
+                "layer": "behind"
+              },
+              {
+                "x": 0,
+                "y": 1,
+                "direction": "north",
+                "offsetX": -1,
+                "offsetY": -19,
+                "layer": "behind"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/club_sofa/north.png"
+      }
+    },
+    "palette": [
+      "#c4544c",
+      "#da9d90",
+      "#875531",
+      "#ce877a",
+      "#a02e34",
+      "#d06b62",
+      "#592f1c",
+      "#241d2b",
+      "#ab7945",
+      "#be3137",
+      "#781e2d"
+    ]
+  },
+  "bed": {
+    "id": "bed",
+    "name": "Bed",
+    "sprite": "/furniture/bed/south.png",
+    "width": 2,
+    "height": 1,
+    "placement": "floor",
+    "category": "seating",
+    "walkable": false,
+    "stackable": false,
+    "rotatable": true,
+    "collision": {
+      "blocksMovement": true,
+      "blocksVision": false,
+      "height": 1,
+      "shape": "rectangle"
+    },
+    "interactions": [
+      {
+        "type": "lay",
+        "animation": "lay",
+        "duration": 0,
+        "positions": [
+          {
+            "x": 0,
+            "y": 0,
+            "direction": "south",
+            "offsetX": 2,
+            "offsetY": -14,
+            "layer": "front"
+          },
+          {
+            "x": 1,
+            "y": 0,
+            "direction": "south",
+            "offsetX": -2,
+            "offsetY": -16,
+            "layer": "front"
+          }
+        ]
+      },
+      {
+        "type": "sleep",
+        "animation": "sleep",
+        "duration": 30000,
+        "positions": [
+          {
+            "x": 0,
+            "y": 0,
+            "direction": "south",
+            "offsetX": 2,
+            "offsetY": -14,
+            "layer": "front"
+          }
+        ]
+      }
+    ],
+    "defaultDirection": "south",
+    "sprites": {
+      "south": {
+        "file": "south.png",
+        "index": 0,
+        "width": 91,
+        "height": 68,
+        "anchorX": 30,
+        "anchorY": 38,
+        "footprint": {
+          "width": 2,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "lay",
+            "animation": "lay",
+            "duration": 0,
+            "spots": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "south",
+                "offsetX": 2,
+                "offsetY": -14,
+                "layer": "front"
+              },
+              {
+                "x": 1,
+                "y": 0,
+                "direction": "south",
+                "offsetX": -2,
+                "offsetY": -16,
+                "layer": "front"
+              }
+            ]
+          },
+          {
+            "type": "sleep",
+            "animation": "sleep",
+            "duration": 30000,
+            "spots": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "south",
+                "offsetX": 2,
+                "offsetY": -14,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/bed/south.png"
+      },
+      "west": {
+        "file": "west.png",
+        "index": 1,
+        "width": 91,
+        "height": 63,
+        "anchorX": 62,
+        "anchorY": 33,
+        "footprint": {
+          "width": 1,
+          "height": 2
+        },
+        "interactions": [
+          {
+            "type": "lay",
+            "animation": "lay",
+            "duration": 0,
+            "spots": [
+              {
+                "x": 0,
+                "y": 1,
+                "direction": "west",
+                "offsetX": 2,
+                "offsetY": -16,
+                "layer": "behind"
+              },
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "west",
+                "offsetX": -2,
+                "offsetY": -14,
+                "layer": "behind"
+              }
+            ]
+          },
+          {
+            "type": "sleep",
+            "animation": "sleep",
+            "duration": 30000,
+            "spots": [
+              {
+                "x": 0,
+                "y": 1,
+                "direction": "west",
+                "offsetX": 2,
+                "offsetY": -16,
+                "layer": "behind"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/bed/west.png"
+      },
+      "north": {
+        "file": "north.png",
+        "index": 2,
+        "width": 91,
+        "height": 63,
+        "anchorX": 29,
+        "anchorY": 33,
+        "footprint": {
+          "width": 2,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "lay",
+            "animation": "lay",
+            "duration": 0,
+            "spots": [
+              {
+                "x": 1,
+                "y": 0,
+                "direction": "north",
+                "offsetX": -2,
+                "offsetY": -16,
+                "layer": "behind"
+              },
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "north",
+                "offsetX": 2,
+                "offsetY": -14,
+                "layer": "behind"
+              }
+            ]
+          },
+          {
+            "type": "sleep",
+            "animation": "sleep",
+            "duration": 30000,
+            "spots": [
+              {
+                "x": 1,
+                "y": 0,
+                "direction": "north",
+                "offsetX": -2,
+                "offsetY": -16,
+                "layer": "behind"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/bed/north.png"
+      },
+      "east": {
+        "file": "east.png",
+        "index": 3,
+        "width": 91,
+        "height": 68,
+        "anchorX": 61,
+        "anchorY": 38,
+        "footprint": {
+          "width": 1,
+          "height": 2
+        },
+        "interactions": [
+          {
+            "type": "lay",
+            "animation": "lay",
+            "duration": 0,
+            "spots": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "east",
+                "offsetX": -2,
+                "offsetY": -14,
+                "layer": "front"
+              },
+              {
+                "x": 0,
+                "y": 1,
+                "direction": "east",
+                "offsetX": 2,
+                "offsetY": -16,
+                "layer": "front"
+              }
+            ]
+          },
+          {
+            "type": "sleep",
+            "animation": "sleep",
+            "duration": 30000,
+            "spots": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "east",
+                "offsetX": -2,
+                "offsetY": -14,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/bed/east.png"
+      }
+    },
+    "palette": [
+      "#869dc5",
+      "#875531",
+      "#592f1c",
+      "#e4ded2",
+      "#f9f8f5",
+      "#f0ede6",
+      "#241d2b",
+      "#cfbca5",
+      "#ab7945",
+      "#5b86b8",
+      "#3a7097",
+      "#ded3c0",
+      "#cbaf90",
+      "#bf8865",
+      "#c0997c"
+    ]
+  },
+  "table": {
+    "id": "table",
+    "name": "Table",
+    "sprite": "/furniture/table/south.png",
+    "width": 2,
+    "height": 2,
+    "placement": "floor",
+    "category": "functional",
+    "walkable": false,
+    "stackable": true,
+    "rotatable": true,
+    "collision": {
+      "blocksMovement": true,
+      "blocksVision": false,
+      "height": 1,
+      "shape": "rectangle"
+    },
+    "interactions": [
+      {
+        "type": "use",
+        "animation": "use",
+        "duration": 5000,
+        "positions": [
+          {
+            "x": 0,
+            "y": 0,
+            "direction": "south",
+            "offsetX": 0,
+            "offsetY": 0,
+            "layer": "front"
+          },
+          {
+            "x": 1,
+            "y": 0,
+            "direction": "south",
+            "offsetX": 0,
+            "offsetY": 0,
+            "layer": "front"
+          },
+          {
+            "x": 0,
+            "y": 1,
+            "direction": "north",
+            "offsetX": 0,
+            "offsetY": 0,
+            "layer": "behind"
+          },
+          {
+            "x": 1,
+            "y": 1,
+            "direction": "north",
+            "offsetX": 0,
+            "offsetY": 0,
+            "layer": "behind"
+          }
+        ]
+      }
+    ],
+    "defaultDirection": "south",
+    "sprites": {
+      "south": {
+        "file": "south.png",
+        "index": 0,
+        "width": 116,
+        "height": 82,
+        "anchorX": 58,
+        "anchorY": 40,
+        "footprint": {
+          "width": 2,
+          "height": 2
+        },
+        "interactions": [
+          {
+            "type": "use",
+            "animation": "use",
+            "duration": 5000,
+            "spots": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "south",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "front"
+              },
+              {
+                "x": 1,
+                "y": 0,
+                "direction": "south",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "front"
+              },
+              {
+                "x": 0,
+                "y": 1,
+                "direction": "north",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "behind"
+              },
+              {
+                "x": 1,
+                "y": 1,
+                "direction": "north",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "behind"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/table/south.png"
+      },
+      "west": {
+        "file": "west.png",
+        "index": 1,
+        "width": 116,
+        "height": 82,
+        "anchorX": 58,
+        "anchorY": 40,
+        "footprint": {
+          "width": 2,
+          "height": 2
+        },
+        "interactions": [
+          {
+            "type": "use",
+            "animation": "use",
+            "duration": 5000,
+            "spots": [
+              {
+                "x": 0,
+                "y": 1,
+                "direction": "west",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "behind"
+              },
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "west",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "behind"
+              },
+              {
+                "x": 1,
+                "y": 1,
+                "direction": "east",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "front"
+              },
+              {
+                "x": 1,
+                "y": 0,
+                "direction": "east",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/table/west.png"
+      },
+      "north": {
+        "file": "north.png",
+        "index": 2,
+        "width": 116,
+        "height": 82,
+        "anchorX": 58,
+        "anchorY": 40,
+        "footprint": {
+          "width": 2,
+          "height": 2
+        },
+        "interactions": [
+          {
+            "type": "use",
+            "animation": "use",
+            "duration": 5000,
+            "spots": [
+              {
+                "x": 1,
+                "y": 1,
+                "direction": "north",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "behind"
+              },
+              {
+                "x": 0,
+                "y": 1,
+                "direction": "north",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "behind"
+              },
+              {
+                "x": 1,
+                "y": 0,
+                "direction": "south",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "front"
+              },
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "south",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/table/north.png"
+      },
+      "east": {
+        "file": "east.png",
+        "index": 3,
+        "width": 116,
+        "height": 82,
+        "anchorX": 58,
+        "anchorY": 40,
+        "footprint": {
+          "width": 2,
+          "height": 2
+        },
+        "interactions": [
+          {
+            "type": "use",
+            "animation": "use",
+            "duration": 5000,
+            "spots": [
+              {
+                "x": 1,
+                "y": 0,
+                "direction": "east",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "front"
+              },
+              {
+                "x": 1,
+                "y": 1,
+                "direction": "east",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "front"
+              },
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "west",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "behind"
+              },
+              {
+                "x": 0,
+                "y": 1,
+                "direction": "west",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "behind"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/table/east.png"
+      }
+    },
+    "palette": [
+      "#cbad7f",
+      "#241d2b",
+      "#c08b52",
+      "#9d5d32",
+      "#875531",
+      "#592f1c",
+      "#ab7945",
+      "#773921"
+    ]
+  },
+  "rug": {
+    "id": "rug",
+    "name": "Rug",
+    "sprite": "/furniture/rug/south.png",
+    "width": 3,
+    "height": 2,
+    "placement": "floor",
+    "category": "flooring",
+    "walkable": true,
+    "stackable": true,
+    "rotatable": true,
+    "collision": {
+      "blocksMovement": false,
+      "blocksVision": false,
+      "height": 0,
+      "shape": "rectangle"
+    },
+    "interactions": [
+      {
+        "type": "dance",
+        "animation": "dance",
+        "duration": 10000,
+        "positions": [
+          {
+            "x": 1,
+            "y": 0,
+            "direction": "south",
+            "offsetX": 0,
+            "offsetY": -2,
+            "layer": "front"
+          },
+          {
+            "x": 1,
+            "y": 1,
+            "direction": "north",
+            "offsetX": 0,
+            "offsetY": -2,
+            "layer": "behind"
+          }
+        ]
+      }
+    ],
+    "defaultDirection": "south",
+    "sprites": {
+      "south": {
+        "file": "south.png",
+        "index": 0,
+        "width": 156,
+        "height": 79,
+        "anchorX": 62,
+        "anchorY": 16,
+        "footprint": {
+          "width": 3,
+          "height": 2
+        },
+        "interactions": [
+          {
+            "type": "dance",
+            "animation": "dance",
+            "duration": 10000,
+            "spots": [
+              {
+                "x": 1,
+                "y": 0,
+                "direction": "south",
+                "offsetX": 0,
+                "offsetY": -2,
+                "layer": "front"
+              },
+              {
+                "x": 1,
+                "y": 1,
+                "direction": "north",
+                "offsetX": 0,
+                "offsetY": -2,
+                "layer": "behind"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/rug/south.png"
+      },
+      "west": {
+        "file": "west.png",
+        "index": 1,
+        "width": 156,
+        "height": 79,
+        "anchorX": 94,
+        "anchorY": 16,
+        "footprint": {
+          "width": 2,
+          "height": 3
+        },
+        "interactions": [
+          {
+            "type": "dance",
+            "animation": "dance",
+            "duration": 10000,
+            "spots": [
+              {
+                "x": 0,
+                "y": 1,
+                "direction": "west",
+                "offsetX": 0,
+                "offsetY": -2,
+                "layer": "behind"
+              },
+              {
+                "x": 1,
+                "y": 1,
+                "direction": "east",
+                "offsetX": 0,
+                "offsetY": -2,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/rug/west.png"
+      },
+      "north": {
+        "file": "north.png",
+        "index": 2,
+        "width": 156,
+        "height": 79,
+        "anchorX": 62,
+        "anchorY": 16,
+        "footprint": {
+          "width": 3,
+          "height": 2
+        },
+        "interactions": [
+          {
+            "type": "dance",
+            "animation": "dance",
+            "duration": 10000,
+            "spots": [
+              {
+                "x": 1,
+                "y": 1,
+                "direction": "north",
+                "offsetX": 0,
+                "offsetY": -2,
+                "layer": "behind"
+              },
+              {
+                "x": 1,
+                "y": 0,
+                "direction": "south",
+                "offsetX": 0,
+                "offsetY": -2,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/rug/north.png"
+      },
+      "east": {
+        "file": "east.png",
+        "index": 3,
+        "width": 156,
+        "height": 79,
+        "anchorX": 94,
+        "anchorY": 16,
+        "footprint": {
+          "width": 2,
+          "height": 3
+        },
+        "interactions": [
+          {
+            "type": "dance",
+            "animation": "dance",
+            "duration": 10000,
+            "spots": [
+              {
+                "x": 1,
+                "y": 1,
+                "direction": "east",
+                "offsetX": 0,
+                "offsetY": -2,
+                "layer": "front"
+              },
+              {
+                "x": 0,
+                "y": 1,
+                "direction": "west",
+                "offsetX": 0,
+                "offsetY": -2,
+                "layer": "behind"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/rug/east.png"
+      }
+    },
+    "palette": [
+      "#d0a7af",
+      "#a86c7a",
+      "#8f4d63",
+      "#c07f92",
+      "#68324a"
+    ]
+  },
+  "plant": {
+    "id": "plant",
+    "name": "Plant",
+    "sprite": "/furniture/plant/south.png",
+    "width": 1,
+    "height": 1,
+    "placement": "floor",
+    "category": "decoration",
+    "walkable": false,
+    "stackable": false,
+    "rotatable": true,
+    "collision": {
+      "blocksMovement": true,
+      "blocksVision": false,
+      "height": 2,
+      "shape": "circle"
+    },
+    "interactions": [],
+    "defaultDirection": "south",
+    "sprites": {
+      "south": {
+        "file": "south.png",
+        "index": 0,
+        "width": 26,
+        "height": 47,
+        "anchorX": 13,
+        "anchorY": 43,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "url": "/furniture/plant/south.png"
+      },
+      "west": {
+        "file": "west.png",
+        "index": 1,
+        "width": 33,
+        "height": 47,
+        "anchorX": 16,
+        "anchorY": 43,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "url": "/furniture/plant/west.png"
+      },
+      "north": {
+        "file": "north.png",
+        "index": 2,
+        "width": 26,
+        "height": 47,
+        "anchorX": 13,
+        "anchorY": 43,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "url": "/furniture/plant/north.png"
+      },
+      "east": {
+        "file": "east.png",
+        "index": 3,
+        "width": 33,
+        "height": 47,
+        "anchorX": 17,
+        "anchorY": 43,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "url": "/furniture/plant/east.png"
+      }
+    },
+    "palette": [
+      "#7b644b",
+      "#72b27b",
+      "#241d2b",
+      "#9b472e",
+      "#4f9d52",
+      "#c1734a",
+      "#3d7d43",
+      "#549e62",
+      "#cc9c78",
+      "#3a7535",
+      "#265324",
+      "#5b4433",
+      "#73271e",
+      "#2a5120",
+      "#162e12",
+      "#322119"
+    ]
+  },
+  "lamp": {
+    "id": "lamp",
+    "name": "Lamp",
+    "sprite": "/furniture/lamp/south.png",
+    "width": 1,
+    "height": 1,
+    "placement": "floor",
+    "category": "functional",
+    "walkable": false,
+    "stackable": false,
+    "rotatable": true,
+    "collision": {
+      "blocksMovement": true,
+      "blocksVision": false,
+      "height": 2,
+      "shape": "circle"
+    },
+    "interactions": [
+      {
+        "type": "use",
+        "animation": "use",
+        "duration": 2000,
+        "positions": [
+          {
+            "x": 0,
+            "y": 0,
+            "direction": "south",
+            "offsetX": 0,
+            "offsetY": 0,
+            "layer": "front"
+          }
+        ]
+      }
+    ],
+    "defaultDirection": "south",
+    "sprites": {
+      "south": {
+        "file": "south.png",
+        "index": 0,
+        "width": 24,
+        "height": 61,
+        "anchorX": 12,
+        "anchorY": 56,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "use",
+            "animation": "use",
+            "duration": 2000,
+            "spots": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "south",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/lamp/south.png"
+      },
+      "west": {
+        "file": "west.png",
+        "index": 1,
+        "width": 24,
+        "height": 61,
+        "anchorX": 12,
+        "anchorY": 56,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "use",
+            "animation": "use",
+            "duration": 2000,
+            "spots": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "west",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "behind"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/lamp/west.png"
+      },
+      "north": {
+        "file": "north.png",
+        "index": 2,
+        "width": 24,
+        "height": 61,
+        "anchorX": 12,
+        "anchorY": 56,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "use",
+            "animation": "use",
+            "duration": 2000,
+            "spots": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "north",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "behind"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/lamp/north.png"
+      },
+      "east": {
+        "file": "east.png",
+        "index": 3,
+        "width": 24,
+        "height": 61,
+        "anchorX": 12,
+        "anchorY": 56,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "use",
+            "animation": "use",
+            "duration": 2000,
+            "spots": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "east",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/lamp/east.png"
+      }
+    },
+    "palette": [
+      "#fef5d7",
+      "#241d2b",
+      "#babdc3",
+      "#7d858f",
+      "#586671",
+      "#98a2ad",
+      "#6d8596",
+      "#9fa1a5"
+    ]
+  },
+  "bookshelf": {
+    "id": "bookshelf",
+    "name": "Bookshelf",
+    "sprite": "/furniture/bookshelf/south.png",
+    "width": 1,
+    "height": 1,
+    "placement": "floor",
+    "category": "wall",
+    "walkable": false,
+    "stackable": false,
+    "rotatable": true,
+    "collision": {
+      "blocksMovement": true,
+      "blocksVision": true,
+      "height": 2,
+      "shape": "rectangle"
+    },
+    "interactions": [
+      {
+        "type": "use",
+        "animation": "use",
+        "duration": 3000,
+        "positions": [
+          {
+            "x": 0,
+            "y": 0,
+            "direction": "south",
+            "offsetX": 0,
+            "offsetY": 0,
+            "layer": "front"
+          }
+        ]
+      }
+    ],
+    "defaultDirection": "south",
+    "sprites": {
+      "south": {
+        "file": "south.png",
+        "index": 0,
+        "width": 40,
+        "height": 78,
+        "anchorX": 20,
+        "anchorY": 68,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "use",
+            "animation": "use",
+            "duration": 3000,
+            "spots": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "south",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/bookshelf/south.png"
+      },
+      "west": {
+        "file": "west.png",
+        "index": 1,
+        "width": 40,
+        "height": 78,
+        "anchorX": 20,
+        "anchorY": 68,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "use",
+            "animation": "use",
+            "duration": 3000,
+            "spots": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "west",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "behind"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/bookshelf/west.png"
+      },
+      "north": {
+        "file": "north.png",
+        "index": 2,
+        "width": 40,
+        "height": 78,
+        "anchorX": 20,
+        "anchorY": 68,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "use",
+            "animation": "use",
+            "duration": 3000,
+            "spots": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "north",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "behind"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/bookshelf/north.png"
+      },
+      "east": {
+        "file": "east.png",
+        "index": 3,
+        "width": 40,
+        "height": 78,
+        "anchorX": 20,
+        "anchorY": 68,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "use",
+            "animation": "use",
+            "duration": 3000,
+            "spots": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "east",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/bookshelf/east.png"
+      }
+    },
+    "palette": [
+      "#3d2015",
+      "#875531",
+      "#592f1c",
+      "#ab7945",
+      "#241d2b",
+      "#844e2c",
+      "#6b432a",
+      "#8f643e",
+      "#ded3c0",
+      "#cbaf90",
+      "#f0ede6",
+      "#c19e69",
+      "#bf8865",
+      "#b07a42"
+    ]
+  },
+  "wall_lamp": {
+    "id": "wall_lamp",
+    "name": "Wall Lamp",
+    "sprite": "/furniture/wall_lamp/south.png",
+    "width": 1,
+    "height": 1,
+    "placement": "wall",
+    "category": "wall",
+    "walkable": true,
+    "stackable": false,
+    "rotatable": false,
+    "collision": {
+      "blocksMovement": false,
+      "blocksVision": false,
+      "height": 0,
+      "shape": "rectangle"
+    },
+    "interactions": [
+      {
+        "type": "use",
+        "animation": "use",
+        "duration": 2000,
+        "positions": [
+          {
+            "x": 0,
+            "y": 0,
+            "direction": "south",
+            "offsetX": 0,
+            "offsetY": 0,
+            "layer": "front"
+          }
+        ]
+      }
+    ],
+    "defaultDirection": "south",
+    "sprites": {
+      "south": {
+        "file": "south.png",
+        "index": 0,
+        "width": 21,
+        "height": 18,
+        "anchorX": 19,
+        "anchorY": 50,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "use",
+            "animation": "use",
+            "duration": 2000,
+            "spots": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "south",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/wall_lamp/south.png"
+      },
+      "east": {
+        "file": "east.png",
+        "index": 3,
+        "width": 21,
+        "height": 18,
+        "anchorX": 2,
+        "anchorY": 50,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "use",
+            "animation": "use",
+            "duration": 2000,
+            "spots": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "east",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/wall_lamp/east.png"
+      }
+    },
+    "palette": [
+      "#fef5d7",
+      "#241d2b",
+      "#586671",
+      "#7d858f",
+      "#9fa1a5",
+      "#ffdf9e"
+    ]
+  },
+  "ceiling_lamp": {
+    "id": "ceiling_lamp",
+    "name": "Ceiling Lamp",
+    "sprite": "/furniture/ceiling_lamp/south.png",
+    "width": 1,
+    "height": 1,
+    "placement": "ceiling",
+    "category": "decoration",
+    "walkable": true,
+    "stackable": false,
+    "rotatable": false,
+    "collision": {
+      "blocksMovement": false,
+      "blocksVision": false,
+      "height": 0,
+      "shape": "circle"
+    },
+    "interactions": [],
+    "defaultDirection": "south",
+    "sprites": {
+      "south": {
+        "file": "south.png",
+        "index": 0,
+        "width": 26,
+        "height": 29,
+        "anchorX": 13,
+        "anchorY": 58,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "url": "/furniture/ceiling_lamp/south.png"
+      },
+      "west": {
+        "file": "west.png",
+        "index": 1,
+        "width": 26,
+        "height": 29,
+        "anchorX": 13,
+        "anchorY": 58,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "url": "/furniture/ceiling_lamp/west.png"
+      },
+      "north": {
+        "file": "north.png",
+        "index": 2,
+        "width": 26,
+        "height": 29,
+        "anchorX": 13,
+        "anchorY": 58,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "url": "/furniture/ceiling_lamp/north.png"
+      },
+      "east": {
+        "file": "east.png",
+        "index": 3,
+        "width": 26,
+        "height": 29,
+        "anchorX": 13,
+        "anchorY": 58,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "url": "/furniture/ceiling_lamp/east.png"
+      }
+    },
+    "palette": [
+      "#fef5d7",
+      "#241d2b",
+      "#9fa1a5",
+      "#67626a",
+      "#7d858f",
+      "#586671",
+      "#4a4450"
+    ]
+  }
+}
