@@ -242,6 +242,12 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       return { ...state, isPlacing: action.payload }
     
     case 'ADD_ROOM':
+      // Idempotent: React StrictMode runs the bootstrap effect twice in
+      // development, which otherwise loaded every predefined room a second
+      // time and left two rooms sharing an id.
+      if (state.rooms.some(room => room.id === action.payload.id)) {
+        return state
+      }
       return { ...state, rooms: [...state.rooms, ensureRoomFloorTiles(action.payload)] }
 
     case 'SET_CURRENT_ROOM':

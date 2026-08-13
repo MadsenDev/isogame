@@ -19,6 +19,9 @@ for us.** See [`tools/sprite-factory`](../tools/sprite-factory).
   room, and they join the depth-sorted pass so you can walk behind one.
 - **Contact shadows.** Generated from the geometry in a second render pass and
   drawn in their own pass between the floor and the objects.
+- **Panel contents rebuilt.** Catalog, styling and rooms share one set of panel
+  primitives; floor swatches preview the generated tile rather than the retired
+  tilesheet.
 - **Pixel-perfect rendering.** The canvas backing store matches its displayed
   size and zoom snaps to whole multiples, so sprites are never resampled.
 
@@ -37,13 +40,6 @@ One `guest` exists. The rig takes a palette (skin, hair, shirt, trousers, shoes)
 and proportions, so per-player appearance is mostly a matter of passing different
 values and exporting more than one character. Clothing shapes would need new
 primitives.
-
-### 4. Panel contents
-
-The shell was rebuilt but the panel *contents* were not: `FurnitureSelector`,
-`RoomCustomization` and `RoomManager` still have their original markup, restyled
-only by the new palette. The category chips taking three rows is the visible
-symptom.
 
 ## Known bugs and rough edges
 

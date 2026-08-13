@@ -162,6 +162,247 @@
     padding: 0 12px;
   }
 
+
+  /* ---- Panel primitives --------------------------------------------------
+     A small shared set, rather than bespoke markup per panel. Everything is
+     flat and square-edged to match the room.
+  ------------------------------------------------------------------------ */
+
+  .iso-catalog,
+  .iso-styling,
+  .iso-rooms {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  /* Filter chips: one scrolling row. */
+  .iso-chips {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+  }
+
+  .iso-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    flex: 0 0 auto;
+    padding: 5px 9px;
+    background: var(--iso-surface-soft);
+    border: 2px solid var(--iso-border);
+    color: var(--iso-text-muted);
+    font: inherit;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+  }
+
+  .iso-chip:hover { color: var(--iso-text); border-color: var(--iso-border-strong); }
+
+  .iso-chip.is-active {
+    background: var(--iso-primary);
+    border-color: var(--iso-primary);
+    color: #241d2b;
+    font-weight: 700;
+  }
+
+  /* Item grid. */
+  .iso-catalog__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .iso-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 8px 4px 6px;
+    background: var(--iso-surface-soft);
+    border: 2px solid var(--iso-border);
+    color: var(--iso-text);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .iso-card:hover { border-color: var(--iso-border-strong); }
+
+  .iso-card.is-active {
+    border-color: var(--iso-primary);
+    background: var(--iso-surface-raised);
+  }
+
+  .iso-card__art {
+    width: 100%;
+    height: 44px;
+    object-fit: contain;
+  }
+
+  .iso-card__name {
+    font-size: 0.68rem;
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  .iso-card__meta {
+    font-size: 0.62rem;
+    color: var(--iso-text-muted);
+  }
+
+  .iso-catalog__selection {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    background: var(--iso-surface-soft);
+    border: 2px solid var(--iso-primary);
+  }
+
+  .iso-catalog__selection img { width: 32px; height: 32px; object-fit: contain; }
+
+  .iso-catalog__selection span {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    font-size: 0.72rem;
+  }
+
+  .iso-catalog__selection em {
+    color: var(--iso-text-muted);
+    font-style: normal;
+    font-size: 0.66rem;
+  }
+
+  /* Floor swatches. */
+  .iso-swatches {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+
+  .iso-swatch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 6px 2px 4px;
+    background: var(--iso-surface-soft);
+    border: 2px solid var(--iso-border);
+    color: var(--iso-text-muted);
+    font: inherit;
+    font-size: 0.62rem;
+    cursor: pointer;
+  }
+
+  .iso-swatch img { width: 100%; height: 22px; object-fit: contain; }
+  .iso-swatch:hover { border-color: var(--iso-border-strong); color: var(--iso-text); }
+
+  .iso-swatch.is-active {
+    border-color: var(--iso-primary);
+    color: var(--iso-text);
+    background: var(--iso-surface-raised);
+  }
+
+  /* Key/value facts. */
+  .iso-facts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin: 0;
+  }
+
+  .iso-facts div {
+    padding: 6px 8px;
+    background: var(--iso-surface-soft);
+    border: 2px solid var(--iso-border);
+  }
+
+  .iso-facts dt {
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--iso-text-muted);
+  }
+
+  .iso-facts dd { margin: 0; font-size: 0.8rem; }
+
+  /* Room rows. */
+  .iso-rows { display: flex; flex-direction: column; gap: 4px; }
+
+  .iso-row {
+    display: flex;
+    align-items: stretch;
+    gap: 4px;
+    border: 2px solid var(--iso-border);
+    background: var(--iso-surface-soft);
+  }
+
+  .iso-row.is-active { border-color: var(--iso-primary); }
+
+  .iso-row__main {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 1;
+    gap: 1px;
+    padding: 7px 9px;
+    background: transparent;
+    border: 0;
+    color: var(--iso-text);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .iso-row__name { font-size: 0.82rem; }
+  .iso-row__meta { font-size: 0.66rem; color: var(--iso-text-muted); }
+
+  .iso-icon-button {
+    width: 30px;
+    background: transparent;
+    border: 0;
+    border-left: 2px solid var(--iso-border);
+    color: var(--iso-text-muted);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .iso-icon-button:hover { background: var(--iso-surface-raised); color: var(--iso-text); }
+  .iso-icon-button.is-danger:hover { color: var(--iso-danger); }
+
+  /* Forms. */
+  .iso-form { display: flex; flex-direction: column; gap: 6px; }
+
+  .iso-form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+
+  .iso-form__row label {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 0.64rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--iso-text-muted);
+  }
+
+  .iso-input--code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.68rem;
+    resize: vertical;
+  }
+
+  .iso-note {
+    margin: 0;
+    font-size: 0.68rem;
+    line-height: 1.45;
+    color: var(--iso-text-muted);
+  }
+
   .iso-zoom__level {
     min-width: 52px;
     justify-content: center;

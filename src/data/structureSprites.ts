@@ -93,7 +93,22 @@ export function getAllStructureUrls(): string[] {
   )
 }
 
-/** Floor textures the game can offer, in catalogue order. */
+/**
+ * Floor textures worth offering, one per distinct generated tile.
+ *
+ * Several legacy texture names map to the same sprite - brick and stone both
+ * resolve to floor_stone - so listing every name put visibly identical swatches
+ * side by side and implied choices that do not exist.
+ */
 export function getFloorTextureNames(): string[] {
-  return Object.keys(FLOOR_TEXTURES).filter(name => name !== 'default')
+  const seen = new Set<string>()
+  const names: string[] = []
+
+  for (const [name, id] of Object.entries(FLOOR_TEXTURES)) {
+    if (name === 'default' || seen.has(id)) continue
+    seen.add(id)
+    names.push(name)
+  }
+
+  return names
 }
