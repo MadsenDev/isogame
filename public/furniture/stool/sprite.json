@@ -1,0 +1,245 @@
+{
+  "id": "stool",
+  "name": "Stool",
+  "defaultDirection": "south",
+  "placement": "floor",
+  "behaviour": {
+    "category": "seating",
+    "walkable": false,
+    "stackable": false,
+    "rotatable": true,
+    "collision": {
+      "blocksMovement": true,
+      "blocksVision": false,
+      "height": 1,
+      "shape": "rectangle"
+    }
+  },
+  "footprint": {
+    "width": 1,
+    "height": 1
+  },
+  "tile": {
+    "width": 64,
+    "height": 32
+  },
+  "pixelsPerUnit": 45.2548,
+  "palette": [
+    "#241d2b",
+    "#c19e69",
+    "#875531",
+    "#592f1c",
+    "#b07a42",
+    "#844e2c",
+    "#ab7945"
+  ],
+  "directions": {
+    "south": {
+      "file": "south.png",
+      "index": 0,
+      "width": 22,
+      "height": 31,
+      "anchorX": 11,
+      "anchorY": 26,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [
+        {
+          "type": "sit",
+          "animation": "sit",
+          "duration": 0,
+          "spots": [
+            {
+              "x": 0,
+              "y": 0,
+              "direction": "south",
+              "offsetX": 0,
+              "offsetY": -20,
+              "layer": "front"
+            }
+          ]
+        }
+      ],
+      "shadow": {
+        "file": "south-shadow.png",
+        "width": 32,
+        "height": 12,
+        "anchorX": 9,
+        "anchorY": 6
+      }
+    },
+    "west": {
+      "file": "west.png",
+      "index": 1,
+      "width": 22,
+      "height": 31,
+      "anchorX": 11,
+      "anchorY": 26,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [
+        {
+          "type": "sit",
+          "animation": "sit",
+          "duration": 0,
+          "spots": [
+            {
+              "x": 0,
+              "y": 0,
+              "direction": "west",
+              "offsetX": 0,
+              "offsetY": -20,
+              "layer": "behind"
+            }
+          ]
+        }
+      ],
+      "shadow": {
+        "file": "west-shadow.png",
+        "width": 32,
+        "height": 12,
+        "anchorX": 9,
+        "anchorY": 6
+      }
+    },
+    "north": {
+      "file": "north.png",
+      "index": 2,
+      "width": 22,
+      "height": 31,
+      "anchorX": 11,
+      "anchorY": 26,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [
+        {
+          "type": "sit",
+          "animation": "sit",
+          "duration": 0,
+          "spots": [
+            {
+              "x": 0,
+              "y": 0,
+              "direction": "north",
+              "offsetX": 0,
+              "offsetY": -20,
+              "layer": "behind"
+            }
+          ]
+        }
+      ],
+      "shadow": {
+        "file": "north-shadow.png",
+        "width": 32,
+        "height": 12,
+        "anchorX": 9,
+        "anchorY": 6
+      }
+    },
+    "east": {
+      "file": "east.png",
+      "index": 3,
+      "width": 22,
+      "height": 31,
+      "anchorX": 11,
+      "anchorY": 26,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [
+        {
+          "type": "sit",
+          "animation": "sit",
+          "duration": 0,
+          "spots": [
+            {
+              "x": 0,
+              "y": 0,
+              "direction": "east",
+              "offsetX": 0,
+              "offsetY": -20,
+              "layer": "front"
+            }
+          ]
+        }
+      ],
+      "shadow": {
+        "file": "east-shadow.png",
+        "width": 32,
+        "height": 12,
+        "anchorX": 9,
+        "anchorY": 6
+      }
+    }
+  },
+  "sheet": {
+    "file": "sheet.png",
+    "width": 91,
+    "height": 31,
+    "frames": [
+      {
+        "direction": "south",
+        "index": 0,
+        "x": 0,
+        "y": 0,
+        "width": 22,
+        "height": 31,
+        "anchorX": 11,
+        "anchorY": 26,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      },
+      {
+        "direction": "west",
+        "index": 1,
+        "x": 23,
+        "y": 0,
+        "width": 22,
+        "height": 31,
+        "anchorX": 11,
+        "anchorY": 26,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      },
+      {
+        "direction": "north",
+        "index": 2,
+        "x": 46,
+        "y": 0,
+        "width": 22,
+        "height": 31,
+        "anchorX": 11,
+        "anchorY": 26,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      },
+      {
+        "direction": "east",
+        "index": 3,
+        "x": 69,
+        "y": 0,
+        "width": 22,
+        "height": 31,
+        "anchorX": 11,
+        "anchorY": 26,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      }
+    ]
+  }
+}

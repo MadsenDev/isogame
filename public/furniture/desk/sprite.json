@@ -1,0 +1,284 @@
+{
+  "id": "desk",
+  "name": "Desk",
+  "defaultDirection": "east",
+  "placement": "floor",
+  "behaviour": {
+    "category": "functional",
+    "walkable": false,
+    "stackable": true,
+    "rotatable": true,
+    "collision": {
+      "blocksMovement": true,
+      "blocksVision": false,
+      "height": 1,
+      "shape": "rectangle"
+    }
+  },
+  "footprint": {
+    "width": 2,
+    "height": 1
+  },
+  "tile": {
+    "width": 64,
+    "height": 32
+  },
+  "pixelsPerUnit": 45.2548,
+  "palette": [
+    "#cbad7f",
+    "#592f1c",
+    "#241d2b",
+    "#c08b52",
+    "#b07a42",
+    "#9d5d32",
+    "#ab7945",
+    "#c19e69",
+    "#875531",
+    "#98a2ad",
+    "#773921",
+    "#844e2c",
+    "#6d8596",
+    "#506f7b"
+  ],
+  "directions": {
+    "east": {
+      "file": "east.png",
+      "index": 0,
+      "width": 88,
+      "height": 69,
+      "anchorX": 28,
+      "anchorY": 42,
+      "footprint": {
+        "width": 2,
+        "height": 1
+      },
+      "interactions": [
+        {
+          "type": "use",
+          "animation": "use",
+          "duration": 5000,
+          "spots": [
+            {
+              "x": 0,
+              "y": 0,
+              "direction": "south",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "front"
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "direction": "south",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "front"
+            }
+          ]
+        }
+      ],
+      "shadow": {
+        "file": "east-shadow.png",
+        "width": 100,
+        "height": 43,
+        "anchorX": 24,
+        "anchorY": 14
+      }
+    },
+    "south": {
+      "file": "south.png",
+      "index": 1,
+      "width": 88,
+      "height": 70,
+      "anchorX": 60,
+      "anchorY": 42,
+      "footprint": {
+        "width": 1,
+        "height": 2
+      },
+      "interactions": [
+        {
+          "type": "use",
+          "animation": "use",
+          "duration": 5000,
+          "spots": [
+            {
+              "x": 0,
+              "y": 1,
+              "direction": "west",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "behind"
+            },
+            {
+              "x": 0,
+              "y": 0,
+              "direction": "west",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "behind"
+            }
+          ]
+        }
+      ],
+      "shadow": {
+        "file": "south-shadow.png",
+        "width": 100,
+        "height": 43,
+        "anchorX": 56,
+        "anchorY": 14
+      }
+    },
+    "west": {
+      "file": "west.png",
+      "index": 2,
+      "width": 88,
+      "height": 70,
+      "anchorX": 28,
+      "anchorY": 42,
+      "footprint": {
+        "width": 2,
+        "height": 1
+      },
+      "interactions": [
+        {
+          "type": "use",
+          "animation": "use",
+          "duration": 5000,
+          "spots": [
+            {
+              "x": 1,
+              "y": 0,
+              "direction": "north",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "behind"
+            },
+            {
+              "x": 0,
+              "y": 0,
+              "direction": "north",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "behind"
+            }
+          ]
+        }
+      ],
+      "shadow": {
+        "file": "west-shadow.png",
+        "width": 100,
+        "height": 43,
+        "anchorX": 24,
+        "anchorY": 14
+      }
+    },
+    "north": {
+      "file": "north.png",
+      "index": 3,
+      "width": 88,
+      "height": 69,
+      "anchorX": 60,
+      "anchorY": 42,
+      "footprint": {
+        "width": 1,
+        "height": 2
+      },
+      "interactions": [
+        {
+          "type": "use",
+          "animation": "use",
+          "duration": 5000,
+          "spots": [
+            {
+              "x": 0,
+              "y": 0,
+              "direction": "east",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "front"
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "direction": "east",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "front"
+            }
+          ]
+        }
+      ],
+      "shadow": {
+        "file": "north-shadow.png",
+        "width": 100,
+        "height": 43,
+        "anchorX": 56,
+        "anchorY": 14
+      }
+    }
+  },
+  "sheet": {
+    "file": "sheet.png",
+    "width": 355,
+    "height": 70,
+    "frames": [
+      {
+        "direction": "east",
+        "index": 0,
+        "x": 0,
+        "y": 0,
+        "width": 88,
+        "height": 69,
+        "anchorX": 28,
+        "anchorY": 42,
+        "footprint": {
+          "width": 2,
+          "height": 1
+        }
+      },
+      {
+        "direction": "south",
+        "index": 1,
+        "x": 89,
+        "y": 0,
+        "width": 88,
+        "height": 70,
+        "anchorX": 60,
+        "anchorY": 42,
+        "footprint": {
+          "width": 1,
+          "height": 2
+        }
+      },
+      {
+        "direction": "west",
+        "index": 2,
+        "x": 178,
+        "y": 0,
+        "width": 88,
+        "height": 70,
+        "anchorX": 28,
+        "anchorY": 42,
+        "footprint": {
+          "width": 2,
+          "height": 1
+        }
+      },
+      {
+        "direction": "north",
+        "index": 3,
+        "x": 267,
+        "y": 0,
+        "width": 88,
+        "height": 69,
+        "anchorX": 60,
+        "anchorY": 42,
+        "footprint": {
+          "width": 1,
+          "height": 2
+        }
+      }
+    ]
+  }
+}

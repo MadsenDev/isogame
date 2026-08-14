@@ -4,7 +4,7 @@
   "defaultDirection": "south",
   "placement": "floor",
   "behaviour": {
-    "category": "wall",
+    "category": "functional",
     "walkable": false,
     "stackable": false,
     "rotatable": true,

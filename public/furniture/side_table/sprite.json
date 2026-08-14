@@ -1,0 +1,182 @@
+{
+  "id": "side_table",
+  "name": "Side Table",
+  "defaultDirection": "south",
+  "placement": "floor",
+  "behaviour": {
+    "category": "functional",
+    "walkable": false,
+    "stackable": true,
+    "rotatable": true,
+    "collision": {
+      "blocksMovement": true,
+      "blocksVision": false,
+      "height": 1,
+      "shape": "circle"
+    }
+  },
+  "footprint": {
+    "width": 1,
+    "height": 1
+  },
+  "tile": {
+    "width": 64,
+    "height": 32
+  },
+  "pixelsPerUnit": 45.2548,
+  "palette": [
+    "#cbad7f",
+    "#241d2b",
+    "#ab7945",
+    "#c08b52",
+    "#875531",
+    "#9d5d32",
+    "#592f1c",
+    "#773921"
+  ],
+  "directions": {
+    "south": {
+      "file": "south.png",
+      "index": 0,
+      "width": 32,
+      "height": 37,
+      "anchorX": 16,
+      "anchorY": 32,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [],
+      "shadow": {
+        "file": "south-shadow.png",
+        "width": 40,
+        "height": 15,
+        "anchorX": 10,
+        "anchorY": 8
+      }
+    },
+    "west": {
+      "file": "west.png",
+      "index": 1,
+      "width": 32,
+      "height": 37,
+      "anchorX": 16,
+      "anchorY": 32,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [],
+      "shadow": {
+        "file": "west-shadow.png",
+        "width": 40,
+        "height": 15,
+        "anchorX": 10,
+        "anchorY": 8
+      }
+    },
+    "north": {
+      "file": "north.png",
+      "index": 2,
+      "width": 32,
+      "height": 37,
+      "anchorX": 16,
+      "anchorY": 32,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [],
+      "shadow": {
+        "file": "north-shadow.png",
+        "width": 40,
+        "height": 15,
+        "anchorX": 10,
+        "anchorY": 8
+      }
+    },
+    "east": {
+      "file": "east.png",
+      "index": 3,
+      "width": 32,
+      "height": 37,
+      "anchorX": 16,
+      "anchorY": 32,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [],
+      "shadow": {
+        "file": "east-shadow.png",
+        "width": 40,
+        "height": 15,
+        "anchorX": 10,
+        "anchorY": 8
+      }
+    }
+  },
+  "sheet": {
+    "file": "sheet.png",
+    "width": 131,
+    "height": 37,
+    "frames": [
+      {
+        "direction": "south",
+        "index": 0,
+        "x": 0,
+        "y": 0,
+        "width": 32,
+        "height": 37,
+        "anchorX": 16,
+        "anchorY": 32,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      },
+      {
+        "direction": "west",
+        "index": 1,
+        "x": 33,
+        "y": 0,
+        "width": 32,
+        "height": 37,
+        "anchorX": 16,
+        "anchorY": 32,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      },
+      {
+        "direction": "north",
+        "index": 2,
+        "x": 66,
+        "y": 0,
+        "width": 32,
+        "height": 37,
+        "anchorX": 16,
+        "anchorY": 32,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      },
+      {
+        "direction": "east",
+        "index": 3,
+        "x": 99,
+        "y": 0,
+        "width": 32,
+        "height": 37,
+        "anchorX": 16,
+        "anchorY": 32,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      }
+    ]
+  }
+}

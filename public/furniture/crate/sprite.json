@@ -1,0 +1,180 @@
+{
+  "id": "crate",
+  "name": "Crate",
+  "defaultDirection": "south",
+  "placement": "floor",
+  "behaviour": {
+    "category": "functional",
+    "walkable": false,
+    "stackable": true,
+    "rotatable": true,
+    "collision": {
+      "blocksMovement": true,
+      "blocksVision": false,
+      "height": 1,
+      "shape": "rectangle"
+    }
+  },
+  "footprint": {
+    "width": 1,
+    "height": 1
+  },
+  "tile": {
+    "width": 64,
+    "height": 32
+  },
+  "pixelsPerUnit": 45.2548,
+  "palette": [
+    "#ab7945",
+    "#844e2c",
+    "#b07a42",
+    "#875531",
+    "#592f1c",
+    "#241d2b"
+  ],
+  "directions": {
+    "south": {
+      "file": "south.png",
+      "index": 0,
+      "width": 46,
+      "height": 50,
+      "anchorX": 23,
+      "anchorY": 39,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [],
+      "shadow": {
+        "file": "south-shadow.png",
+        "width": 61,
+        "height": 24,
+        "anchorX": 22,
+        "anchorY": 12
+      }
+    },
+    "west": {
+      "file": "west.png",
+      "index": 1,
+      "width": 46,
+      "height": 50,
+      "anchorX": 23,
+      "anchorY": 39,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [],
+      "shadow": {
+        "file": "west-shadow.png",
+        "width": 61,
+        "height": 24,
+        "anchorX": 22,
+        "anchorY": 12
+      }
+    },
+    "north": {
+      "file": "north.png",
+      "index": 2,
+      "width": 46,
+      "height": 50,
+      "anchorX": 23,
+      "anchorY": 39,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [],
+      "shadow": {
+        "file": "north-shadow.png",
+        "width": 61,
+        "height": 24,
+        "anchorX": 22,
+        "anchorY": 12
+      }
+    },
+    "east": {
+      "file": "east.png",
+      "index": 3,
+      "width": 46,
+      "height": 50,
+      "anchorX": 23,
+      "anchorY": 39,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [],
+      "shadow": {
+        "file": "east-shadow.png",
+        "width": 61,
+        "height": 24,
+        "anchorX": 22,
+        "anchorY": 12
+      }
+    }
+  },
+  "sheet": {
+    "file": "sheet.png",
+    "width": 187,
+    "height": 50,
+    "frames": [
+      {
+        "direction": "south",
+        "index": 0,
+        "x": 0,
+        "y": 0,
+        "width": 46,
+        "height": 50,
+        "anchorX": 23,
+        "anchorY": 39,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      },
+      {
+        "direction": "west",
+        "index": 1,
+        "x": 47,
+        "y": 0,
+        "width": 46,
+        "height": 50,
+        "anchorX": 23,
+        "anchorY": 39,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      },
+      {
+        "direction": "north",
+        "index": 2,
+        "x": 94,
+        "y": 0,
+        "width": 46,
+        "height": 50,
+        "anchorX": 23,
+        "anchorY": 39,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      },
+      {
+        "direction": "east",
+        "index": 3,
+        "x": 141,
+        "y": 0,
+        "width": 46,
+        "height": 50,
+        "anchorX": 23,
+        "anchorY": 39,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      }
+    ]
+  }
+}
