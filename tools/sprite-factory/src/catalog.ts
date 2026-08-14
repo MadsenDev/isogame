@@ -333,8 +333,11 @@ export const CATALOG: AssetSpec[] = [
     name: 'Rug',
     facing: 'south',
     footprint: { width: 3, height: 2 },
-    // A rug is a floor decal: an outline would fight the tile grid it sits on.
+    // A rug is a floor decal: an outline would fight the tile grid it sits on,
+    // and something with no height casts no shadow to speak of - generating one
+    // just puts a rug-shaped smear half a tile from the rug.
     outline: { enabled: false },
+    shadow: { enabled: false },
     behaviour: behaviour.decal(),
     interactions: [
       dance([
@@ -357,6 +360,7 @@ export const CATALOG: AssetSpec[] = [
     facing: 'south',
     footprint: { width: 2, height: 2 },
     outline: { enabled: false },
+    shadow: { enabled: false },
     behaviour: behaviour.decal({ shape: 'circle' }),
     interactions: [
       dance([

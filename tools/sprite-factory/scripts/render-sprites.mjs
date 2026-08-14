@@ -252,6 +252,10 @@ async function main() {
 
     for (const asset of assets) {
       const assetDir = join(SPRITE_DIR, asset.metadata.id)
+      // Scoped to the one asset being re-rendered, so a partial run cannot
+      // leave files the new manifest no longer mentions - turning off a piece's
+      // shadow used to leave its shadow PNGs behind for good.
+      await rm(assetDir, { recursive: true, force: true })
       await mkdir(assetDir, { recursive: true })
 
       for (const file of asset.files) {
