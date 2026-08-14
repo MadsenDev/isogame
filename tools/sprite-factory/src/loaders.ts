@@ -83,6 +83,8 @@ function baseColourOf(material: THREE.Material): string {
 export interface LoadedModel {
   group: THREE.Group
   palette: string[]
+  /** Always empty: an imported model has no named slots to recolour by. */
+  ramps: Record<string, string[]>
   dispose: () => void
 }
 
@@ -181,6 +183,9 @@ export async function loadModelFile(
   return {
     group,
     palette,
+    // An imported model's materials are whatever the file declared, so there
+    // are no named slots to recolour by.
+    ramps: {},
     dispose: () => disposables.forEach((item) => item.dispose()),
   }
 }

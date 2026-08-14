@@ -29,6 +29,13 @@ interface PrimitiveBase {
   rotation?: Vec3
   /** Material name from the asset's material table, or an inline spec. */
   material: string | MaterialSpec
+  /**
+   * Which render layer this part belongs to. Undefined means the base layer.
+   *
+   * Layers exist so one part of a model can be exported as a separate,
+   * correctly-occluded overlay - see `AssetSpec.isolateLayer`.
+   */
+  layer?: string
 }
 
 export interface BoxSpec extends PrimitiveBase {
@@ -148,6 +155,16 @@ export interface AssetSpec {
   materials: Record<string, MaterialSpec>
   /** Primitive parts. Mutually exclusive with `source`. */
   parts?: PrimitiveSpec[]
+  /**
+   * Render only the parts on this layer, with everything else present but
+   * invisible.
+   *
+   * The hidden parts still write depth, so the layer comes out occluded exactly
+   * as it would be in the full model - a ponytail disappears behind the head
+   * when the character turns to face us. That is what lets hair ship as one
+   * sprite set per style rather than one per style *and* outfit.
+   */
+  isolateLayer?: string
   /** Load geometry from a .glb/.gltf/.obj file instead of building primitives. */
   source?: ModelSource
   /** Overrides the default silhouette outline for this asset. */
@@ -184,6 +201,8 @@ export interface BuiltModel {
   group: THREE.Group
   /** Every colour any pixel of this model can be, darkest ramp entry first. */
   palette: string[]
+  /** Named material -> its four-shade ramp. Empty for imported models. */
+  ramps: Record<string, string[]>
   dispose: () => void
 }
 
@@ -206,11 +225,16 @@ export async function buildAssetModel(asset: AssetSpec, shading: ShadingConfig):
 export function buildPrimitiveModel(asset: AssetSpec, shading: ShadingConfig): BuiltModel {
   const group = new THREE.Group()
   const palette: string[] = []
+  const ramps: Record<string, string[]> = {}
   const disposables: Array<{ dispose: () => void }> = []
+  // Visibility is part of the cache key: a hidden part needs its own material
+  // instance, or switching colorWrite off would blank every part that happens
+  // to share its colour.
   const cache = new Map<string, THREE.ShaderMaterial>()
 
-  const resolveMaterial = (ref: string | MaterialSpec): THREE.ShaderMaterial => {
-    const key = typeof ref === 'string' ? ref : JSON.stringify(ref)
+  const resolveMaterial = (ref: string | MaterialSpec, visible: boolean): THREE.ShaderMaterial => {
+    const name = typeof ref === 'string' ? ref : JSON.stringify(ref)
+    const key = `${name}|${visible}`
     const cached = cache.get(key)
     if (cached) return cached
 
@@ -218,7 +242,11 @@ export function buildPrimitiveModel(asset: AssetSpec, shading: ShadingConfig): B
     if (!spec) throw new Error(`${asset.id}: unknown material "${ref}"`)
 
     const built = createPixelToonMaterial(spec, shading)
-    palette.push(...built.ramp)
+    if (typeof ref === 'string') ramps[ref] = built.ramp
+    // Only colours that can actually reach a pixel belong in the snap palette.
+    if (visible) palette.push(...built.ramp)
+    else built.material.colorWrite = false
+
     cache.set(key, built.material)
     disposables.push(built.material)
     return built.material
@@ -228,7 +256,8 @@ export function buildPrimitiveModel(asset: AssetSpec, shading: ShadingConfig): B
     const geometry = buildGeometry(part)
     disposables.push(geometry)
 
-    const mesh = new THREE.Mesh(geometry, resolveMaterial(part.material))
+    const visible = asset.isolateLayer === undefined || part.layer === asset.isolateLayer
+    const mesh = new THREE.Mesh(geometry, resolveMaterial(part.material, visible))
     const [px, py, pz] = part.position ?? [0, 0, 0]
     mesh.position.set(px, py, pz)
     if (part.rotation) {
@@ -242,6 +271,7 @@ export function buildPrimitiveModel(asset: AssetSpec, shading: ShadingConfig): B
   return {
     group,
     palette,
+    ramps,
     dispose: () => disposables.forEach((d) => d.dispose()),
   }
 }

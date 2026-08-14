@@ -1,10 +1,10 @@
 import { Player } from '../context/GameContext'
-import { getCharacterFrame, getAllCharacterFrameUrls } from '../data/characterSprites'
+import { DEFAULT_APPEARANCE } from '../data/appearance'
+import { characterRenderer } from '../utils/characterRenderer'
+import { WALK_FRAME_COUNT } from '../data/characterSprites'
 
 export class PlayerComponent {
   private ctx: CanvasRenderingContext2D
-  /** Loaded frames, keyed by URL. */
-  private characterSprites: Map<string, HTMLImageElement> = new Map()
   private baseGridSize: number
   private gridSize: number
   private zoom = 1
@@ -13,7 +13,6 @@ export class PlayerComponent {
     this.ctx = ctx
     this.baseGridSize = gridSize
     this.gridSize = gridSize
-    this.loadCharacterSprites()
   }
 
   public setZoom(zoom: number) {
@@ -22,19 +21,19 @@ export class PlayerComponent {
   }
 
   /**
-   * Preload every generated frame.
+   * Which clip and frame a player is showing right now.
    *
-   * These come from public/, so they resolve in a production build too. The
-   * previous art was fetched from /src/assets/... which only ever worked
-   * because the dev server happens to serve the source tree.
+   * The walk cycle is stepped by progress through the current tile rather than
+   * by wall-clock time, so the stride stays in sync with the movement however
+   * fast the simulation happens to be running.
    */
-  private loadCharacterSprites() {
-    for (const url of getAllCharacterFrameUrls()) {
-      const img = new Image()
-      img.src = url
-      img.onload = () => this.characterSprites.set(url, img)
-      img.onerror = () => console.error(`Failed to load character sprite: ${url}`)
-    }
+  private clipFor(player: Player) {
+    const walking = player.isMoving && player.path.length > 0 && player.pathIndex < player.path.length
+    // Sitting is a pose, not a timed action, so it holds until the player walks
+    // away.
+    const animation = walking ? 'walk' : player.action === 'sitting' ? 'sit' : 'idle'
+    const progress = walking ? Math.min(player.moveTimer / player.moveDelay, 1) : 0
+    return { animation, frame: walking ? Math.floor(progress * WALK_FRAME_COUNT) : 0 }
   }
 
   public getCharacterDirection(player: Player): string {
@@ -84,24 +83,20 @@ export class PlayerComponent {
    */
   public drawShadow(player: Player, screenPos: { x: number; y: number }, directionOverride?: string) {
     const direction = directionOverride ?? this.getCharacterDirection(player)
-    const walking = player.isMoving && player.path.length > 0 && player.pathIndex < player.path.length
-    const animation = walking ? 'walk' : player.action === 'sitting' ? 'sit' : 'idle'
-    const progress = walking ? Math.min(player.moveTimer / player.moveDelay, 1) : 0
+    const appearance = player.appearance ?? DEFAULT_APPEARANCE
+    const { animation, frame } = this.clipFor(player)
 
-    const frame = getCharacterFrame(animation, direction, walking ? Math.floor(progress * 6) : 0)
-    if (!frame?.shadow || !frame.shadowUrl) return
-
-    const image = this.characterSprites.get(frame.shadowUrl)
-    if (!image) return
+    const shadow = characterRenderer.getShadow(appearance, animation, direction, frame)
+    if (!shadow) return
 
     const smoothing = this.ctx.imageSmoothingEnabled
     this.ctx.imageSmoothingEnabled = false
     this.ctx.drawImage(
-      image,
-      Math.round(screenPos.x - frame.shadow.anchorX * this.zoom),
-      Math.round(screenPos.y - frame.shadow.anchorY * this.zoom),
-      Math.round(frame.shadow.width * this.zoom),
-      Math.round(frame.shadow.height * this.zoom)
+      shadow.image,
+      Math.round(screenPos.x - shadow.anchorX * this.zoom),
+      Math.round(screenPos.y - shadow.anchorY * this.zoom),
+      Math.round(shadow.width * this.zoom),
+      Math.round(shadow.height * this.zoom)
     )
     this.ctx.imageSmoothingEnabled = smoothing
   }
@@ -117,23 +112,17 @@ export class PlayerComponent {
     directionOverride?: string
   ) {
     const direction = directionOverride ?? this.getCharacterDirection(player)
-    const walking = player.isMoving && player.path.length > 0 && player.pathIndex < player.path.length
+    const appearance = player.appearance ?? DEFAULT_APPEARANCE
+    const { animation, frame: frameIndex } = this.clipFor(player)
 
-    // Pick the clip. Sitting is a pose, not a timed action, so it holds until
-    // the player walks away.
-    const animation = walking ? 'walk' : player.action === 'sitting' ? 'sit' : 'idle'
-
-    // Step the walk cycle by progress through the current tile, so the stride
-    // stays in sync with the movement rather than with wall-clock time.
-    const progress = walking ? Math.min(player.moveTimer / player.moveDelay, 1) : 0
-    const frameIndex = walking ? Math.floor(progress * 6) : 0
-
-    const frame = getCharacterFrame(animation, direction, frameIndex)
-    const sprite = frame ? this.characterSprites.get(frame.url) ?? null : null
+    // Idempotent, and the only place that knows a player is on screen: this is
+    // what gets a newly-dressed guest's sprites fetched.
+    characterRenderer.preload(appearance)
+    const frame = characterRenderer.getFrame(appearance, animation, direction, frameIndex)
 
     this.ctx.save()
 
-    if (frame && sprite) {
+    if (frame) {
       // Anchored like every other generated sprite: the anchor is the tile
       // centre at floor level, so the character stands on their tile at the
       // scale they were modelled at.
@@ -144,7 +133,7 @@ export class PlayerComponent {
 
       const smoothing = this.ctx.imageSmoothingEnabled
       this.ctx.imageSmoothingEnabled = false
-      this.ctx.drawImage(sprite, left, top, width, height)
+      this.ctx.drawImage(frame.canvas, left, top, width, height)
       this.ctx.imageSmoothingEnabled = smoothing
 
       if (isCurrentPlayer) {

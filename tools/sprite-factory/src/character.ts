@@ -80,6 +80,14 @@ export const DEFAULT_PROPORTIONS: CharacterProportions = {
   hipWidth: 0.24,
 }
 
+/**
+ * The recolourable slots.
+ *
+ * These are the *only* things a pixel of a character can be, and the game
+ * recolours a sprite by mapping each slot's generated ramp onto a ramp derived
+ * from the colour a player picked. So this list is the customisation surface:
+ * anything that should be separately colourable has to be its own slot.
+ */
 export interface CharacterPalette {
   skin: string
   hair: string
@@ -88,6 +96,20 @@ export interface CharacterPalette {
   shoes: string
   eyes: string
 }
+
+export type CharacterSlot = keyof CharacterPalette
+
+export const CHARACTER_SLOTS: CharacterSlot[] = [
+  'skin',
+  'hair',
+  'shirt',
+  'trousers',
+  'shoes',
+  'eyes',
+]
+
+/** Hair lives on its own render layer so it can ship as a separate overlay. */
+export const HAIR_LAYER = 'hair'
 
 const DEG = Math.PI / 180
 
@@ -111,12 +133,33 @@ function swing(pivot: Vec3, length: number, angle: number): { position: Vec3; ro
   }
 }
 
-/** Build the primitive list for one pose. */
-export function buildCharacterParts(
-  pose: Pose,
-  proportions: CharacterProportions = DEFAULT_PROPORTIONS
-): PrimitiveSpec[] {
-  const p = proportions
+/**
+ * The joints of a posed skeleton, resolved once and handed to the outfit.
+ *
+ * Outfits need to know where the shoulders and knees ended up, and computing
+ * that twice - once for the body, once for the clothes - is how a sleeve ends
+ * up half a pixel off the arm it covers.
+ */
+export interface Skeleton {
+  p: CharacterProportions
+  pose: Pose
+  hipY: number
+  torsoY: number
+  shoulderY: number
+  headY: number
+  thighLength: number
+  shinLength: number
+  legs: Array<{
+    z: number
+    angle: number
+    thigh: { position: Vec3; rotation: Vec3 }
+    shin: { position: Vec3; rotation: Vec3 }
+    shinAngle: number
+  }>
+  arms: Array<{ z: number; angle: number; shoulder: Vec3; hand: Vec3 }>
+}
+
+export function buildSkeleton(pose: Pose, p: CharacterProportions): Skeleton {
   const drop = pose.bob - pose.crouch
 
   const hipY = p.legLength + drop
@@ -129,132 +172,405 @@ export function buildCharacterParts(
 
   // A leg is two segments so it can bend. Without a knee, a sitting character's
   // legs stick straight out in front of them like a mannequin.
-  const buildLeg = (legAngle: number, z: number) => {
-    const thigh = swing([0, hipY, z], thighLength, legAngle)
-    const radians = legAngle * DEG
+  const buildLeg = (angle: number, z: number) => {
+    const thigh = swing([0, hipY, z], thighLength, angle)
+    const radians = angle * DEG
     const kneePoint: Vec3 = [
       thigh.position[0] - (thighLength / 2) * Math.sin(radians),
       thigh.position[1] - (thighLength / 2) * Math.cos(radians),
       z,
     ]
-    const shin = swing(kneePoint, shinLength, legAngle - pose.knee)
-    return { thigh, shin, shinAngle: legAngle - pose.knee }
+    const shin = swing(kneePoint, shinLength, angle - pose.knee)
+    return { z, angle, thigh, shin, shinAngle: angle - pose.knee }
   }
 
-  const legs = [buildLeg(pose.leftLeg, -p.hipWidth / 2), buildLeg(pose.rightLeg, p.hipWidth / 2)]
-  const leftArm = swing([0, shoulderY - 0.04, -p.shoulderWidth / 2], p.armLength, pose.leftArm)
-  const rightArm = swing([0, shoulderY - 0.04, p.shoulderWidth / 2], p.armLength, pose.rightArm)
+  const buildArm = (angle: number, z: number) => {
+    const shoulder: Vec3 = [0, shoulderY - 0.04, z]
+    const limb = swing(shoulder, p.armLength, angle)
+    return {
+      z,
+      angle,
+      shoulder,
+      // The far end of the arm, where a hand goes.
+      hand: [
+        limb.position[0] - (p.armLength / 2) * Math.sin(angle * DEG),
+        limb.position[1] - (p.armLength / 2) * Math.cos(angle * DEG),
+        z,
+      ] as Vec3,
+    }
+  }
 
-  const parts: PrimitiveSpec[] = [
-    // Legs first so the torso overlaps them at the hip.
-    ...legs.flatMap((leg): PrimitiveSpec[] => [
+  return {
+    p,
+    pose,
+    hipY,
+    torsoY,
+    shoulderY,
+    headY,
+    thighLength,
+    shinLength,
+    legs: [buildLeg(pose.leftLeg, -p.hipWidth / 2), buildLeg(pose.rightLeg, p.hipWidth / 2)],
+    arms: [buildArm(pose.leftArm, -p.shoulderWidth / 2), buildArm(pose.rightArm, p.shoulderWidth / 2)],
+  }
+}
+
+/**
+ * A sleeve is the top `cover` fraction of the arm; the rest is bare.
+ *
+ * Both segments swing about the shoulder at the same angle, so this is really
+ * just one box cut in two - but cutting it is what makes a t-shirt read as a
+ * t-shirt instead of as a long-sleeved top in a different colour.
+ */
+function armParts(skeleton: Skeleton, cover: number): PrimitiveSpec[] {
+  const { p } = skeleton
+  const parts: PrimitiveSpec[] = []
+
+  for (const arm of skeleton.arms) {
+    const sleeveLength = p.armLength * cover
+    const bareLength = p.armLength - sleeveLength
+
+    if (sleeveLength > 0.001) {
+      const sleeve = swing(arm.shoulder, sleeveLength, arm.angle)
+      parts.push({
+        type: 'box',
+        // Sleeves sit *on* the arm, so they have to be fractionally thicker.
+        size: [p.armThickness * 1.12, sleeveLength, p.armThickness * 1.12],
+        position: sleeve.position,
+        rotation: sleeve.rotation,
+        material: 'shirt',
+      })
+    }
+
+    if (bareLength > 0.001) {
+      const radians = arm.angle * DEG
+      const elbow: Vec3 = [
+        arm.shoulder[0] - sleeveLength * Math.sin(radians),
+        arm.shoulder[1] - sleeveLength * Math.cos(radians),
+        arm.z,
+      ]
+      const bare = swing(elbow, bareLength, arm.angle)
+      parts.push({
+        type: 'box',
+        size: [p.armThickness, bareLength, p.armThickness],
+        position: bare.position,
+        rotation: bare.rotation,
+        material: 'skin',
+      })
+    }
+
+    // Hands, so a swinging arm still reads at this size.
+    parts.push({
+      type: 'box',
+      size: [p.armThickness, p.armThickness, p.armThickness],
+      position: arm.hand,
+      material: 'skin',
+    })
+  }
+
+  return parts
+}
+
+/** Legs and feet. `material` is what the legs are wearing, if anything. */
+function legParts(skeleton: Skeleton, material: 'trousers' | 'skin'): PrimitiveSpec[] {
+  const { p } = skeleton
+  const parts: PrimitiveSpec[] = []
+
+  for (const leg of skeleton.legs) {
+    parts.push(
       {
         type: 'box',
-        size: [p.legThickness, thighLength, p.legThickness],
+        size: [p.legThickness, skeleton.thighLength, p.legThickness],
         position: leg.thigh.position,
         rotation: leg.thigh.rotation,
-        material: 'trousers',
+        material,
       },
       {
         type: 'box',
-        size: [p.legThickness * 0.92, shinLength, p.legThickness * 0.92],
+        size: [p.legThickness * 0.92, skeleton.shinLength, p.legThickness * 0.92],
         position: leg.shin.position,
         rotation: leg.shin.rotation,
-        material: 'trousers',
-      },
-    ]),
-    {
-      type: 'box',
-      size: [p.torsoDepth, p.torsoHeight, p.torsoWidth],
-      position: [0, torsoY, 0],
-      rotation: [0, 0, -pose.lean],
-      material: 'shirt',
-    },
-    {
-      type: 'box',
-      size: [p.armThickness, p.armLength, p.armThickness],
-      position: leftArm.position,
-      rotation: leftArm.rotation,
-      material: 'shirt',
-    },
-    {
-      type: 'box',
-      size: [p.armThickness, p.armLength, p.armThickness],
-      position: rightArm.position,
-      rotation: rightArm.rotation,
-      material: 'shirt',
-    },
-    // Hands, so a swinging arm still reads at this size.
-    {
-      type: 'box',
-      size: [p.armThickness, p.armThickness, p.armThickness],
-      position: [
-        leftArm.position[0] - (p.armLength / 2) * Math.sin(pose.leftArm * DEG),
-        leftArm.position[1] - (p.armLength / 2) * Math.cos(pose.leftArm * DEG),
-        leftArm.position[2],
-      ],
-      material: 'skin',
-    },
-    {
-      type: 'box',
-      size: [p.armThickness, p.armThickness, p.armThickness],
-      position: [
-        rightArm.position[0] - (p.armLength / 2) * Math.sin(pose.rightArm * DEG),
-        rightArm.position[1] - (p.armLength / 2) * Math.cos(pose.rightArm * DEG),
-        rightArm.position[2],
-      ],
-      material: 'skin',
-    },
-    {
-      type: 'box',
-      size: [p.headSize * 0.85, p.headSize, p.headSize * 0.9],
-      position: [0, headY, 0],
-      material: 'skin',
-    },
-    // Eyes: two pixels of dark on the front face. At a 30px head this is the
-    // difference between "facing away" and "facing away, probably".
-    {
-      type: 'box',
-      size: [p.headSize * 0.06, p.headSize * 0.16, p.headSize * 0.16],
-      position: [p.headSize * 0.44, headY + p.headSize * 0.06, -p.headSize * 0.22],
-      material: 'eyes',
-    },
-    {
-      type: 'box',
-      size: [p.headSize * 0.06, p.headSize * 0.16, p.headSize * 0.16],
-      position: [p.headSize * 0.44, headY + p.headSize * 0.06, p.headSize * 0.22],
-      material: 'eyes',
-    },
-    // Hair: a slab on top and a shorter one at the back, which is enough to
-    // tell which way a 30px head is facing.
-    {
-      type: 'box',
-      size: [p.headSize * 0.88, p.headSize * 0.3, p.headSize * 0.93],
-      position: [0, headY + p.headSize * 0.4, 0],
-      material: 'hair',
-    },
-    {
-      type: 'box',
-      size: [p.headSize * 0.22, p.headSize * 0.55, p.headSize * 0.93],
-      position: [-p.headSize * 0.36, headY + p.headSize * 0.1, 0],
-      material: 'hair',
-    },
-  ]
+        material,
+      }
+    )
+  }
 
-  // Feet, at the end of each shin.
-  for (const [index, leg] of legs.entries()) {
+  // Feet, at the end of each shin. Drawn after both legs so a shoe is never
+  // half-buried in the other leg's shin.
+  for (const leg of skeleton.legs) {
     const radians = leg.shinAngle * DEG
-    const z = index === 0 ? -p.hipWidth / 2 : p.hipWidth / 2
     parts.push({
       type: 'box',
       size: [p.legThickness * 1.5, p.legThickness * 0.55, p.legThickness],
       position: [
-        leg.shin.position[0] - (shinLength / 2) * Math.sin(radians) + 0.03,
-        leg.shin.position[1] - (shinLength / 2) * Math.cos(radians),
-        z,
+        leg.shin.position[0] - (skeleton.shinLength / 2) * Math.sin(radians) + 0.03,
+        leg.shin.position[1] - (skeleton.shinLength / 2) * Math.cos(radians),
+        leg.z,
       ],
       material: 'shoes',
     })
+  }
+
+  return parts
+}
+
+function torsoPart(skeleton: Skeleton, scale = 1): PrimitiveSpec {
+  const { p } = skeleton
+  return {
+    type: 'box',
+    size: [p.torsoDepth * scale, p.torsoHeight, p.torsoWidth * scale],
+    position: [0, skeleton.torsoY, 0],
+    rotation: [0, 0, -skeleton.pose.lean],
+    material: 'shirt',
+  }
+}
+
+export interface Outfit {
+  id: string
+  name: string
+  build(skeleton: Skeleton): PrimitiveSpec[]
+}
+
+/**
+ * What a character is wearing.
+ *
+ * An outfit only has the six palette slots to work with, so the variety has to
+ * come from silhouette - a sleeve length, a flared skirt, a hood - rather than
+ * from texture. That suits the format: at a 30px torso, shape is the only thing
+ * that survives anyway.
+ */
+export const OUTFITS: Outfit[] = [
+  {
+    id: 'tee',
+    name: 'T-shirt',
+    build: (s) => [...legParts(s, 'trousers'), torsoPart(s), ...armParts(s, 0.42)],
+  },
+  {
+    id: 'hoodie',
+    name: 'Hoodie',
+    build: (s) => [
+      ...legParts(s, 'trousers'),
+      torsoPart(s, 1.14),
+      ...armParts(s, 1),
+      // The hood, bunched behind the neck. Reads as a collar from the front and
+      // as a hood from behind, which is the only two views that matter.
+      {
+        type: 'box',
+        size: [s.p.torsoDepth * 0.62, s.p.headSize * 0.46, s.p.torsoWidth * 0.86],
+        position: [-s.p.torsoDepth * 0.36, s.shoulderY + s.p.headSize * 0.1, 0],
+        material: 'shirt',
+      },
+    ],
+  },
+  {
+    id: 'tank',
+    name: 'Tank top',
+    build: (s) => [
+      ...legParts(s, 'trousers'),
+      torsoPart(s, 0.94),
+      // Straps, so the bare shoulders do not read as a topless character.
+      ...[-1, 1].map(
+        (side): PrimitiveSpec => ({
+          type: 'box',
+          size: [s.p.torsoDepth * 0.98, s.p.torsoHeight * 0.3, s.p.torsoWidth * 0.22],
+          position: [0, s.shoulderY - s.p.torsoHeight * 0.12, (side * s.p.torsoWidth) / 3.4],
+          rotation: [0, 0, -s.pose.lean],
+          material: 'shirt',
+        })
+      ),
+      ...armParts(s, 0),
+    ],
+  },
+  {
+    id: 'dress',
+    name: 'Dress',
+    build: (s) => [
+      ...legParts(s, 'skin'),
+      torsoPart(s, 0.98),
+      // Flared: wider at the hem than at the waist, which is what separates a
+      // skirt from a cylinder of fabric.
+      {
+        type: 'cylinder',
+        radius: s.p.hipWidth * 1.5,
+        radiusTop: s.p.hipWidth * 0.92,
+        height: s.p.legLength * 0.42,
+        position: [0, s.hipY - s.p.legLength * 0.12, 0],
+        material: 'shirt',
+      },
+      ...armParts(s, 0.24),
+    ],
+  },
+  {
+    id: 'overalls',
+    name: 'Overalls',
+    build: (s) => [
+      ...legParts(s, 'trousers'),
+      // The bib is trouser-coloured, so overalls read as one garment over a
+      // shirt rather than as a shirt tucked into trousers.
+      {
+        type: 'box',
+        size: [s.p.torsoDepth * 1.04, s.p.torsoHeight * 0.82, s.p.torsoWidth * 1.02],
+        position: [0, s.torsoY - s.p.torsoHeight * 0.09, 0],
+        rotation: [0, 0, -s.pose.lean],
+        material: 'trousers',
+      },
+      torsoPart(s, 0.96),
+      ...armParts(s, 0.42),
+    ],
+  },
+]
+
+export interface HairStyle {
+  id: string
+  name: string
+  /** `headY` is the centre of the head; `h` is its size in tile units. */
+  build(h: number, headY: number): PrimitiveSpec[]
+}
+
+/**
+ * Hair.
+ *
+ * Every style is deliberately a little wider than the skull it sits on. The
+ * body and the hair are rendered as separate passes and composited, so each
+ * carries its own silhouette outline; overlapping the skull edge by a fraction
+ * of a pixel is what keeps that from showing up as a bright seam at the
+ * hairline.
+ */
+export const HAIR_STYLES: HairStyle[] = [
+  { id: 'bald', name: 'Bald', build: () => [] },
+  {
+    id: 'buzz',
+    name: 'Buzz cut',
+    build: (h, y) => [
+      { type: 'box', size: [h * 0.92, h * 0.22, h * 0.97], position: [0, y + h * 0.41, 0], material: 'hair' },
+      { type: 'box', size: [h * 0.14, h * 0.34, h * 0.97], position: [-h * 0.41, y + h * 0.2, 0], material: 'hair' },
+    ],
+  },
+  {
+    id: 'short',
+    name: 'Short',
+    build: (h, y) => [
+      { type: 'box', size: [h * 0.9, h * 0.3, h * 0.95], position: [0, y + h * 0.4, 0], material: 'hair' },
+      { type: 'box', size: [h * 0.24, h * 0.55, h * 0.95], position: [-h * 0.35, y + h * 0.1, 0], material: 'hair' },
+    ],
+  },
+  {
+    id: 'bob',
+    name: 'Bob',
+    build: (h, y) => [
+      { type: 'box', size: [h * 0.9, h * 0.3, h * 0.98], position: [0, y + h * 0.4, 0], material: 'hair' },
+      { type: 'box', size: [h * 0.28, h * 0.8, h * 0.98], position: [-h * 0.34, y + h * 0.02, 0], material: 'hair' },
+      ...[-1, 1].map(
+        (side): PrimitiveSpec => ({
+          type: 'box',
+          size: [h * 0.84, h * 0.7, h * 0.16],
+          position: [-h * 0.02, y + h * 0.04, side * h * 0.44],
+          material: 'hair',
+        })
+      ),
+    ],
+  },
+  {
+    id: 'long',
+    name: 'Long',
+    build: (h, y) => [
+      { type: 'box', size: [h * 0.9, h * 0.3, h * 0.98], position: [0, y + h * 0.4, 0], material: 'hair' },
+      // Down to the shoulder blades. Anything longer starts intersecting the
+      // arms as they swing.
+      { type: 'box', size: [h * 0.24, h * 1.5, h * 0.98], position: [-h * 0.36, y - h * 0.3, 0], material: 'hair' },
+      ...[-1, 1].map(
+        (side): PrimitiveSpec => ({
+          type: 'box',
+          size: [h * 0.6, h * 1.0, h * 0.16],
+          position: [-h * 0.12, y - h * 0.1, side * h * 0.45],
+          material: 'hair',
+        })
+      ),
+    ],
+  },
+  {
+    id: 'ponytail',
+    name: 'Ponytail',
+    build: (h, y) => [
+      { type: 'box', size: [h * 0.9, h * 0.3, h * 0.95], position: [0, y + h * 0.4, 0], material: 'hair' },
+      { type: 'box', size: [h * 0.24, h * 0.55, h * 0.95], position: [-h * 0.35, y + h * 0.1, 0], material: 'hair' },
+      // Tie, then tail. The head writes depth in the hair pass, so from the
+      // front the tail is hidden rather than floating over the face.
+      { type: 'box', size: [h * 0.22, h * 0.2, h * 0.3], position: [-h * 0.53, y + h * 0.3, 0], material: 'hair' },
+      { type: 'box', size: [h * 0.2, h * 0.62, h * 0.24], position: [-h * 0.6, y - h * 0.02, 0], material: 'hair' },
+    ],
+  },
+  {
+    id: 'afro',
+    name: 'Afro',
+    build: (h, y) => [
+      // A sphere terraces into concentric bands under the four-shade ramp,
+      // which is exactly how you would hand-paint this.
+      {
+        type: 'sphere',
+        radius: h * 0.6,
+        segments: 20,
+        scale: [0.92, 0.82, 1],
+        position: [-h * 0.06, y + h * 0.3, 0],
+        material: 'hair',
+      },
+    ],
+  },
+]
+
+export function getOutfit(id: string): Outfit {
+  const outfit = OUTFITS.find((entry) => entry.id === id)
+  if (!outfit) throw new Error(`Unknown outfit "${id}"`)
+  return outfit
+}
+
+export function getHairStyle(id: string): HairStyle {
+  const style = HAIR_STYLES.find((entry) => entry.id === id)
+  if (!style) throw new Error(`Unknown hair style "${id}"`)
+  return style
+}
+
+export interface BuildOptions {
+  proportions?: CharacterProportions
+  /** Outfit id. Defaults to the first in the catalogue. */
+  outfit?: string
+  /** Hair style id. Defaults to bald - hair is usually a separate pass. */
+  hair?: string
+}
+
+/**
+ * Build the primitive list for one pose.
+ *
+ * Hair parts are tagged onto their own layer so the renderer can isolate them,
+ * which is what lets hair styles and outfits be exported as two lists that
+ * compose rather than as one list of every combination.
+ */
+export function buildCharacterParts(pose: Pose, options: BuildOptions = {}): PrimitiveSpec[] {
+  const p = options.proportions ?? DEFAULT_PROPORTIONS
+  const skeleton = buildSkeleton(pose, p)
+  const outfit = getOutfit(options.outfit ?? OUTFITS[0].id)
+
+  const parts: PrimitiveSpec[] = [
+    ...outfit.build(skeleton),
+    {
+      type: 'box',
+      size: [p.headSize * 0.85, p.headSize, p.headSize * 0.9],
+      position: [0, skeleton.headY, 0],
+      material: 'skin',
+    },
+    // Eyes: two pixels of dark on the front face. At a 30px head this is the
+    // difference between "facing away" and "facing away, probably".
+    ...[-1, 1].map(
+      (side): PrimitiveSpec => ({
+        type: 'box',
+        size: [p.headSize * 0.06, p.headSize * 0.16, p.headSize * 0.16],
+        position: [p.headSize * 0.44, skeleton.headY + p.headSize * 0.06, side * p.headSize * 0.22],
+        material: 'eyes',
+      })
+    ),
+  ]
+
+  for (const part of getHairStyle(options.hair ?? 'bald').build(p.headSize, skeleton.headY)) {
+    parts.push({ ...part, layer: HAIR_LAYER })
   }
 
   return parts
@@ -313,22 +629,50 @@ export interface CharacterSpec {
 
 export const WALK_FRAMES = 6
 
+/**
+ * The palette every character sprite is *generated* with.
+ *
+ * This is not the palette anyone sees - the game maps each slot's ramp onto a
+ * ramp derived from the colour a player picked - so these are keys, chosen to
+ * be told apart rather than to look good:
+ *
+ *   - the twenty-four ramp entries must all be distinct, or a pixel would be
+ *     ambiguous between two slots. Note that this rules out very dark bases:
+ *     the darkest shade is 0.24 below the base in lightness, so anything under
+ *     that clamps to black and collides with every other near-black slot.
+ *   - slots are spread around the hue circle, because the downsampler averages
+ *     across shared edges before snapping, and neighbours far apart in hue give
+ *     that average somewhere unambiguous to land.
+ */
+export const GENERATION_PALETTE: CharacterPalette = {
+  skin: '#e0a878',
+  hair: '#6b4530',
+  shirt: '#4a72a8',
+  trousers: '#3c4557',
+  shoes: '#544b5e',
+  eyes: '#3d5f52',
+}
+
+export const DEFAULT_ANIMATIONS: Record<string, Pose[]> = {
+  idle: [idlePose()],
+  walk: Array.from({ length: WALK_FRAMES }, (_, frame) => walkPose(frame, WALK_FRAMES)),
+  sit: [sitPose()],
+}
+
 export const DEFAULT_CHARACTER: CharacterSpec = {
   id: 'guest',
   name: 'Guest',
-  palette: {
-    skin: '#e0a878',
-    hair: '#5a3b28',
-    shirt: '#4a72a8',
-    trousers: '#3c4557',
-    shoes: '#2f2a33',
-    eyes: '#2b2430',
-  },
-  animations: {
-    idle: [idlePose()],
-    walk: Array.from({ length: WALK_FRAMES }, (_, frame) => walkPose(frame, WALK_FRAMES)),
-    sit: [sitPose()],
-  },
+  palette: GENERATION_PALETTE,
+  animations: DEFAULT_ANIMATIONS,
+}
+
+export interface PoseAssetOptions {
+  outfit?: string
+  hair?: string
+  /** Render only this layer, with the rest present as depth. */
+  isolateLayer?: string
+  /** Contact shadows belong to the body pass; overlays would double them up. */
+  shadow?: boolean
 }
 
 /**
@@ -338,7 +682,13 @@ export const DEFAULT_CHARACTER: CharacterSpec = {
  * footprint. The behaviour block is inert - nothing collides with a sprite -
  * but the renderer expects one.
  */
-export function poseAsset(character: CharacterSpec, animation: string, frame: number, pose: Pose): AssetSpec {
+export function poseAsset(
+  character: CharacterSpec,
+  animation: string,
+  frame: number,
+  pose: Pose,
+  options: PoseAssetOptions = {}
+): AssetSpec {
   const materials: Record<string, MaterialSpec> = {
     skin: { colour: character.palette.skin },
     hair: { colour: character.palette.hair },
@@ -363,6 +713,12 @@ export function poseAsset(character: CharacterSpec, animation: string, frame: nu
       collision: { blocksMovement: false, blocksVision: false, height: 0, shape: 'rectangle' },
     },
     materials,
-    parts: buildCharacterParts(pose, character.proportions),
+    isolateLayer: options.isolateLayer,
+    shadow: { enabled: options.shadow ?? true },
+    parts: buildCharacterParts(pose, {
+      proportions: character.proportions,
+      outfit: options.outfit,
+      hair: options.hair,
+    }),
   }
 }

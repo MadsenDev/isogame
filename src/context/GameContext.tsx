@@ -2,8 +2,11 @@ import React, { createContext, useContext, useReducer, ReactNode, useEffect, use
 import { getWorldStore } from '../persistence/worldStore'
 import { fromPersistedRoom, toWorldDocument } from '../persistence/serialise'
 import type { WorldDocument } from '../persistence/types'
+import { getProfileStore, toProfileDocument } from '../persistence/profileStore'
 import roomLayoutDefinitions from '../assets/roomLayouts.json'
 import type { WallEdge } from '../data/structureSprites'
+import { Appearance, appearanceForSeed, DEFAULT_APPEARANCE } from '../data/appearance'
+import { getHairStyles, getOutfits } from '../data/characterSprites'
 
 // Types
 export interface Player {
@@ -24,6 +27,8 @@ export interface Player {
   action: 'idle' | 'sitting' | 'dancing' | 'waving'
   actionTimer: number
   lastDirection: string
+  /** Hair, outfit and colours. Every player has one; only ours is editable. */
+  appearance: Appearance
 }
 
 export interface Furniture {
@@ -214,6 +219,7 @@ export type GameAction =
   | { type: 'SET_CURRENT_PLAYER'; payload: number }
   | { type: 'MOVE_PLAYER'; payload: { playerId: number; x: number; y: number; path: Array<{ x: number; y: number }> } }
   | { type: 'SET_PLAYER_ACTION'; payload: { playerId: number; action: Player['action'] } }
+  | { type: 'SET_PLAYER_APPEARANCE'; payload: { playerId: number; appearance: Appearance } }
   | { type: 'ADD_CHAT_MESSAGE'; payload: ChatMessage }
   | { type: 'SET_SHOW_CHAT'; payload: boolean }
   | { type: 'SHOW_CONTEXT_MENU'; payload: { x: number; y: number; player: Player } }
@@ -630,6 +636,16 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         )
       }
     
+    case 'SET_PLAYER_APPEARANCE':
+      return {
+        ...state,
+        players: state.players.map(player =>
+          player.id === action.payload.playerId
+            ? { ...player, appearance: action.payload.appearance }
+            : player
+        )
+      }
+
     case 'ADD_CHAT_MESSAGE':
       return {
         ...state,
@@ -680,6 +696,8 @@ const GameContext = createContext<{
     /** Discard the saved world and reload from the shipped layouts. */
     resetWorld: () => void
   }
+  /** Change how the local player looks, and remember it. */
+  setAppearance: (appearance: Appearance) => void
 } | null>(null)
 
 // Helper function to generate unique IDs
@@ -1011,7 +1029,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
     let cancelled = false
 
     const bootstrap = async () => {
-      const saved = await getWorldStore().load()
+      const [saved, profile] = await Promise.all([
+        getWorldStore().load(),
+        getProfileStore().load()
+      ])
       if (cancelled) return
 
       const restored = saved?.rooms?.length
@@ -1030,7 +1051,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       if (!defaultRoom) return
 
       dispatch({ type: 'SET_CURRENT_ROOM', payload: defaultRoom })
-      startPlayers(defaultRoom)
+      startPlayers(defaultRoom, profile?.appearance ?? DEFAULT_APPEARANCE)
       hydrated.current = true
     }
 
@@ -1065,89 +1086,55 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return () => window.clearTimeout(timer)
   }, [state.rooms, state.currentRoom])
 
-  /** Seed the four guests at the room's spawn point. */
-  const startPlayers = (defaultRoom: Room) => {
-    const players: Player[] = [
-      {
-        id: 0,
-        x: defaultRoom.spawnPoint?.x || 5,
-        y: defaultRoom.spawnPoint?.y || 5,
-        targetX: defaultRoom.spawnPoint?.x || 5,
-        targetY: defaultRoom.spawnPoint?.y || 5,
-        color: '#FF6B6B',
-        name: 'Player1',
-        size: 0.8,
-        isMoving: false,
-        moveSpeed: 0.1,
-        moveTimer: 0,
-        moveDelay: 400,
-        path: [],
-        pathIndex: 0,
-        action: 'idle',
-        actionTimer: 0,
-        lastDirection: 'south'
-      },
-      {
-        id: 1,
-        x: (defaultRoom.spawnPoint?.x || 5) + 1,
-        y: (defaultRoom.spawnPoint?.y || 5) + 1,
-        targetX: (defaultRoom.spawnPoint?.x || 5) + 1,
-        targetY: (defaultRoom.spawnPoint?.y || 5) + 1,
-        color: '#4ECDC4',
-        name: 'Player2',
-        size: 0.8,
-        isMoving: false,
-        moveSpeed: 0.1,
-        moveTimer: 0,
-        moveDelay: 400,
-        path: [],
-        pathIndex: 0,
-        action: 'idle',
-        actionTimer: 0,
-        lastDirection: 'south'
-      },
-      {
-        id: 2,
-        x: (defaultRoom.spawnPoint?.x || 5) + 2,
-        y: (defaultRoom.spawnPoint?.y || 5) + 2,
-        targetX: (defaultRoom.spawnPoint?.x || 5) + 2,
-        targetY: (defaultRoom.spawnPoint?.y || 5) + 2,
-        color: '#45B7D1',
-        name: 'Player3',
-        size: 0.8,
-        isMoving: false,
-        moveSpeed: 0.1,
-        moveTimer: 0,
-        moveDelay: 400,
-        path: [],
-        pathIndex: 0,
-        action: 'idle',
-        actionTimer: 0,
-        lastDirection: 'south'
-      },
-      {
-        id: 3,
-        x: (defaultRoom.spawnPoint?.x || 5) + 3,
-        y: (defaultRoom.spawnPoint?.y || 5) + 3,
-        targetX: (defaultRoom.spawnPoint?.x || 5) + 3,
-        targetY: (defaultRoom.spawnPoint?.y || 5) + 3,
-        color: '#96CEB4',
-        name: 'Player4',
-        size: 0.8,
-        isMoving: false,
-        moveSpeed: 0.1,
-        moveTimer: 0,
-        moveDelay: 400,
-        path: [],
-        pathIndex: 0,
-        action: 'idle',
-        actionTimer: 0,
-        lastDirection: 'south'
-      }
+  /**
+   * Seed the guests at the room's spawn point.
+   *
+   * Only the first is ours; the rest are given deterministic looks derived from
+   * their id, so a room reads as populated by different people without any of
+   * it being authored or stored.
+   */
+  const startPlayers = (defaultRoom: Room, appearance: Appearance) => {
+    const spawnX = defaultRoom.spawnPoint?.x || 5
+    const spawnY = defaultRoom.spawnPoint?.y || 5
+    const outfits = getOutfits().map(outfit => outfit.id)
+    const hairStyles = getHairStyles().map(style => style.id)
+
+    const guests = [
+      { name: 'Player1', color: '#FF6B6B' },
+      { name: 'Player2', color: '#4ECDC4' },
+      { name: 'Player3', color: '#45B7D1' },
+      { name: 'Player4', color: '#96CEB4' }
     ]
 
-    players.forEach(player => {
-      dispatch({ type: 'ADD_PLAYER', payload: player })
+    guests.forEach((guest, id) => {
+      // Staggered so no two guests share a screen column. The old +1,+1 per
+      // guest is a straight line *down the screen* in isometric, which stacked
+      // all four into one overlapping pile.
+      const x = spawnX + id
+      const y = spawnY + (id % 2) * 2
+
+      dispatch({
+        type: 'ADD_PLAYER',
+        payload: {
+          id,
+          ...guest,
+          x,
+          y,
+          targetX: x,
+          targetY: y,
+          size: 0.8,
+          isMoving: false,
+          moveSpeed: 0.1,
+          moveTimer: 0,
+          moveDelay: 400,
+          path: [],
+          pathIndex: 0,
+          action: 'idle',
+          actionTimer: 0,
+          lastDirection: 'south',
+          appearance: id === 0 ? appearance : appearanceForSeed(id, outfits, hairStyles)
+        }
+      })
     })
   }
 
@@ -1185,8 +1172,23 @@ export function GameProvider({ children }: { children: ReactNode }) {
       }
     }
 
+  /**
+   * Dress the local player.
+   *
+   * Saved immediately rather than debounced: unlike painting a floor, this is
+   * one deliberate change per interaction, and losing the last one to a reload
+   * is exactly the thing people notice.
+   */
+  const setAppearance = (appearance: Appearance) => {
+    dispatch({
+      type: 'SET_PLAYER_APPEARANCE',
+      payload: { playerId: state.currentPlayerId, appearance }
+    })
+    void getProfileStore().save(toProfileDocument(appearance))
+  }
+
   return (
-    <GameContext.Provider value={{ state, dispatch, roomManager }}>
+    <GameContext.Provider value={{ state, dispatch, roomManager, setAppearance }}>
       {children}
     </GameContext.Provider>
   )

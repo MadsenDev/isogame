@@ -122,6 +122,8 @@ export interface RenderedAsset {
   footprint: { width: number; height: number }
   frames: SpriteFrame[]
   palette: string[]
+  /** Named material -> the four-shade ramp it was rendered with. */
+  ramps: Record<string, string[]>
   /** Uncropped canvas size the frames were rendered into. */
   canvas: { width: number; height: number }
 }
@@ -447,19 +449,23 @@ export async function renderAsset(
       // Hide the caster without stopping it casting: shadow-map rendering uses
       // its own depth material, so suppressing colour and depth writes leaves
       // the object invisible while its shadow still lands on the floor.
-      const restore: Array<() => void> = []
+      //
+      // Keyed by material, not by mesh. Materials are shared between parts, so
+      // walking meshes would read back the value the *previous* mesh had just
+      // written and "restore" the material to invisible - which silently blanked
+      // every frame after the first.
+      const restore = new Map<THREE.Material, { colorWrite: boolean; depthWrite: boolean }>()
       model.group.traverse((node) => {
         const mesh = node as THREE.Mesh
         if (!mesh.isMesh) return
         const material = mesh.material as THREE.Material
-        const colorWrite = material.colorWrite
-        const depthWrite = material.depthWrite
+        if (restore.has(material)) return
+        restore.set(material, {
+          colorWrite: material.colorWrite,
+          depthWrite: material.depthWrite,
+        })
         material.colorWrite = false
         material.depthWrite = false
-        restore.push(() => {
-          material.colorWrite = colorWrite
-          material.depthWrite = depthWrite
-        })
       })
       shadowRig.floor.visible = true
 
@@ -472,7 +478,10 @@ export async function renderAsset(
       )
 
       shadowRig.floor.visible = false
-      restore.forEach((undo) => undo())
+      for (const [material, saved] of restore) {
+        material.colorWrite = saved.colorWrite
+        material.depthWrite = saved.depthWrite
+      }
 
       let shadowImage: RgbaImage = flipVertically({
         data: new Uint8ClampedArray(shadowBuffer.buffer.slice(0)),
@@ -534,6 +543,7 @@ export async function renderAsset(
     footprint: asset.footprint,
     frames,
     palette: uniqueColours(frames.flatMap((frame) => usedColours(frame.image))),
+    ramps: model.ramps,
     canvas,
   }
 }

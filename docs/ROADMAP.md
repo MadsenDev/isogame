@@ -45,12 +45,18 @@ lighting, wall art. Also the honest stress test of whether authoring furniture
 as primitives actually scales past ten pieces, or whether it needs a visual
 editor.
 
-### 2. Character variety
+### 2. More character variety
 
-One `guest` exists. The rig takes a palette (skin, hair, shirt, trousers, shoes)
-and proportions, so per-player appearance is mostly a matter of passing different
-values and exporting more than one character. Clothing shapes would need new
-primitives.
+Done: hair styles, outfits, and per-slot recolouring. Bodies and hair are
+separate render layers, so the two catalogues add rather than multiply and a new
+style is one render.
+
+What is left is content and slots. More outfits and hair styles are pure
+authoring. Anything that wants its *own* colour - a jacket over a shirt, shoe
+laces, a hat separate from hair - needs a new material slot, which means a new
+entry in `GENERATION_PALETTE` that survives the distinctness check. Facial
+features beyond the two eye pixels would need a resolution the format does not
+really have.
 
 ## Known bugs and rough edges
 
