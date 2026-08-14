@@ -1,0 +1,100 @@
+{
+  "id": "wall_clock",
+  "name": "Wall Clock",
+  "defaultDirection": "south",
+  "placement": "wall",
+  "behaviour": {
+    "category": "wall",
+    "walkable": true,
+    "stackable": false,
+    "rotatable": false,
+    "collision": {
+      "blocksMovement": false,
+      "blocksVision": false,
+      "height": 0,
+      "shape": "rectangle"
+    }
+  },
+  "footprint": {
+    "width": 1,
+    "height": 1
+  },
+  "tile": {
+    "width": 64,
+    "height": 32
+  },
+  "pixelsPerUnit": 45.2548,
+  "palette": [
+    "#f9f8f5",
+    "#241d2b",
+    "#67626a",
+    "#4a4450",
+    "#28232e",
+    "#cfbca5",
+    "#e4ded2",
+    "#c0997c"
+  ],
+  "directions": {
+    "south": {
+      "file": "south.png",
+      "index": 0,
+      "width": 15,
+      "height": 17,
+      "anchorX": 22,
+      "anchorY": 69,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": []
+    },
+    "east": {
+      "file": "east.png",
+      "index": 3,
+      "width": 14,
+      "height": 17,
+      "anchorX": -7,
+      "anchorY": 69,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": []
+    }
+  },
+  "sheet": {
+    "file": "sheet.png",
+    "width": 30,
+    "height": 17,
+    "frames": [
+      {
+        "direction": "south",
+        "index": 0,
+        "x": 0,
+        "y": 0,
+        "width": 15,
+        "height": 17,
+        "anchorX": 22,
+        "anchorY": 69,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      },
+      {
+        "direction": "east",
+        "index": 3,
+        "x": 16,
+        "y": 0,
+        "width": 14,
+        "height": 17,
+        "anchorX": -7,
+        "anchorY": 69,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      }
+    ]
+  }
+}

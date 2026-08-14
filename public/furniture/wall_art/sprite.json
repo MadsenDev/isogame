@@ -1,0 +1,103 @@
+{
+  "id": "wall_art",
+  "name": "Framed Print",
+  "defaultDirection": "south",
+  "placement": "wall",
+  "behaviour": {
+    "category": "wall",
+    "walkable": true,
+    "stackable": false,
+    "rotatable": false,
+    "collision": {
+      "blocksMovement": false,
+      "blocksVision": false,
+      "height": 0,
+      "shape": "rectangle"
+    }
+  },
+  "footprint": {
+    "width": 1,
+    "height": 1
+  },
+  "tile": {
+    "width": 64,
+    "height": 32
+  },
+  "pixelsPerUnit": 45.2548,
+  "palette": [
+    "#bacfe3",
+    "#cfbca5",
+    "#241d2b",
+    "#6ea87f",
+    "#c0997c",
+    "#592f1c",
+    "#875531",
+    "#e4ded2",
+    "#fef5d7",
+    "#ab7945",
+    "#8fb9d6"
+  ],
+  "directions": {
+    "south": {
+      "file": "south.png",
+      "index": 0,
+      "width": 20,
+      "height": 35,
+      "anchorX": 25,
+      "anchorY": 71,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": []
+    },
+    "east": {
+      "file": "east.png",
+      "index": 3,
+      "width": 20,
+      "height": 35,
+      "anchorX": -5,
+      "anchorY": 71,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": []
+    }
+  },
+  "sheet": {
+    "file": "sheet.png",
+    "width": 41,
+    "height": 35,
+    "frames": [
+      {
+        "direction": "south",
+        "index": 0,
+        "x": 0,
+        "y": 0,
+        "width": 20,
+        "height": 35,
+        "anchorX": 25,
+        "anchorY": 71,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      },
+      {
+        "direction": "east",
+        "index": 3,
+        "x": 21,
+        "y": 0,
+        "width": 20,
+        "height": 35,
+        "anchorX": -5,
+        "anchorY": 71,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      }
+    ]
+  }
+}

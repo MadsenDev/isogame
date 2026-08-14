@@ -1,0 +1,192 @@
+{
+  "id": "potted_tree",
+  "name": "Potted Tree",
+  "defaultDirection": "south",
+  "placement": "floor",
+  "behaviour": {
+    "category": "decoration",
+    "walkable": false,
+    "stackable": false,
+    "rotatable": true,
+    "collision": {
+      "blocksMovement": true,
+      "blocksVision": false,
+      "height": 2,
+      "shape": "circle"
+    }
+  },
+  "footprint": {
+    "width": 1,
+    "height": 1
+  },
+  "tile": {
+    "width": 64,
+    "height": 32
+  },
+  "pixelsPerUnit": 45.2548,
+  "palette": [
+    "#3d7d43",
+    "#549e62",
+    "#241d2b",
+    "#7b644b",
+    "#816c60",
+    "#9c9187",
+    "#4f9d52",
+    "#72b27b",
+    "#3a7535",
+    "#265324",
+    "#44271b",
+    "#6f4b32",
+    "#b2aea9",
+    "#654c44",
+    "#5b4433",
+    "#2a5120",
+    "#162e12",
+    "#322119"
+  ],
+  "directions": {
+    "south": {
+      "file": "south.png",
+      "index": 0,
+      "width": 30,
+      "height": 73,
+      "anchorX": 15,
+      "anchorY": 68,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [],
+      "shadow": {
+        "file": "south-shadow.png",
+        "width": 58,
+        "height": 21,
+        "anchorX": 8,
+        "anchorY": 11
+      }
+    },
+    "west": {
+      "file": "west.png",
+      "index": 1,
+      "width": 41,
+      "height": 73,
+      "anchorX": 20,
+      "anchorY": 68,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [],
+      "shadow": {
+        "file": "west-shadow.png",
+        "width": 59,
+        "height": 16,
+        "anchorX": 8,
+        "anchorY": 9
+      }
+    },
+    "north": {
+      "file": "north.png",
+      "index": 2,
+      "width": 30,
+      "height": 73,
+      "anchorX": 15,
+      "anchorY": 68,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [],
+      "shadow": {
+        "file": "north-shadow.png",
+        "width": 58,
+        "height": 21,
+        "anchorX": 8,
+        "anchorY": 12
+      }
+    },
+    "east": {
+      "file": "east.png",
+      "index": 3,
+      "width": 41,
+      "height": 73,
+      "anchorX": 21,
+      "anchorY": 68,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [],
+      "shadow": {
+        "file": "east-shadow.png",
+        "width": 59,
+        "height": 16,
+        "anchorX": 8,
+        "anchorY": 9
+      }
+    }
+  },
+  "sheet": {
+    "file": "sheet.png",
+    "width": 145,
+    "height": 73,
+    "frames": [
+      {
+        "direction": "south",
+        "index": 0,
+        "x": 0,
+        "y": 0,
+        "width": 30,
+        "height": 73,
+        "anchorX": 15,
+        "anchorY": 68,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      },
+      {
+        "direction": "west",
+        "index": 1,
+        "x": 31,
+        "y": 0,
+        "width": 41,
+        "height": 73,
+        "anchorX": 20,
+        "anchorY": 68,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      },
+      {
+        "direction": "north",
+        "index": 2,
+        "x": 73,
+        "y": 0,
+        "width": 30,
+        "height": 73,
+        "anchorX": 15,
+        "anchorY": 68,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      },
+      {
+        "direction": "east",
+        "index": 3,
+        "x": 104,
+        "y": 0,
+        "width": 41,
+        "height": 73,
+        "anchorX": 21,
+        "anchorY": 68,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      }
+    ]
+  }
+}

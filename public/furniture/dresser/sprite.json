@@ -1,0 +1,253 @@
+{
+  "id": "dresser",
+  "name": "Dresser",
+  "defaultDirection": "east",
+  "placement": "floor",
+  "behaviour": {
+    "category": "functional",
+    "walkable": false,
+    "stackable": false,
+    "rotatable": true,
+    "collision": {
+      "blocksMovement": true,
+      "blocksVision": false,
+      "height": 1,
+      "shape": "rectangle"
+    }
+  },
+  "footprint": {
+    "width": 2,
+    "height": 1
+  },
+  "tile": {
+    "width": 64,
+    "height": 32
+  },
+  "pixelsPerUnit": 45.2548,
+  "palette": [
+    "#cbad7f",
+    "#b07a42",
+    "#592f1c",
+    "#c08b52",
+    "#241d2b",
+    "#9d5d32",
+    "#ab7945",
+    "#875531",
+    "#c19e69",
+    "#773921",
+    "#98a2ad",
+    "#babdc3",
+    "#6d8596",
+    "#844e2c",
+    "#506f7b"
+  ],
+  "directions": {
+    "east": {
+      "file": "east.png",
+      "index": 0,
+      "width": 84,
+      "height": 77,
+      "anchorX": 26,
+      "anchorY": 49,
+      "footprint": {
+        "width": 2,
+        "height": 1
+      },
+      "interactions": [
+        {
+          "type": "use",
+          "animation": "use",
+          "duration": 3000,
+          "spots": [
+            {
+              "x": 0,
+              "y": 0,
+              "direction": "south",
+              "offsetX": 16,
+              "offsetY": 8,
+              "layer": "front"
+            }
+          ]
+        }
+      ],
+      "shadow": {
+        "file": "east-shadow.png",
+        "width": 102,
+        "height": 42,
+        "anchorX": 23,
+        "anchorY": 14
+      }
+    },
+    "south": {
+      "file": "south.png",
+      "index": 1,
+      "width": 84,
+      "height": 77,
+      "anchorX": 58,
+      "anchorY": 49,
+      "footprint": {
+        "width": 1,
+        "height": 2
+      },
+      "interactions": [
+        {
+          "type": "use",
+          "animation": "use",
+          "duration": 3000,
+          "spots": [
+            {
+              "x": 0,
+              "y": 1,
+              "direction": "west",
+              "offsetX": 16,
+              "offsetY": -8,
+              "layer": "behind"
+            }
+          ]
+        }
+      ],
+      "shadow": {
+        "file": "south-shadow.png",
+        "width": 101,
+        "height": 42,
+        "anchorX": 54,
+        "anchorY": 14
+      }
+    },
+    "west": {
+      "file": "west.png",
+      "index": 2,
+      "width": 84,
+      "height": 77,
+      "anchorX": 26,
+      "anchorY": 49,
+      "footprint": {
+        "width": 2,
+        "height": 1
+      },
+      "interactions": [
+        {
+          "type": "use",
+          "animation": "use",
+          "duration": 3000,
+          "spots": [
+            {
+              "x": 1,
+              "y": 0,
+              "direction": "north",
+              "offsetX": -16,
+              "offsetY": -8,
+              "layer": "behind"
+            }
+          ]
+        }
+      ],
+      "shadow": {
+        "file": "west-shadow.png",
+        "width": 102,
+        "height": 42,
+        "anchorX": 23,
+        "anchorY": 14
+      }
+    },
+    "north": {
+      "file": "north.png",
+      "index": 3,
+      "width": 84,
+      "height": 77,
+      "anchorX": 58,
+      "anchorY": 49,
+      "footprint": {
+        "width": 1,
+        "height": 2
+      },
+      "interactions": [
+        {
+          "type": "use",
+          "animation": "use",
+          "duration": 3000,
+          "spots": [
+            {
+              "x": 0,
+              "y": 0,
+              "direction": "east",
+              "offsetX": -16,
+              "offsetY": 8,
+              "layer": "front"
+            }
+          ]
+        }
+      ],
+      "shadow": {
+        "file": "north-shadow.png",
+        "width": 101,
+        "height": 42,
+        "anchorX": 54,
+        "anchorY": 14
+      }
+    }
+  },
+  "sheet": {
+    "file": "sheet.png",
+    "width": 339,
+    "height": 77,
+    "frames": [
+      {
+        "direction": "east",
+        "index": 0,
+        "x": 0,
+        "y": 0,
+        "width": 84,
+        "height": 77,
+        "anchorX": 26,
+        "anchorY": 49,
+        "footprint": {
+          "width": 2,
+          "height": 1
+        }
+      },
+      {
+        "direction": "south",
+        "index": 1,
+        "x": 85,
+        "y": 0,
+        "width": 84,
+        "height": 77,
+        "anchorX": 58,
+        "anchorY": 49,
+        "footprint": {
+          "width": 1,
+          "height": 2
+        }
+      },
+      {
+        "direction": "west",
+        "index": 2,
+        "x": 170,
+        "y": 0,
+        "width": 84,
+        "height": 77,
+        "anchorX": 26,
+        "anchorY": 49,
+        "footprint": {
+          "width": 2,
+          "height": 1
+        }
+      },
+      {
+        "direction": "north",
+        "index": 3,
+        "x": 255,
+        "y": 0,
+        "width": 84,
+        "height": 77,
+        "anchorX": 58,
+        "anchorY": 49,
+        "footprint": {
+          "width": 1,
+          "height": 2
+        }
+      }
+    ]
+  }
+}

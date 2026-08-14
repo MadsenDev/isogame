@@ -198,6 +198,647 @@
       "#ab7945"
     ]
   },
+  "armchair": {
+    "id": "armchair",
+    "name": "Armchair",
+    "sprite": "/furniture/armchair/south.png",
+    "width": 1,
+    "height": 1,
+    "placement": "floor",
+    "category": "seating",
+    "walkable": false,
+    "stackable": false,
+    "rotatable": true,
+    "collision": {
+      "blocksMovement": true,
+      "blocksVision": false,
+      "height": 1,
+      "shape": "rectangle"
+    },
+    "interactions": [
+      {
+        "type": "sit",
+        "animation": "sit",
+        "duration": 0,
+        "positions": [
+          {
+            "x": 0,
+            "y": 0,
+            "direction": "south",
+            "offsetX": 1,
+            "offsetY": -18,
+            "layer": "front"
+          }
+        ]
+      }
+    ],
+    "defaultDirection": "south",
+    "sprites": {
+      "south": {
+        "file": "south.png",
+        "index": 0,
+        "width": 44,
+        "height": 55,
+        "anchorX": 22,
+        "anchorY": 47,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "sit",
+            "animation": "sit",
+            "duration": 0,
+            "positions": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "south",
+                "offsetX": 1,
+                "offsetY": -18,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "shadow": {
+          "file": "south-shadow.png",
+          "width": 52,
+          "height": 23,
+          "anchorX": 16,
+          "anchorY": 12,
+          "url": "/furniture/armchair/south-shadow.png"
+        },
+        "url": "/furniture/armchair/south.png"
+      },
+      "west": {
+        "file": "west.png",
+        "index": 1,
+        "width": 44,
+        "height": 47,
+        "anchorX": 22,
+        "anchorY": 39,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "sit",
+            "animation": "sit",
+            "duration": 0,
+            "positions": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "west",
+                "offsetX": 1,
+                "offsetY": -18,
+                "layer": "behind"
+              }
+            ]
+          }
+        ],
+        "shadow": {
+          "file": "west-shadow.png",
+          "width": 52,
+          "height": 23,
+          "anchorX": 16,
+          "anchorY": 12,
+          "url": "/furniture/armchair/west-shadow.png"
+        },
+        "url": "/furniture/armchair/west.png"
+      },
+      "north": {
+        "file": "north.png",
+        "index": 2,
+        "width": 44,
+        "height": 47,
+        "anchorX": 22,
+        "anchorY": 39,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "sit",
+            "animation": "sit",
+            "duration": 0,
+            "positions": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "north",
+                "offsetX": -1,
+                "offsetY": -18,
+                "layer": "behind"
+              }
+            ]
+          }
+        ],
+        "shadow": {
+          "file": "north-shadow.png",
+          "width": 60,
+          "height": 23,
+          "anchorX": 17,
+          "anchorY": 12,
+          "url": "/furniture/armchair/north-shadow.png"
+        },
+        "url": "/furniture/armchair/north.png"
+      },
+      "east": {
+        "file": "east.png",
+        "index": 3,
+        "width": 44,
+        "height": 55,
+        "anchorX": 22,
+        "anchorY": 47,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "sit",
+            "animation": "sit",
+            "duration": 0,
+            "positions": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "east",
+                "offsetX": -1,
+                "offsetY": -18,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "shadow": {
+          "file": "east-shadow.png",
+          "width": 60,
+          "height": 23,
+          "anchorX": 17,
+          "anchorY": 12,
+          "url": "/furniture/armchair/east-shadow.png"
+        },
+        "url": "/furniture/armchair/east.png"
+      }
+    },
+    "palette": [
+      "#416579",
+      "#5e7f9e",
+      "#8497b0",
+      "#241d2b",
+      "#97a9c1",
+      "#497a94",
+      "#6f92b0",
+      "#592f1c",
+      "#875531",
+      "#2a4d58",
+      "#326473"
+    ]
+  },
+  "stool": {
+    "id": "stool",
+    "name": "Stool",
+    "sprite": "/furniture/stool/south.png",
+    "width": 1,
+    "height": 1,
+    "placement": "floor",
+    "category": "seating",
+    "walkable": false,
+    "stackable": false,
+    "rotatable": true,
+    "collision": {
+      "blocksMovement": true,
+      "blocksVision": false,
+      "height": 1,
+      "shape": "rectangle"
+    },
+    "interactions": [
+      {
+        "type": "sit",
+        "animation": "sit",
+        "duration": 0,
+        "positions": [
+          {
+            "x": 0,
+            "y": 0,
+            "direction": "south",
+            "offsetX": 0,
+            "offsetY": -20,
+            "layer": "front"
+          }
+        ]
+      }
+    ],
+    "defaultDirection": "south",
+    "sprites": {
+      "south": {
+        "file": "south.png",
+        "index": 0,
+        "width": 22,
+        "height": 31,
+        "anchorX": 11,
+        "anchorY": 26,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "sit",
+            "animation": "sit",
+            "duration": 0,
+            "positions": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "south",
+                "offsetX": 0,
+                "offsetY": -20,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "shadow": {
+          "file": "south-shadow.png",
+          "width": 32,
+          "height": 12,
+          "anchorX": 9,
+          "anchorY": 6,
+          "url": "/furniture/stool/south-shadow.png"
+        },
+        "url": "/furniture/stool/south.png"
+      },
+      "west": {
+        "file": "west.png",
+        "index": 1,
+        "width": 22,
+        "height": 31,
+        "anchorX": 11,
+        "anchorY": 26,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "sit",
+            "animation": "sit",
+            "duration": 0,
+            "positions": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "west",
+                "offsetX": 0,
+                "offsetY": -20,
+                "layer": "behind"
+              }
+            ]
+          }
+        ],
+        "shadow": {
+          "file": "west-shadow.png",
+          "width": 32,
+          "height": 12,
+          "anchorX": 9,
+          "anchorY": 6,
+          "url": "/furniture/stool/west-shadow.png"
+        },
+        "url": "/furniture/stool/west.png"
+      },
+      "north": {
+        "file": "north.png",
+        "index": 2,
+        "width": 22,
+        "height": 31,
+        "anchorX": 11,
+        "anchorY": 26,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "sit",
+            "animation": "sit",
+            "duration": 0,
+            "positions": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "north",
+                "offsetX": 0,
+                "offsetY": -20,
+                "layer": "behind"
+              }
+            ]
+          }
+        ],
+        "shadow": {
+          "file": "north-shadow.png",
+          "width": 32,
+          "height": 12,
+          "anchorX": 9,
+          "anchorY": 6,
+          "url": "/furniture/stool/north-shadow.png"
+        },
+        "url": "/furniture/stool/north.png"
+      },
+      "east": {
+        "file": "east.png",
+        "index": 3,
+        "width": 22,
+        "height": 31,
+        "anchorX": 11,
+        "anchorY": 26,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "sit",
+            "animation": "sit",
+            "duration": 0,
+            "positions": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "east",
+                "offsetX": 0,
+                "offsetY": -20,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "shadow": {
+          "file": "east-shadow.png",
+          "width": 32,
+          "height": 12,
+          "anchorX": 9,
+          "anchorY": 6,
+          "url": "/furniture/stool/east-shadow.png"
+        },
+        "url": "/furniture/stool/east.png"
+      }
+    },
+    "palette": [
+      "#241d2b",
+      "#c19e69",
+      "#875531",
+      "#592f1c",
+      "#b07a42",
+      "#844e2c",
+      "#ab7945"
+    ]
+  },
+  "bench": {
+    "id": "bench",
+    "name": "Bench",
+    "sprite": "/furniture/bench/east.png",
+    "width": 2,
+    "height": 1,
+    "placement": "floor",
+    "category": "seating",
+    "walkable": false,
+    "stackable": false,
+    "rotatable": true,
+    "collision": {
+      "blocksMovement": true,
+      "blocksVision": false,
+      "height": 1,
+      "shape": "rectangle"
+    },
+    "interactions": [
+      {
+        "type": "sit",
+        "animation": "sit",
+        "duration": 0,
+        "positions": [
+          {
+            "x": 0,
+            "y": 0,
+            "direction": "east",
+            "offsetX": 1,
+            "offsetY": -17,
+            "layer": "front"
+          },
+          {
+            "x": 1,
+            "y": 0,
+            "direction": "east",
+            "offsetX": -1,
+            "offsetY": -18,
+            "layer": "front"
+          }
+        ]
+      }
+    ],
+    "defaultDirection": "east",
+    "sprites": {
+      "east": {
+        "file": "east.png",
+        "index": 0,
+        "width": 76,
+        "height": 53,
+        "anchorX": 22,
+        "anchorY": 29,
+        "footprint": {
+          "width": 2,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "sit",
+            "animation": "sit",
+            "duration": 0,
+            "positions": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "east",
+                "offsetX": 1,
+                "offsetY": -17,
+                "layer": "front"
+              },
+              {
+                "x": 1,
+                "y": 0,
+                "direction": "east",
+                "offsetX": -1,
+                "offsetY": -18,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "shadow": {
+          "file": "east-shadow.png",
+          "width": 80,
+          "height": 37,
+          "anchorX": 16,
+          "anchorY": 11,
+          "url": "/furniture/bench/east-shadow.png"
+        },
+        "url": "/furniture/bench/east.png"
+      },
+      "south": {
+        "file": "south.png",
+        "index": 1,
+        "width": 76,
+        "height": 53,
+        "anchorX": 54,
+        "anchorY": 29,
+        "footprint": {
+          "width": 1,
+          "height": 2
+        },
+        "interactions": [
+          {
+            "type": "sit",
+            "animation": "sit",
+            "duration": 0,
+            "positions": [
+              {
+                "x": 0,
+                "y": 1,
+                "direction": "south",
+                "offsetX": 1,
+                "offsetY": -18,
+                "layer": "front"
+              },
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "south",
+                "offsetX": -1,
+                "offsetY": -17,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "shadow": {
+          "file": "south-shadow.png",
+          "width": 79,
+          "height": 37,
+          "anchorX": 47,
+          "anchorY": 11,
+          "url": "/furniture/bench/south-shadow.png"
+        },
+        "url": "/furniture/bench/south.png"
+      },
+      "west": {
+        "file": "west.png",
+        "index": 2,
+        "width": 76,
+        "height": 53,
+        "anchorX": 22,
+        "anchorY": 29,
+        "footprint": {
+          "width": 2,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "sit",
+            "animation": "sit",
+            "duration": 0,
+            "positions": [
+              {
+                "x": 1,
+                "y": 0,
+                "direction": "west",
+                "offsetX": -1,
+                "offsetY": -18,
+                "layer": "behind"
+              },
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "west",
+                "offsetX": 1,
+                "offsetY": -17,
+                "layer": "behind"
+              }
+            ]
+          }
+        ],
+        "shadow": {
+          "file": "west-shadow.png",
+          "width": 80,
+          "height": 37,
+          "anchorX": 16,
+          "anchorY": 11,
+          "url": "/furniture/bench/west-shadow.png"
+        },
+        "url": "/furniture/bench/west.png"
+      },
+      "north": {
+        "file": "north.png",
+        "index": 3,
+        "width": 76,
+        "height": 53,
+        "anchorX": 54,
+        "anchorY": 29,
+        "footprint": {
+          "width": 1,
+          "height": 2
+        },
+        "interactions": [
+          {
+            "type": "sit",
+            "animation": "sit",
+            "duration": 0,
+            "positions": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "north",
+                "offsetX": -1,
+                "offsetY": -17,
+                "layer": "behind"
+              },
+              {
+                "x": 0,
+                "y": 1,
+                "direction": "north",
+                "offsetX": 1,
+                "offsetY": -18,
+                "layer": "behind"
+              }
+            ]
+          }
+        ],
+        "shadow": {
+          "file": "north-shadow.png",
+          "width": 79,
+          "height": 37,
+          "anchorX": 47,
+          "anchorY": 11,
+          "url": "/furniture/bench/north-shadow.png"
+        },
+        "url": "/furniture/bench/north.png"
+      }
+    },
+    "palette": [
+      "#c19e69",
+      "#241d2b",
+      "#875531",
+      "#b07a42",
+      "#592f1c",
+      "#844e2c",
+      "#ab7945"
+    ]
+  },
   "club_sofa": {
     "id": "club_sofa",
     "name": "Club Sofa",
@@ -1083,6 +1724,697 @@
       "#773921"
     ]
   },
+  "side_table": {
+    "id": "side_table",
+    "name": "Side Table",
+    "sprite": "/furniture/side_table/south.png",
+    "width": 1,
+    "height": 1,
+    "placement": "floor",
+    "category": "functional",
+    "walkable": false,
+    "stackable": true,
+    "rotatable": true,
+    "collision": {
+      "blocksMovement": true,
+      "blocksVision": false,
+      "height": 1,
+      "shape": "circle"
+    },
+    "interactions": [],
+    "defaultDirection": "south",
+    "sprites": {
+      "south": {
+        "file": "south.png",
+        "index": 0,
+        "width": 32,
+        "height": 37,
+        "anchorX": 16,
+        "anchorY": 32,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "shadow": {
+          "file": "south-shadow.png",
+          "width": 40,
+          "height": 15,
+          "anchorX": 10,
+          "anchorY": 8,
+          "url": "/furniture/side_table/south-shadow.png"
+        },
+        "url": "/furniture/side_table/south.png"
+      },
+      "west": {
+        "file": "west.png",
+        "index": 1,
+        "width": 32,
+        "height": 37,
+        "anchorX": 16,
+        "anchorY": 32,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "shadow": {
+          "file": "west-shadow.png",
+          "width": 40,
+          "height": 15,
+          "anchorX": 10,
+          "anchorY": 8,
+          "url": "/furniture/side_table/west-shadow.png"
+        },
+        "url": "/furniture/side_table/west.png"
+      },
+      "north": {
+        "file": "north.png",
+        "index": 2,
+        "width": 32,
+        "height": 37,
+        "anchorX": 16,
+        "anchorY": 32,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "shadow": {
+          "file": "north-shadow.png",
+          "width": 40,
+          "height": 15,
+          "anchorX": 10,
+          "anchorY": 8,
+          "url": "/furniture/side_table/north-shadow.png"
+        },
+        "url": "/furniture/side_table/north.png"
+      },
+      "east": {
+        "file": "east.png",
+        "index": 3,
+        "width": 32,
+        "height": 37,
+        "anchorX": 16,
+        "anchorY": 32,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "shadow": {
+          "file": "east-shadow.png",
+          "width": 40,
+          "height": 15,
+          "anchorX": 10,
+          "anchorY": 8,
+          "url": "/furniture/side_table/east-shadow.png"
+        },
+        "url": "/furniture/side_table/east.png"
+      }
+    },
+    "palette": [
+      "#cbad7f",
+      "#241d2b",
+      "#ab7945",
+      "#c08b52",
+      "#875531",
+      "#9d5d32",
+      "#592f1c",
+      "#773921"
+    ]
+  },
+  "desk": {
+    "id": "desk",
+    "name": "Desk",
+    "sprite": "/furniture/desk/east.png",
+    "width": 2,
+    "height": 1,
+    "placement": "floor",
+    "category": "functional",
+    "walkable": false,
+    "stackable": true,
+    "rotatable": true,
+    "collision": {
+      "blocksMovement": true,
+      "blocksVision": false,
+      "height": 1,
+      "shape": "rectangle"
+    },
+    "interactions": [
+      {
+        "type": "use",
+        "animation": "use",
+        "duration": 5000,
+        "positions": [
+          {
+            "x": 0,
+            "y": 0,
+            "direction": "south",
+            "offsetX": 0,
+            "offsetY": 0,
+            "layer": "front"
+          },
+          {
+            "x": 1,
+            "y": 0,
+            "direction": "south",
+            "offsetX": 0,
+            "offsetY": 0,
+            "layer": "front"
+          }
+        ]
+      }
+    ],
+    "defaultDirection": "east",
+    "sprites": {
+      "east": {
+        "file": "east.png",
+        "index": 0,
+        "width": 88,
+        "height": 69,
+        "anchorX": 28,
+        "anchorY": 42,
+        "footprint": {
+          "width": 2,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "use",
+            "animation": "use",
+            "duration": 5000,
+            "positions": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "south",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "front"
+              },
+              {
+                "x": 1,
+                "y": 0,
+                "direction": "south",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "shadow": {
+          "file": "east-shadow.png",
+          "width": 100,
+          "height": 43,
+          "anchorX": 24,
+          "anchorY": 14,
+          "url": "/furniture/desk/east-shadow.png"
+        },
+        "url": "/furniture/desk/east.png"
+      },
+      "south": {
+        "file": "south.png",
+        "index": 1,
+        "width": 88,
+        "height": 70,
+        "anchorX": 60,
+        "anchorY": 42,
+        "footprint": {
+          "width": 1,
+          "height": 2
+        },
+        "interactions": [
+          {
+            "type": "use",
+            "animation": "use",
+            "duration": 5000,
+            "positions": [
+              {
+                "x": 0,
+                "y": 1,
+                "direction": "west",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "behind"
+              },
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "west",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "behind"
+              }
+            ]
+          }
+        ],
+        "shadow": {
+          "file": "south-shadow.png",
+          "width": 100,
+          "height": 43,
+          "anchorX": 56,
+          "anchorY": 14,
+          "url": "/furniture/desk/south-shadow.png"
+        },
+        "url": "/furniture/desk/south.png"
+      },
+      "west": {
+        "file": "west.png",
+        "index": 2,
+        "width": 88,
+        "height": 70,
+        "anchorX": 28,
+        "anchorY": 42,
+        "footprint": {
+          "width": 2,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "use",
+            "animation": "use",
+            "duration": 5000,
+            "positions": [
+              {
+                "x": 1,
+                "y": 0,
+                "direction": "north",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "behind"
+              },
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "north",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "behind"
+              }
+            ]
+          }
+        ],
+        "shadow": {
+          "file": "west-shadow.png",
+          "width": 100,
+          "height": 43,
+          "anchorX": 24,
+          "anchorY": 14,
+          "url": "/furniture/desk/west-shadow.png"
+        },
+        "url": "/furniture/desk/west.png"
+      },
+      "north": {
+        "file": "north.png",
+        "index": 3,
+        "width": 88,
+        "height": 69,
+        "anchorX": 60,
+        "anchorY": 42,
+        "footprint": {
+          "width": 1,
+          "height": 2
+        },
+        "interactions": [
+          {
+            "type": "use",
+            "animation": "use",
+            "duration": 5000,
+            "positions": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "east",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "front"
+              },
+              {
+                "x": 0,
+                "y": 1,
+                "direction": "east",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "shadow": {
+          "file": "north-shadow.png",
+          "width": 100,
+          "height": 43,
+          "anchorX": 56,
+          "anchorY": 14,
+          "url": "/furniture/desk/north-shadow.png"
+        },
+        "url": "/furniture/desk/north.png"
+      }
+    },
+    "palette": [
+      "#cbad7f",
+      "#592f1c",
+      "#241d2b",
+      "#c08b52",
+      "#b07a42",
+      "#9d5d32",
+      "#ab7945",
+      "#c19e69",
+      "#875531",
+      "#98a2ad",
+      "#773921",
+      "#844e2c",
+      "#6d8596",
+      "#506f7b"
+    ]
+  },
+  "dresser": {
+    "id": "dresser",
+    "name": "Dresser",
+    "sprite": "/furniture/dresser/east.png",
+    "width": 2,
+    "height": 1,
+    "placement": "floor",
+    "category": "functional",
+    "walkable": false,
+    "stackable": false,
+    "rotatable": true,
+    "collision": {
+      "blocksMovement": true,
+      "blocksVision": false,
+      "height": 1,
+      "shape": "rectangle"
+    },
+    "interactions": [
+      {
+        "type": "use",
+        "animation": "use",
+        "duration": 3000,
+        "positions": [
+          {
+            "x": 0,
+            "y": 0,
+            "direction": "south",
+            "offsetX": 16,
+            "offsetY": 8,
+            "layer": "front"
+          }
+        ]
+      }
+    ],
+    "defaultDirection": "east",
+    "sprites": {
+      "east": {
+        "file": "east.png",
+        "index": 0,
+        "width": 84,
+        "height": 77,
+        "anchorX": 26,
+        "anchorY": 49,
+        "footprint": {
+          "width": 2,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "use",
+            "animation": "use",
+            "duration": 3000,
+            "positions": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "south",
+                "offsetX": 16,
+                "offsetY": 8,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "shadow": {
+          "file": "east-shadow.png",
+          "width": 102,
+          "height": 42,
+          "anchorX": 23,
+          "anchorY": 14,
+          "url": "/furniture/dresser/east-shadow.png"
+        },
+        "url": "/furniture/dresser/east.png"
+      },
+      "south": {
+        "file": "south.png",
+        "index": 1,
+        "width": 84,
+        "height": 77,
+        "anchorX": 58,
+        "anchorY": 49,
+        "footprint": {
+          "width": 1,
+          "height": 2
+        },
+        "interactions": [
+          {
+            "type": "use",
+            "animation": "use",
+            "duration": 3000,
+            "positions": [
+              {
+                "x": 0,
+                "y": 1,
+                "direction": "west",
+                "offsetX": 16,
+                "offsetY": -8,
+                "layer": "behind"
+              }
+            ]
+          }
+        ],
+        "shadow": {
+          "file": "south-shadow.png",
+          "width": 101,
+          "height": 42,
+          "anchorX": 54,
+          "anchorY": 14,
+          "url": "/furniture/dresser/south-shadow.png"
+        },
+        "url": "/furniture/dresser/south.png"
+      },
+      "west": {
+        "file": "west.png",
+        "index": 2,
+        "width": 84,
+        "height": 77,
+        "anchorX": 26,
+        "anchorY": 49,
+        "footprint": {
+          "width": 2,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "use",
+            "animation": "use",
+            "duration": 3000,
+            "positions": [
+              {
+                "x": 1,
+                "y": 0,
+                "direction": "north",
+                "offsetX": -16,
+                "offsetY": -8,
+                "layer": "behind"
+              }
+            ]
+          }
+        ],
+        "shadow": {
+          "file": "west-shadow.png",
+          "width": 102,
+          "height": 42,
+          "anchorX": 23,
+          "anchorY": 14,
+          "url": "/furniture/dresser/west-shadow.png"
+        },
+        "url": "/furniture/dresser/west.png"
+      },
+      "north": {
+        "file": "north.png",
+        "index": 3,
+        "width": 84,
+        "height": 77,
+        "anchorX": 58,
+        "anchorY": 49,
+        "footprint": {
+          "width": 1,
+          "height": 2
+        },
+        "interactions": [
+          {
+            "type": "use",
+            "animation": "use",
+            "duration": 3000,
+            "positions": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "east",
+                "offsetX": -16,
+                "offsetY": 8,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "shadow": {
+          "file": "north-shadow.png",
+          "width": 101,
+          "height": 42,
+          "anchorX": 54,
+          "anchorY": 14,
+          "url": "/furniture/dresser/north-shadow.png"
+        },
+        "url": "/furniture/dresser/north.png"
+      }
+    },
+    "palette": [
+      "#cbad7f",
+      "#b07a42",
+      "#592f1c",
+      "#c08b52",
+      "#241d2b",
+      "#9d5d32",
+      "#ab7945",
+      "#875531",
+      "#c19e69",
+      "#773921",
+      "#98a2ad",
+      "#babdc3",
+      "#6d8596",
+      "#844e2c",
+      "#506f7b"
+    ]
+  },
+  "crate": {
+    "id": "crate",
+    "name": "Crate",
+    "sprite": "/furniture/crate/south.png",
+    "width": 1,
+    "height": 1,
+    "placement": "floor",
+    "category": "functional",
+    "walkable": false,
+    "stackable": true,
+    "rotatable": true,
+    "collision": {
+      "blocksMovement": true,
+      "blocksVision": false,
+      "height": 1,
+      "shape": "rectangle"
+    },
+    "interactions": [],
+    "defaultDirection": "south",
+    "sprites": {
+      "south": {
+        "file": "south.png",
+        "index": 0,
+        "width": 46,
+        "height": 50,
+        "anchorX": 23,
+        "anchorY": 39,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "shadow": {
+          "file": "south-shadow.png",
+          "width": 61,
+          "height": 24,
+          "anchorX": 22,
+          "anchorY": 12,
+          "url": "/furniture/crate/south-shadow.png"
+        },
+        "url": "/furniture/crate/south.png"
+      },
+      "west": {
+        "file": "west.png",
+        "index": 1,
+        "width": 46,
+        "height": 50,
+        "anchorX": 23,
+        "anchorY": 39,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "shadow": {
+          "file": "west-shadow.png",
+          "width": 61,
+          "height": 24,
+          "anchorX": 22,
+          "anchorY": 12,
+          "url": "/furniture/crate/west-shadow.png"
+        },
+        "url": "/furniture/crate/west.png"
+      },
+      "north": {
+        "file": "north.png",
+        "index": 2,
+        "width": 46,
+        "height": 50,
+        "anchorX": 23,
+        "anchorY": 39,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "shadow": {
+          "file": "north-shadow.png",
+          "width": 61,
+          "height": 24,
+          "anchorX": 22,
+          "anchorY": 12,
+          "url": "/furniture/crate/north-shadow.png"
+        },
+        "url": "/furniture/crate/north.png"
+      },
+      "east": {
+        "file": "east.png",
+        "index": 3,
+        "width": 46,
+        "height": 50,
+        "anchorX": 23,
+        "anchorY": 39,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "shadow": {
+          "file": "east-shadow.png",
+          "width": 61,
+          "height": 24,
+          "anchorX": 22,
+          "anchorY": 12,
+          "url": "/furniture/crate/east-shadow.png"
+        },
+        "url": "/furniture/crate/east.png"
+      }
+    },
+    "palette": [
+      "#ab7945",
+      "#844e2c",
+      "#b07a42",
+      "#875531",
+      "#592f1c",
+      "#241d2b"
+    ]
+  },
   "rug": {
     "id": "rug",
     "name": "Rug",
@@ -1320,6 +2652,208 @@
       "#68324a"
     ]
   },
+  "round_rug": {
+    "id": "round_rug",
+    "name": "Round Rug",
+    "sprite": "/furniture/round_rug/south.png",
+    "width": 2,
+    "height": 2,
+    "placement": "floor",
+    "category": "flooring",
+    "walkable": true,
+    "stackable": true,
+    "rotatable": true,
+    "collision": {
+      "blocksMovement": false,
+      "blocksVision": false,
+      "height": 0,
+      "shape": "circle"
+    },
+    "interactions": [
+      {
+        "type": "dance",
+        "animation": "dance",
+        "duration": 10000,
+        "positions": [
+          {
+            "x": 0,
+            "y": 0,
+            "direction": "south",
+            "offsetX": 0,
+            "offsetY": 30,
+            "layer": "front"
+          }
+        ]
+      }
+    ],
+    "defaultDirection": "south",
+    "sprites": {
+      "south": {
+        "file": "south.png",
+        "index": 0,
+        "width": 88,
+        "height": 45,
+        "anchorX": 44,
+        "anchorY": 7,
+        "footprint": {
+          "width": 2,
+          "height": 2
+        },
+        "interactions": [
+          {
+            "type": "dance",
+            "animation": "dance",
+            "duration": 10000,
+            "positions": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "south",
+                "offsetX": 0,
+                "offsetY": 30,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "shadow": {
+          "file": "south-shadow.png",
+          "width": 87,
+          "height": 44,
+          "anchorX": 43,
+          "anchorY": 6,
+          "url": "/furniture/round_rug/south-shadow.png"
+        },
+        "url": "/furniture/round_rug/south.png"
+      },
+      "west": {
+        "file": "west.png",
+        "index": 1,
+        "width": 88,
+        "height": 45,
+        "anchorX": 44,
+        "anchorY": 7,
+        "footprint": {
+          "width": 2,
+          "height": 2
+        },
+        "interactions": [
+          {
+            "type": "dance",
+            "animation": "dance",
+            "duration": 10000,
+            "positions": [
+              {
+                "x": 0,
+                "y": 1,
+                "direction": "west",
+                "offsetX": 64,
+                "offsetY": -2,
+                "layer": "behind"
+              }
+            ]
+          }
+        ],
+        "shadow": {
+          "file": "west-shadow.png",
+          "width": 87,
+          "height": 44,
+          "anchorX": 43,
+          "anchorY": 6,
+          "url": "/furniture/round_rug/west-shadow.png"
+        },
+        "url": "/furniture/round_rug/west.png"
+      },
+      "north": {
+        "file": "north.png",
+        "index": 2,
+        "width": 88,
+        "height": 45,
+        "anchorX": 44,
+        "anchorY": 7,
+        "footprint": {
+          "width": 2,
+          "height": 2
+        },
+        "interactions": [
+          {
+            "type": "dance",
+            "animation": "dance",
+            "duration": 10000,
+            "positions": [
+              {
+                "x": 1,
+                "y": 1,
+                "direction": "north",
+                "offsetX": 0,
+                "offsetY": -34,
+                "layer": "behind"
+              }
+            ]
+          }
+        ],
+        "shadow": {
+          "file": "north-shadow.png",
+          "width": 87,
+          "height": 44,
+          "anchorX": 43,
+          "anchorY": 6,
+          "url": "/furniture/round_rug/north-shadow.png"
+        },
+        "url": "/furniture/round_rug/north.png"
+      },
+      "east": {
+        "file": "east.png",
+        "index": 3,
+        "width": 88,
+        "height": 45,
+        "anchorX": 44,
+        "anchorY": 7,
+        "footprint": {
+          "width": 2,
+          "height": 2
+        },
+        "interactions": [
+          {
+            "type": "dance",
+            "animation": "dance",
+            "duration": 10000,
+            "positions": [
+              {
+                "x": 1,
+                "y": 0,
+                "direction": "east",
+                "offsetX": -64,
+                "offsetY": -2,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "shadow": {
+          "file": "east-shadow.png",
+          "width": 87,
+          "height": 44,
+          "anchorX": 43,
+          "anchorY": 6,
+          "url": "/furniture/round_rug/east-shadow.png"
+        },
+        "url": "/furniture/round_rug/east.png"
+      }
+    },
+    "palette": [
+      "#95b9b5",
+      "#649894",
+      "#f0ede6",
+      "#6fa79c",
+      "#4a7a72",
+      "#4b8975",
+      "#ded3c0",
+      "#2e5449",
+      "#336851",
+      "#cbaf90"
+    ]
+  },
   "plant": {
     "id": "plant",
     "name": "Plant",
@@ -1446,6 +2980,263 @@
       "#2a5120",
       "#162e12",
       "#322119"
+    ]
+  },
+  "potted_tree": {
+    "id": "potted_tree",
+    "name": "Potted Tree",
+    "sprite": "/furniture/potted_tree/south.png",
+    "width": 1,
+    "height": 1,
+    "placement": "floor",
+    "category": "decoration",
+    "walkable": false,
+    "stackable": false,
+    "rotatable": true,
+    "collision": {
+      "blocksMovement": true,
+      "blocksVision": false,
+      "height": 2,
+      "shape": "circle"
+    },
+    "interactions": [],
+    "defaultDirection": "south",
+    "sprites": {
+      "south": {
+        "file": "south.png",
+        "index": 0,
+        "width": 30,
+        "height": 73,
+        "anchorX": 15,
+        "anchorY": 68,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "shadow": {
+          "file": "south-shadow.png",
+          "width": 58,
+          "height": 21,
+          "anchorX": 8,
+          "anchorY": 11,
+          "url": "/furniture/potted_tree/south-shadow.png"
+        },
+        "url": "/furniture/potted_tree/south.png"
+      },
+      "west": {
+        "file": "west.png",
+        "index": 1,
+        "width": 41,
+        "height": 73,
+        "anchorX": 20,
+        "anchorY": 68,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "shadow": {
+          "file": "west-shadow.png",
+          "width": 59,
+          "height": 16,
+          "anchorX": 8,
+          "anchorY": 9,
+          "url": "/furniture/potted_tree/west-shadow.png"
+        },
+        "url": "/furniture/potted_tree/west.png"
+      },
+      "north": {
+        "file": "north.png",
+        "index": 2,
+        "width": 30,
+        "height": 73,
+        "anchorX": 15,
+        "anchorY": 68,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "shadow": {
+          "file": "north-shadow.png",
+          "width": 58,
+          "height": 21,
+          "anchorX": 8,
+          "anchorY": 12,
+          "url": "/furniture/potted_tree/north-shadow.png"
+        },
+        "url": "/furniture/potted_tree/north.png"
+      },
+      "east": {
+        "file": "east.png",
+        "index": 3,
+        "width": 41,
+        "height": 73,
+        "anchorX": 21,
+        "anchorY": 68,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "shadow": {
+          "file": "east-shadow.png",
+          "width": 59,
+          "height": 16,
+          "anchorX": 8,
+          "anchorY": 9,
+          "url": "/furniture/potted_tree/east-shadow.png"
+        },
+        "url": "/furniture/potted_tree/east.png"
+      }
+    },
+    "palette": [
+      "#3d7d43",
+      "#549e62",
+      "#241d2b",
+      "#7b644b",
+      "#816c60",
+      "#9c9187",
+      "#4f9d52",
+      "#72b27b",
+      "#3a7535",
+      "#265324",
+      "#44271b",
+      "#6f4b32",
+      "#b2aea9",
+      "#654c44",
+      "#5b4433",
+      "#2a5120",
+      "#162e12",
+      "#322119"
+    ]
+  },
+  "vase": {
+    "id": "vase",
+    "name": "Vase",
+    "sprite": "/furniture/vase/south.png",
+    "width": 1,
+    "height": 1,
+    "placement": "floor",
+    "category": "decoration",
+    "walkable": false,
+    "stackable": false,
+    "rotatable": true,
+    "collision": {
+      "blocksMovement": true,
+      "blocksVision": false,
+      "height": 1,
+      "shape": "circle"
+    },
+    "interactions": [],
+    "defaultDirection": "south",
+    "sprites": {
+      "south": {
+        "file": "south.png",
+        "index": 0,
+        "width": 14,
+        "height": 27,
+        "anchorX": 7,
+        "anchorY": 26,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "shadow": {
+          "file": "south-shadow.png",
+          "width": 21,
+          "height": 7,
+          "anchorX": 4,
+          "anchorY": 4,
+          "url": "/furniture/vase/south-shadow.png"
+        },
+        "url": "/furniture/vase/south.png"
+      },
+      "west": {
+        "file": "west.png",
+        "index": 1,
+        "width": 14,
+        "height": 27,
+        "anchorX": 7,
+        "anchorY": 26,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "shadow": {
+          "file": "west-shadow.png",
+          "width": 21,
+          "height": 7,
+          "anchorX": 4,
+          "anchorY": 4,
+          "url": "/furniture/vase/west-shadow.png"
+        },
+        "url": "/furniture/vase/west.png"
+      },
+      "north": {
+        "file": "north.png",
+        "index": 2,
+        "width": 14,
+        "height": 27,
+        "anchorX": 7,
+        "anchorY": 26,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "shadow": {
+          "file": "north-shadow.png",
+          "width": 23,
+          "height": 7,
+          "anchorX": 4,
+          "anchorY": 4,
+          "url": "/furniture/vase/north-shadow.png"
+        },
+        "url": "/furniture/vase/north.png"
+      },
+      "east": {
+        "file": "east.png",
+        "index": 3,
+        "width": 14,
+        "height": 27,
+        "anchorX": 7,
+        "anchorY": 26,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "shadow": {
+          "file": "east-shadow.png",
+          "width": 21,
+          "height": 7,
+          "anchorX": 4,
+          "anchorY": 4,
+          "url": "/furniture/vase/east-shadow.png"
+        },
+        "url": "/furniture/vase/east.png"
+      }
+    },
+    "palette": [
+      "#241d2b",
+      "#7fa8c4",
+      "#4b97b5",
+      "#a8bed3",
+      "#d98aa8",
+      "#e5b6c4",
+      "#ded3c0",
+      "#3d7d43",
+      "#ce5290",
+      "#549e62",
+      "#f0ede6",
+      "#cbaf90",
+      "#265324",
+      "#358493",
+      "#bf8865"
     ]
   },
   "lamp": {
@@ -1655,7 +3446,7 @@
     "width": 1,
     "height": 1,
     "placement": "floor",
-    "category": "wall",
+    "category": "functional",
     "walkable": false,
     "stackable": false,
     "rotatable": true,
@@ -1958,6 +3749,253 @@
       "#7d858f",
       "#9fa1a5",
       "#ffdf9e"
+    ]
+  },
+  "wall_art": {
+    "id": "wall_art",
+    "name": "Framed Print",
+    "sprite": "/furniture/wall_art/south.png",
+    "width": 1,
+    "height": 1,
+    "placement": "wall",
+    "category": "wall",
+    "walkable": true,
+    "stackable": false,
+    "rotatable": false,
+    "collision": {
+      "blocksMovement": false,
+      "blocksVision": false,
+      "height": 0,
+      "shape": "rectangle"
+    },
+    "interactions": [],
+    "defaultDirection": "south",
+    "sprites": {
+      "south": {
+        "file": "south.png",
+        "index": 0,
+        "width": 20,
+        "height": 35,
+        "anchorX": 25,
+        "anchorY": 71,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "url": "/furniture/wall_art/south.png"
+      },
+      "east": {
+        "file": "east.png",
+        "index": 3,
+        "width": 20,
+        "height": 35,
+        "anchorX": -5,
+        "anchorY": 71,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "url": "/furniture/wall_art/east.png"
+      }
+    },
+    "palette": [
+      "#bacfe3",
+      "#cfbca5",
+      "#241d2b",
+      "#6ea87f",
+      "#c0997c",
+      "#592f1c",
+      "#875531",
+      "#e4ded2",
+      "#fef5d7",
+      "#ab7945",
+      "#8fb9d6"
+    ]
+  },
+  "wall_shelf": {
+    "id": "wall_shelf",
+    "name": "Wall Shelf",
+    "sprite": "/furniture/wall_shelf/south.png",
+    "width": 1,
+    "height": 1,
+    "placement": "wall",
+    "category": "wall",
+    "walkable": true,
+    "stackable": false,
+    "rotatable": false,
+    "collision": {
+      "blocksMovement": false,
+      "blocksVision": false,
+      "height": 0,
+      "shape": "rectangle"
+    },
+    "interactions": [
+      {
+        "type": "use",
+        "animation": "use",
+        "duration": 3000,
+        "positions": [
+          {
+            "x": 0,
+            "y": 0,
+            "direction": "south",
+            "offsetX": 0,
+            "offsetY": 0,
+            "layer": "front"
+          }
+        ]
+      }
+    ],
+    "defaultDirection": "south",
+    "sprites": {
+      "south": {
+        "file": "south.png",
+        "index": 0,
+        "width": 32,
+        "height": 23,
+        "anchorX": 28,
+        "anchorY": 60,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "use",
+            "animation": "use",
+            "duration": 3000,
+            "positions": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "south",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/wall_shelf/south.png"
+      },
+      "east": {
+        "file": "east.png",
+        "index": 3,
+        "width": 32,
+        "height": 24,
+        "anchorX": 4,
+        "anchorY": 61,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [
+          {
+            "type": "use",
+            "animation": "use",
+            "duration": 3000,
+            "positions": [
+              {
+                "x": 0,
+                "y": 0,
+                "direction": "east",
+                "offsetX": 0,
+                "offsetY": 0,
+                "layer": "front"
+              }
+            ]
+          }
+        ],
+        "url": "/furniture/wall_shelf/east.png"
+      }
+    },
+    "palette": [
+      "#241d2b",
+      "#c19e69",
+      "#844e2c",
+      "#b07a42",
+      "#ded3c0",
+      "#4f9d52",
+      "#c1734a",
+      "#72b27b",
+      "#bf8865",
+      "#9b472e",
+      "#586671",
+      "#cbaf90",
+      "#3a7535",
+      "#4a72a8",
+      "#315b7e",
+      "#8b3238",
+      "#9fa1a5",
+      "#7089ba",
+      "#f0ede6",
+      "#cc9c78",
+      "#2a5120",
+      "#b5504a",
+      "#c18176",
+      "#7d858f"
+    ]
+  },
+  "wall_clock": {
+    "id": "wall_clock",
+    "name": "Wall Clock",
+    "sprite": "/furniture/wall_clock/south.png",
+    "width": 1,
+    "height": 1,
+    "placement": "wall",
+    "category": "wall",
+    "walkable": true,
+    "stackable": false,
+    "rotatable": false,
+    "collision": {
+      "blocksMovement": false,
+      "blocksVision": false,
+      "height": 0,
+      "shape": "rectangle"
+    },
+    "interactions": [],
+    "defaultDirection": "south",
+    "sprites": {
+      "south": {
+        "file": "south.png",
+        "index": 0,
+        "width": 15,
+        "height": 17,
+        "anchorX": 22,
+        "anchorY": 69,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "url": "/furniture/wall_clock/south.png"
+      },
+      "east": {
+        "file": "east.png",
+        "index": 3,
+        "width": 14,
+        "height": 17,
+        "anchorX": -7,
+        "anchorY": 69,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        },
+        "interactions": [],
+        "url": "/furniture/wall_clock/east.png"
+      }
+    },
+    "palette": [
+      "#f9f8f5",
+      "#241d2b",
+      "#67626a",
+      "#4a4450",
+      "#28232e",
+      "#cfbca5",
+      "#e4ded2",
+      "#c0997c"
     ]
   },
   "ceiling_lamp": {

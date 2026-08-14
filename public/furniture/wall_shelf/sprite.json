@@ -1,0 +1,148 @@
+{
+  "id": "wall_shelf",
+  "name": "Wall Shelf",
+  "defaultDirection": "south",
+  "placement": "wall",
+  "behaviour": {
+    "category": "wall",
+    "walkable": true,
+    "stackable": false,
+    "rotatable": false,
+    "collision": {
+      "blocksMovement": false,
+      "blocksVision": false,
+      "height": 0,
+      "shape": "rectangle"
+    }
+  },
+  "footprint": {
+    "width": 1,
+    "height": 1
+  },
+  "tile": {
+    "width": 64,
+    "height": 32
+  },
+  "pixelsPerUnit": 45.2548,
+  "palette": [
+    "#241d2b",
+    "#c19e69",
+    "#844e2c",
+    "#b07a42",
+    "#ded3c0",
+    "#4f9d52",
+    "#c1734a",
+    "#72b27b",
+    "#bf8865",
+    "#9b472e",
+    "#586671",
+    "#cbaf90",
+    "#3a7535",
+    "#4a72a8",
+    "#315b7e",
+    "#8b3238",
+    "#9fa1a5",
+    "#7089ba",
+    "#f0ede6",
+    "#cc9c78",
+    "#2a5120",
+    "#b5504a",
+    "#c18176",
+    "#7d858f"
+  ],
+  "directions": {
+    "south": {
+      "file": "south.png",
+      "index": 0,
+      "width": 32,
+      "height": 23,
+      "anchorX": 28,
+      "anchorY": 60,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [
+        {
+          "type": "use",
+          "animation": "use",
+          "duration": 3000,
+          "spots": [
+            {
+              "x": 0,
+              "y": 0,
+              "direction": "south",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "front"
+            }
+          ]
+        }
+      ]
+    },
+    "east": {
+      "file": "east.png",
+      "index": 3,
+      "width": 32,
+      "height": 24,
+      "anchorX": 4,
+      "anchorY": 61,
+      "footprint": {
+        "width": 1,
+        "height": 1
+      },
+      "interactions": [
+        {
+          "type": "use",
+          "animation": "use",
+          "duration": 3000,
+          "spots": [
+            {
+              "x": 0,
+              "y": 0,
+              "direction": "east",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "front"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "sheet": {
+    "file": "sheet.png",
+    "width": 65,
+    "height": 24,
+    "frames": [
+      {
+        "direction": "south",
+        "index": 0,
+        "x": 0,
+        "y": 0,
+        "width": 32,
+        "height": 23,
+        "anchorX": 28,
+        "anchorY": 60,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      },
+      {
+        "direction": "east",
+        "index": 3,
+        "x": 33,
+        "y": 0,
+        "width": 32,
+        "height": 24,
+        "anchorX": 4,
+        "anchorY": 61,
+        "footprint": {
+          "width": 1,
+          "height": 1
+        }
+      }
+    ]
+  }
+}
