@@ -104,6 +104,11 @@ export interface SpriteMetadata {
   placement: Placement
   behaviour: BehaviourSpec
   footprint: { width: number; height: number }
+  /**
+   * The top of the piece, measured from the model. Only emitted when the piece
+   * is stackable, because that is the only time anything rests on it.
+   */
+  surface?: { height: number; offsetY: number }
   tile: { width: number; height: number }
   pixelsPerUnit: number
   palette: string[]
@@ -147,6 +152,7 @@ export function buildMetadata(
     placement: asset.placement,
     behaviour: asset.behaviour,
     footprint: asset.footprint,
+    surface: asset.behaviour.stackable ? asset.surface : undefined,
     tile: { width: constants.tileWidth, height: constants.tileHeight },
     pixelsPerUnit: Number(constants.pixelsPerUnit.toFixed(4)),
     palette: asset.palette,
@@ -209,6 +215,8 @@ export interface GameFurnitureDefinition {
   category: BehaviourSpec['category']
   walkable: boolean
   stackable: boolean
+  /** Where the top of this piece is, for anything placed on it. */
+  surface?: { height: number; offsetY: number }
   rotatable: boolean
   collision: BehaviourSpec['collision']
   interactions: GameInteraction[]
@@ -237,6 +245,7 @@ export function buildGameDefinition(
     category: metadata.behaviour.category,
     walkable: metadata.behaviour.walkable,
     stackable: metadata.behaviour.stackable,
+    surface: metadata.surface,
     rotatable: metadata.behaviour.rotatable,
     collision: metadata.behaviour.collision,
     interactions: toGameInteractions(defaultFrame.interactions),

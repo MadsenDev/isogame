@@ -64,6 +64,13 @@ export interface Furniture {
   id: string
   x: number
   y: number
+  /**
+   * Screen pixels this piece is raised by, from whatever it rests on.
+   *
+   * Zero for anything on the floor. Stored rather than derived so a stack
+   * survives a reload without having to be resolved bottom-up on load.
+   */
+  z: number
   type: string
   /** Rendered orientation. Defaults to the definition's default direction. */
   direction?: FurnitureDirection
@@ -115,6 +122,8 @@ export interface FurnitureDefinition {
   collision: FurnitureCollision
   walkable: boolean
   stackable: boolean
+  /** Where the top of this piece is, for anything placed on it. Generated. */
+  surface?: { height: number; offsetY: number }
   rotatable: boolean
   category: 'seating' | 'decoration' | 'functional' | 'flooring' | 'wall'
   placement?: FurniturePlacement

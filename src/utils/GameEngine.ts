@@ -233,11 +233,9 @@ export class GameEngine {
     })
 
     this.state.currentRoom.furniture.forEach(furniture => {
-      const footprint = this.getFurnitureFootprint(furniture)
-
       drawables.push({
         rank: isFloorDecal(furniture) ? 0 : 1,
-        depth: furniture.x + furniture.y + (footprint.width - 1) + (footprint.height - 1),
+        depth: this.furnitureDepth(furniture),
         order: 0,
         draw: () => this.furnitureComponent.drawFurniture(furniture)
       })
@@ -333,6 +331,36 @@ export class GameEngine {
       const screenPos = this.coordinateUtils.worldToScreen(player.x, player.y)
       this.playerComponent.drawShadow(player, screenPos)
     })
+  }
+
+  /**
+   * Where a piece sorts, back to front.
+   *
+   * Its own front-most tile, except for something resting on top of another
+   * piece: a vase on the *back* tile of a 2x2 table has depth 10 against the
+   * table's 12, so on its own key it would be drawn behind the table it is
+   * standing on. Resolved by looking at what is underneath rather than by
+   * storing a support reference, so removing the table leaves nothing stale.
+   */
+  private furnitureDepth(furniture: Furniture): number {
+    const footprint = this.getFurnitureFootprint(furniture)
+    const own = furniture.x + furniture.y + (footprint.width - 1) + (footprint.height - 1)
+    if (furniture.z <= 0 || !this.state.currentRoom) return own
+
+    let depth = own
+    for (const piece of this.state.currentRoom.furniture) {
+      if (piece === furniture || piece.z >= furniture.z) continue
+      const under = this.getFurnitureFootprint(piece)
+      const overlaps = !(
+        furniture.x + footprint.width <= piece.x ||
+        piece.x + under.width <= furniture.x ||
+        furniture.y + footprint.height <= piece.y ||
+        piece.y + under.height <= furniture.y
+      )
+      if (!overlaps) continue
+      depth = Math.max(depth, piece.x + piece.y + (under.width - 1) + (under.height - 1) + 0.5)
+    }
+    return depth
   }
 
   /** Tiles a piece occupies in its current orientation. */
@@ -694,7 +722,8 @@ export class GameEngine {
         this.state.currentRoom.furniture,
         this.state.players,
         this.state.currentRoom.floorTiles,
-        this.state.previewFurniture.type
+        this.state.previewFurniture.type,
+        this.state.previewFurniture.direction
       )
       
       if (isValid) {
@@ -723,7 +752,8 @@ export class GameEngine {
           this.state.currentRoom.furniture,
           this.state.players,
           this.state.currentRoom.floorTiles,
-          this.state.selectedFurniture || 'chair' // Default to chair if no furniture selected
+          this.state.selectedFurniture || 'chair', // Default to chair if no furniture selected
+          this.state.placementDirection ?? undefined
         )
       } else if (this.state.currentTool === 'room') {
         const withinBounds = (
@@ -900,36 +930,60 @@ export class GameEngine {
     return getFurnitureDefinition(type)
   }
 
-  /** Whether clicking this tile would send the player somewhere useful. */
+  /**
+   * Whether clicking this tile would send the player somewhere useful.
+   *
+   * Memoised, because this runs every frame for the hovered tile and answering
+   * it properly means pathfinding to each candidate spot - up to eight of them
+   * for a table. The key includes where the player is standing, since that is
+   * what can change the answer while the pointer sits still.
+   */
+  private hoverInteraction: { key: string; reachable: boolean } | null = null
+
   private hasReachableInteraction(x: number, y: number): boolean {
     const player = this.state.players[this.state.currentPlayerId]
     if (!player || !this.state.currentRoom) return false
 
+    const key = `${x},${y}|${Math.round(player.x)},${Math.round(player.y)}|${this.state.currentRoom.furniture.length}`
+    if (this.hoverInteraction?.key === key) return this.hoverInteraction.reachable
+
     const piece = findFurnitureAt(this.state.currentRoom.furniture, x, y)
-    return Boolean(piece && this.planInteraction(player, piece))
+    const reachable = Boolean(piece && this.planInteraction(player, piece, x, y))
+    this.hoverInteraction = { key, reachable }
+    return reachable
   }
 
   /**
    * Where to send a player who clicked a piece of furniture, and what to do
    * when they get there.
    *
-   * Spots are tried nearest first, and a spot is only offered if a path to it
-   * actually exists - a chair jammed into a corner behind a table should fall
-   * back to ordinary walking rather than sending someone on a walk they cannot
-   * finish. Only `use` needs an intent recorded: sitting, lying and dancing
-   * trigger on arrival because their spot *is* the destination.
+   * Ranked by distance from the *clicked tile* first, because on a two-seat
+   * sofa which end you clicked is the whole point - ranking by distance from
+   * the player instead just seats you at the nearer end whichever end you
+   * asked for. Distance from the player only breaks ties, which is what
+   * decides which side of a desk you walk to.
+   *
+   * A spot is only offered if a path to it exists, so a chair jammed into a
+   * corner behind a table falls back to ordinary walking rather than sending
+   * someone on a walk they cannot finish. Only `use` records an intent: sitting,
+   * lying and dancing trigger on arrival, because their spot *is* the
+   * destination.
    */
   private planInteraction(
     player: Player,
-    piece: Furniture
+    piece: Furniture,
+    clickedX: number,
+    clickedY: number
   ): { x: number; y: number; path: Array<{ x: number; y: number }>; intent: PlayerIntent | null } | null {
     const fromX = Math.round(player.x)
     const fromY = Math.round(player.y)
+    const toClick = (s: { tileX: number; tileY: number }) =>
+      Math.abs(s.tileX - clickedX) + Math.abs(s.tileY - clickedY)
+    const toPlayer = (s: { tileX: number; tileY: number }) =>
+      Math.abs(s.tileX - fromX) + Math.abs(s.tileY - fromY)
 
     const spots = listInteractionSpots(piece, ['sit', 'lay', 'sleep', 'use', 'dance']).sort(
-      (a, b) =>
-        Math.abs(a.tileX - fromX) + Math.abs(a.tileY - fromY) -
-        (Math.abs(b.tileX - fromX) + Math.abs(b.tileY - fromY))
+      (a, b) => toClick(a) - toClick(b) || toPlayer(a) - toPlayer(b)
     )
 
     for (const spot of spots) {
@@ -961,7 +1015,7 @@ export class GameEngine {
         const piece = this.state.currentRoom
           ? findFurnitureAt(this.state.currentRoom.furniture, gridX, gridY)
           : null
-        const planned = piece ? this.planInteraction(currentPlayer, piece) : null
+        const planned = piece ? this.planInteraction(currentPlayer, piece, gridX, gridY) : null
         const destination = planned ?? { x: gridX, y: gridY, path: null, intent: null }
 
         const path =
@@ -1009,8 +1063,9 @@ export class GameEngine {
         }
       }
     } else if (this.state.currentTool === 'furniture' && this.state.isPlacing && this.state.selectedFurniture) {
-      // Handle furniture placement
-      if (this.furnitureComponent.isValidFurniturePosition(
+      // The plan carries the stack height as well as the yes/no, because they
+      // come from the same question: what is already on these tiles.
+      const plan = this.furnitureComponent.planPlacement(
         gridX,
         gridY,
         this.state.currentRoom!.width,
@@ -1018,14 +1073,18 @@ export class GameEngine {
         this.state.currentRoom!.furniture,
         this.state.players,
         this.state.currentRoom!.floorTiles,
-        this.state.selectedFurniture
-      )) {
+        this.state.selectedFurniture,
+        this.state.placementDirection ?? undefined
+      )
+
+      if (plan.valid) {
         const furnitureDefinition = this.getFurnitureDefinition(this.state.selectedFurniture)
         if (furnitureDefinition) {
           const furniture = {
             id: createId('furniture'),
             x: gridX,
             y: gridY,
+            z: plan.z,
             type: this.state.selectedFurniture,
             direction: this.state.placementDirection ?? furnitureDefinition.defaultDirection,
             definition: furnitureDefinition

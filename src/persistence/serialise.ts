@@ -40,6 +40,7 @@ export function toPersistedRoom(room: Room, previous?: PersistedRoom): Persisted
       type: piece.type,
       x: piece.x,
       y: piece.y,
+      z: piece.z || undefined,
       direction: piece.direction
     })),
     doorway: room.doorway,
@@ -71,6 +72,7 @@ export function fromPersistedRoom(persisted: PersistedRoom): Room {
       type: piece.type,
       x: piece.x,
       y: piece.y,
+      z: piece.z ?? 0,
       direction: piece.direction as Furniture['direction'],
       definition
     })

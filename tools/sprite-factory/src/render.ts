@@ -122,10 +122,33 @@ export interface RenderedAsset {
   footprint: { width: number; height: number }
   frames: SpriteFrame[]
   palette: string[]
+  /**
+   * The top of the model, in tile units, and how far up the screen that is.
+   *
+   * Only meaningful for something you can put things on. The pipeline already
+   * knows the geometry, so a table's height is measured rather than guessed -
+   * which is what stops a vase hovering half a pixel above the tabletop.
+   */
+  surface: { height: number; offsetY: number }
   /** Named material -> the four-shade ramp it was rendered with. */
   ramps: Record<string, string[]>
   /** Uncropped canvas size the frames were rendered into. */
   canvas: { width: number; height: number }
+}
+
+/**
+ * A height in tile units, and the same height as a screen offset.
+ *
+ * Raising something is a pure +Y translation, which projects to a pure vertical
+ * shift - so one number serves every orientation. Emitting it in pixels keeps
+ * it in the same currency as the anchors and interaction offsets beside it.
+ */
+function surfaceOf(height: number): { height: number; offsetY: number } {
+  const projected = projectToPixels(
+    new THREE.Vector3(0, height, 0),
+    new THREE.Vector3(0, 0, 0)
+  )
+  return { height: Number(height.toFixed(4)), offsetY: Math.round(-projected.y) }
 }
 
 /**
@@ -351,6 +374,10 @@ export async function renderAsset(
     ...(outlineEnabled ? [outlineColour] : []),
   ])
 
+  // Measured before anything is rotated, which is fine: turning about +Y
+  // cannot change how tall something is.
+  const surfaceHeight = new THREE.Box3().setFromObject(model.group).max.y
+
   const canvas = measureCanvas(model.group, asset, cfg.padding)
   const scene = new THREE.Scene()
   scene.add(model.group)
@@ -543,6 +570,7 @@ export async function renderAsset(
     footprint: asset.footprint,
     frames,
     palette: uniqueColours(frames.flatMap((frame) => usedColours(frame.image))),
+    surface: surfaceOf(surfaceHeight),
     ramps: model.ramps,
     canvas,
   }

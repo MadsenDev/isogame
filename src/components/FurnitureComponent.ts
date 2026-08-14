@@ -1,6 +1,6 @@
 import { Furniture, FurnitureDefinition } from '../context/GameContext'
 import { CoordinateUtils } from '../utils/CoordinateUtils'
-import { getFurnitureDefinition } from '../data/furnitureDefinitions'
+import { getFurnitureDefinition, PlacementPlan, planPlacement } from '../data/furnitureDefinitions'
 
 export interface PreviewFurniture {
   x: number
@@ -101,6 +101,10 @@ export class FurnitureComponent {
    * land on top of whatever was drawn before it.
    */
   public drawShadow(furniture: Furniture) {
+    // Something on a table is not touching the floor, so it has no contact
+    // shadow there; the table's own shadow is the one that belongs.
+    if (furniture.z > 0) return
+
     const definition = furniture.definition
     const frame = this.getSprite(definition, furniture.direction)
     const shadow = frame?.shadow
@@ -132,7 +136,7 @@ export class FurnitureComponent {
     const definition = furniture.definition
     if (!definition) return
 
-    if (!this.drawSprite(definition, furniture.x, furniture.y, furniture.direction)) {
+    if (!this.drawSprite(definition, furniture.x, furniture.y, furniture.direction, 1, furniture.z)) {
       this.drawFurnitureFallback(furniture, definition)
     }
   }
@@ -150,7 +154,9 @@ export class FurnitureComponent {
     x: number,
     y: number,
     direction?: string,
-    alpha = 1
+    alpha = 1,
+    /** Pixels to raise it by, for something resting on a table. */
+    z = 0
   ): boolean {
     const frame = this.getSprite(definition, direction)
     if (!frame) return false
@@ -174,7 +180,7 @@ export class FurnitureComponent {
     this.ctx.drawImage(
       image,
       Math.round(screenPos.x - frame.anchorX * this.zoom),
-      Math.round(screenPos.y - frame.anchorY * this.zoom),
+      Math.round(screenPos.y - (frame.anchorY + z) * this.zoom),
       Math.round(frame.width * this.zoom),
       Math.round(frame.height * this.zoom)
     )
@@ -246,67 +252,57 @@ export class FurnitureComponent {
     this.ctx.restore()
   }
 
-  public isValidFurniturePosition(
-    x: number, 
-    y: number, 
-    roomWidth: number, 
-    roomHeight: number, 
-    existingFurniture: Furniture[], 
+  /**
+   * Whether a piece can go here, and how high it would sit.
+   *
+   * Delegates to `planPlacement`, which knows that a ceiling lamp, a wall
+   * print, a rug and a table are on four different planes and only clash with
+   * their own kind - and that the one way two floor pieces can share a tile is
+   * for one to be standing on the other.
+   */
+  public planPlacement(
+    x: number,
+    y: number,
+    roomWidth: number,
+    roomHeight: number,
+    existingFurniture: Furniture[],
     players: Array<{ x: number; y: number }>,
     floorTiles: Array<{ x: number; y: number }>,
-    furnitureType: string
-  ): boolean {
+    furnitureType: string,
+    direction?: string
+  ): PlacementPlan {
     const definition = this.getFurnitureDefinition(furnitureType)
-    if (!definition) return false
+    if (!definition) return { valid: false, z: 0, support: null }
 
-    // Check if all required tiles are within room bounds
-    for (let fx = 0; fx < definition.width; fx++) {
-      for (let fy = 0; fy < definition.height; fy++) {
-        const checkX = x + fx
-        const checkY = y + fy
-        
-        if (checkX < 0 || checkX >= roomWidth || checkY < 0 || checkY >= roomHeight) {
-          return false
-        }
-        
-        // Check if there's a floor tile
-        const hasFloorTile = floorTiles.some(tile => tile.x === checkX && tile.y === checkY)
-        if (!hasFloorTile) {
-          return false
-        }
-      }
-    }
-
-    // Check collision with existing furniture
-    for (const furniture of existingFurniture) {
-      if (this.furnitureCollides(furniture, x, y, definition)) {
-        return false
-      }
-    }
-
-    // Check collision with players
-    for (const player of players) {
-      const playerX = Math.round(player.x)
-      const playerY = Math.round(player.y)
-      
-      if (playerX >= x && playerX < x + definition.width && 
-          playerY >= y && playerY < y + definition.height) {
-        return false
-      }
-    }
-
-    return true
+    return planPlacement({
+      definition,
+      direction,
+      x,
+      y,
+      roomWidth,
+      roomHeight,
+      floorTiles,
+      furniture: existingFurniture,
+      players
+    })
   }
 
-  private furnitureCollides(furniture: Furniture, x: number, y: number, definition: FurnitureDefinition): boolean {
-    const furnitureDef = furniture.definition
-    
-    // Check if furniture rectangles overlap
-    return !(x + definition.width <= furniture.x || 
-             furniture.x + furnitureDef.width <= x ||
-             y + definition.height <= furniture.y ||
-             furniture.y + furnitureDef.height <= y)
+  public isValidFurniturePosition(
+    x: number,
+    y: number,
+    roomWidth: number,
+    roomHeight: number,
+    existingFurniture: Furniture[],
+    players: Array<{ x: number; y: number }>,
+    floorTiles: Array<{ x: number; y: number }>,
+    furnitureType: string,
+    direction?: string
+  ): boolean {
+    return this.planPlacement(
+      x, y, roomWidth, roomHeight, existingFurniture, players, floorTiles, furnitureType, direction
+    ).valid
   }
+
 
   public getFurnitureInteractionPositions(furniture: Furniture, interactionType: string): Array<{ x: number; y: number; direction: string }> {
     const definition = furniture.definition
