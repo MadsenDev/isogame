@@ -1,15 +1,61 @@
 import type { Dispatch } from 'react'
-import { Furniture, GameState, GameAction } from '../context/GameContext'
+import { Furniture, GameState, GameAction, Player, PlayerAction, PlayerIntent } from '../context/GameContext'
 import { PlayerComponent } from '../components/PlayerComponent'
 import { TileComponent } from '../components/TileComponent'
 import { FurnitureComponent } from '../components/FurnitureComponent'
 import { WallComponent } from '../components/WallComponent'
 import { Pathfinder } from '../utils/Pathfinder'
 import { CoordinateUtils } from '../utils/CoordinateUtils'
-import { findInteractionSpot, getFurnitureDefinition, getNextDirection } from '../data/furnitureDefinitions'
+import {
+  findFurnitureAt,
+  findInteractionSpot,
+  getFurnitureDefinition,
+  getNextDirection,
+  listInteractionSpots
+} from '../data/furnitureDefinitions'
 import { notifyView, registerView } from './viewController'
 import { doorwayWall } from '../data/structureSprites'
 import { createId } from '../persistence/serialise'
+
+/**
+ * What a player is doing, per interaction type the Sprite Factory emits.
+ *
+ * The catalogue has always described `lay`, `sleep`, `use` and `dance` spots
+ * with generated attachment points; until now the game only ever read `sit`, so
+ * a bed sat you on the mattress and a desk did nothing at all.
+ */
+const ACTION_BY_INTERACTION: Record<string, PlayerAction> = {
+  sit: 'sitting',
+  lay: 'laying',
+  sleep: 'laying',
+  use: 'using',
+  dance: 'dancing'
+}
+
+const INTERACTION_TYPES_BY_ACTION: Partial<Record<PlayerAction, string[]>> = {
+  sitting: ['sit'],
+  laying: ['lay', 'sleep'],
+  using: ['use'],
+  dancing: ['dance']
+}
+
+/**
+ * Interactions where the player ends up *on* the furniture.
+ *
+ * These are the ones that take the piece's depth and suppress the player's own
+ * contact shadow. A `use` spot is an ordinary floor tile beside the piece, so
+ * it needs neither.
+ */
+const MOUNTED_INTERACTIONS = ['sit', 'lay', 'sleep']
+
+/**
+ * Interactions triggered by arriving on their tile.
+ *
+ * `use` is deliberately absent: its spots are ordinary walkable floor, so
+ * arriving on one would mean walking past a desk stopped you to use it. It is
+ * reached by intent instead - see planInteraction.
+ */
+const ARRIVAL_INTERACTIONS = ['sit', 'lay', 'sleep', 'dance']
 
 export class GameEngine {
   private canvas: HTMLCanvasElement
@@ -175,26 +221,24 @@ export class GameEngine {
     })
 
     this.state.players.forEach(player => {
-      const tileX = Math.round(player.x)
-      const tileY = Math.round(player.y)
-      const seated = player.action === 'sitting' || player.action === 'idle'
-        ? findInteractionSpot(this.state.currentRoom!.furniture, tileX, tileY, ['sit', 'lay', 'sleep'])
-        : null
-
-      const useSpot = player.action === 'sitting' && seated ? seated : null
+      const spot = this.spotFor(player)
       const screenPos = this.coordinateUtils.worldToScreen(player.x, player.y)
 
-      // The seat offset is in unzoomed sprite pixels, like the sprite anchors.
-      const offsetX = (useSpot?.spot.offsetX ?? 0) * this.zoom
-      const offsetY = (useSpot?.spot.offsetY ?? 0) * this.zoom
+      // The attachment offset is in unzoomed sprite pixels, like the anchors.
+      const offsetX = (spot?.spot.offsetX ?? 0) * this.zoom
+      const offsetY = (spot?.spot.offsetY ?? 0) * this.zoom
 
+      // Only somebody *on* a piece needs the piece's depth. A player standing
+      // beside a desk to use it sorts correctly by their own tile - and must,
+      // because the layer flag answers "is the furniture behind the person who
+      // is on it", which is a different question from "who is nearer".
       let depth = player.x + player.y
-      if (useSpot) {
-        const piece = useSpot.furniture
+      if (spot && MOUNTED_INTERACTIONS.includes(spot.type)) {
+        const piece = spot.furniture
         const spriteFootprint = this.getFurnitureFootprint(piece)
         const pieceDepth =
           piece.x + piece.y + (spriteFootprint.width - 1) + (spriteFootprint.height - 1)
-        depth = useSpot.spot.layer === 'behind' ? pieceDepth - 0.5 : pieceDepth + 0.5
+        depth = spot.spot.layer === 'behind' ? pieceDepth - 0.5 : pieceDepth + 0.5
       }
 
       drawables.push({
@@ -207,7 +251,7 @@ export class GameEngine {
             player,
             { x: screenPos.x + offsetX, y: screenPos.y + offsetY },
             player.id === this.state.currentPlayerId,
-            useSpot?.spot.direction
+            spot?.spot.direction
           )
 
           if (player.isMoving) {
@@ -224,11 +268,31 @@ export class GameEngine {
   }
 
   /**
+   * The interaction spot backing a player's current action, if any.
+   *
+   * Resolved every frame from where they are standing rather than stored on the
+   * player, so moving or deleting the furniture out from under someone leaves
+   * them standing on the floor instead of hovering over a piece that is gone.
+   */
+  private spotFor(player: Player) {
+    const types = INTERACTION_TYPES_BY_ACTION[player.action]
+    if (!types || !this.state.currentRoom) return null
+
+    return findInteractionSpot(
+      this.state.currentRoom.furniture,
+      Math.round(player.x),
+      Math.round(player.y),
+      types
+    )
+  }
+
+  /**
    * Contact shadows for everything standing on the floor.
    *
-   * Sitting players are skipped: their shadow is already implied by the
-   * furniture they are on, and drawing it would put a second one on the floor
-   * beneath the chair.
+   * Players on a piece of furniture are skipped: their shadow is already
+   * implied by the thing they are on, and drawing it would put a second one on
+   * the floor beneath the chair. Someone dancing or reaching for a desk is
+   * still on the floor and still casts one.
    */
   private drawShadows() {
     if (!this.state.currentRoom) return
@@ -238,7 +302,8 @@ export class GameEngine {
     })
 
     this.state.players.forEach(player => {
-      if (player.action === 'sitting') return
+      const spot = this.spotFor(player)
+      if (spot && MOUNTED_INTERACTIONS.includes(spot.type)) return
       const screenPos = this.coordinateUtils.worldToScreen(player.x, player.y)
       this.playerComponent.drawShadow(player, screenPos)
     })
@@ -494,32 +559,60 @@ export class GameEngine {
             player.x = player.targetX
             player.y = player.targetY
 
-            // Arriving on a seat sits you down, the way it does in the games
-            // this borrows from.
-            const seat = findInteractionSpot(
-              this.state.currentRoom?.furniture ?? [],
-              Math.round(player.x),
-              Math.round(player.y),
-              ['sit', 'lay', 'sleep']
-            )
-            if (seat) {
-              player.action = 'sitting'
-              player.actionTimer = 0
-            } else if (player.action === 'sitting') {
-              player.action = 'idle'
-            }
+            this.arrive(player)
           }
         }
       }
 
-      if (player.action !== 'idle' && player.action !== 'sitting') {
+      // Actions run for as long as the catalogue says. Zero means "until they
+      // walk away", which is what sitting and lying are; the timer still runs,
+      // because looping clips are driven off it.
+      if (player.action !== 'idle') {
         player.actionTimer += deltaMs
-        if (player.actionTimer >= 3000) {
+        if (player.actionDuration > 0 && player.actionTimer >= player.actionDuration) {
           player.action = 'idle'
           player.actionTimer = 0
+          player.actionDuration = 0
         }
       }
     })
+  }
+
+  /**
+   * Decide what a player does on reaching the end of their path.
+   *
+   * Two ways in. Arriving on a seat, a bed or a dance floor acts on its own -
+   * you walked onto it, so that was the point. Everything else has to have been
+   * *intended*, because its spots are ordinary floor a player might merely be
+   * crossing.
+   */
+  private arrive(player: Player) {
+    const furniture = this.state.currentRoom?.furniture ?? []
+    const tileX = Math.round(player.x)
+    const tileY = Math.round(player.y)
+
+    // Consumed either way: an intent that did not pan out is not carried into
+    // the next walk.
+    const intent = player.intent
+    player.intent = null
+
+    let landed = findInteractionSpot(furniture, tileX, tileY, ARRIVAL_INTERACTIONS)
+
+    if (!landed && intent) {
+      // Matched by id, so a piece that moved or was deleted while the player
+      // walked over simply leaves them standing there.
+      const piece = furniture.find(item => item.id === intent.furnitureId)
+      landed = piece ? findInteractionSpot([piece], tileX, tileY, [intent.type]) : null
+    }
+
+    if (landed) {
+      player.action = ACTION_BY_INTERACTION[landed.type] ?? 'idle'
+      player.actionDuration = landed.duration
+    } else {
+      player.action = 'idle'
+      player.actionDuration = 0
+    }
+    player.actionTimer = 0
   }
 
   public render() {
@@ -636,9 +729,17 @@ export class GameEngine {
           }
         }
       } else {
-        isValid = this.isValidPlayerPosition(this.state.hoverGridPos.x, this.state.hoverGridPos.y, this.state.currentPlayerId)
+        // A tile you cannot stand on is still a valid *click* if the piece
+        // occupying it has something to do - clicking a desk sends you to a
+        // spot beside it. Marking that red would tell people not to try.
+        isValid =
+          this.isValidPlayerPosition(
+            this.state.hoverGridPos.x,
+            this.state.hoverGridPos.y,
+            this.state.currentPlayerId
+          ) || this.hasReachableInteraction(this.state.hoverGridPos.x, this.state.hoverGridPos.y)
       }
-      
+
       this.tileComponent.drawHoverGrid(this.state.hoverGridPos.x, this.state.hoverGridPos.y, screenPos, isValid)
     }
 
@@ -773,6 +874,54 @@ export class GameEngine {
     return getFurnitureDefinition(type)
   }
 
+  /** Whether clicking this tile would send the player somewhere useful. */
+  private hasReachableInteraction(x: number, y: number): boolean {
+    const player = this.state.players[this.state.currentPlayerId]
+    if (!player || !this.state.currentRoom) return false
+
+    const piece = findFurnitureAt(this.state.currentRoom.furniture, x, y)
+    return Boolean(piece && this.planInteraction(player, piece))
+  }
+
+  /**
+   * Where to send a player who clicked a piece of furniture, and what to do
+   * when they get there.
+   *
+   * Spots are tried nearest first, and a spot is only offered if a path to it
+   * actually exists - a chair jammed into a corner behind a table should fall
+   * back to ordinary walking rather than sending someone on a walk they cannot
+   * finish. Only `use` needs an intent recorded: sitting, lying and dancing
+   * trigger on arrival because their spot *is* the destination.
+   */
+  private planInteraction(
+    player: Player,
+    piece: Furniture
+  ): { x: number; y: number; path: Array<{ x: number; y: number }>; intent: PlayerIntent | null } | null {
+    const fromX = Math.round(player.x)
+    const fromY = Math.round(player.y)
+
+    const spots = listInteractionSpots(piece, ['sit', 'lay', 'sleep', 'use', 'dance']).sort(
+      (a, b) =>
+        Math.abs(a.tileX - fromX) + Math.abs(a.tileY - fromY) -
+        (Math.abs(b.tileX - fromX) + Math.abs(b.tileY - fromY))
+    )
+
+    for (const spot of spots) {
+      const here = spot.tileX === fromX && spot.tileY === fromY
+      const path = here ? [] : this.pathfinder.findPath(fromX, fromY, spot.tileX, spot.tileY, player.id)
+      if (!here && path.length === 0) continue
+
+      return {
+        x: spot.tileX,
+        y: spot.tileY,
+        path,
+        intent: spot.type === 'use' ? { type: 'use', furnitureId: piece.id } : null
+      }
+    }
+
+    return null
+  }
+
   public handleClick(x: number, y: number, e?: MouseEvent) {
     const worldPos = this.coordinateUtils.screenToWorld(x, y)
     const gridX = Math.round(worldPos.x)
@@ -781,26 +930,56 @@ export class GameEngine {
     if (this.state.currentTool === 'move') {
       const currentPlayer = this.state.players[this.state.currentPlayerId]
       if (currentPlayer) {
-        const path = this.pathfinder.findPath(
-          Math.round(currentPlayer.x),
-          Math.round(currentPlayer.y),
-          gridX,
-          gridY,
-          this.state.currentPlayerId
-        )
+        // Clicking a piece of furniture means "interact with that", not "walk
+        // onto that tile" - which for anything solid was never possible anyway.
+        const piece = this.state.currentRoom
+          ? findFurnitureAt(this.state.currentRoom.furniture, gridX, gridY)
+          : null
+        const planned = piece ? this.planInteraction(currentPlayer, piece) : null
+        const destination = planned ?? { x: gridX, y: gridY, path: null, intent: null }
 
-        // An unreachable tile yields an empty path. Dispatching it anyway left
-        // the player flagged as moving forever, with nothing to move along.
+        const path =
+          destination.path ??
+          this.pathfinder.findPath(
+            Math.round(currentPlayer.x),
+            Math.round(currentPlayer.y),
+            destination.x,
+            destination.y,
+            this.state.currentPlayerId
+          )
+
         if (path.length > 0) {
           this.dispatch({
             type: 'MOVE_PLAYER',
             payload: {
               playerId: this.state.currentPlayerId,
-              x: gridX,
-              y: gridY,
-              path: path
+              x: destination.x,
+              y: destination.y,
+              path,
+              intent: destination.intent
             }
           })
+        } else if (
+          destination.intent &&
+          Math.round(currentPlayer.x) === destination.x &&
+          Math.round(currentPlayer.y) === destination.y
+        ) {
+          // Already standing where the job is: no walk, just do it. Without
+          // this, clicking a desk you are already beside does nothing, because
+          // a path to your own tile is empty and empty means unreachable.
+          const spot = findInteractionSpot([piece!], destination.x, destination.y, [
+            destination.intent.type
+          ])
+          if (spot) {
+            this.dispatch({
+              type: 'SET_PLAYER_ACTION',
+              payload: {
+                playerId: this.state.currentPlayerId,
+                action: ACTION_BY_INTERACTION[spot.type] ?? 'idle',
+                durationMs: spot.duration
+              }
+            })
+          }
         }
       }
     } else if (this.state.currentTool === 'furniture' && this.state.isPlacing && this.state.selectedFurniture) {

@@ -1,7 +1,27 @@
-import { Player } from '../context/GameContext'
+import { Player, PlayerAction } from '../context/GameContext'
 import { DEFAULT_APPEARANCE } from '../data/appearance'
 import { characterRenderer } from '../utils/characterRenderer'
-import { WALK_FRAME_COUNT } from '../data/characterSprites'
+import { getAnimationFrameCount, WALK_FRAME_COUNT } from '../data/characterSprites'
+
+/**
+ * Which generated clip each action draws with.
+ *
+ * One entry per action, and one clip per interaction type the Sprite Factory
+ * can emit. Lying used to fall through to `sit`, which put people on beds in a
+ * chair pose; dancing and waving fell through to `idle`, so the two context
+ * menu buttons offering them visibly did nothing.
+ */
+const ACTION_CLIPS: Record<PlayerAction, string> = {
+  idle: 'idle',
+  sitting: 'sit',
+  laying: 'lay',
+  using: 'use',
+  dancing: 'dance',
+  waving: 'wave'
+}
+
+/** Milliseconds per frame for clips that loop on their own clock. */
+const LOOP_FRAME_MS = 150
 
 export class PlayerComponent {
   private ctx: CanvasRenderingContext2D
@@ -23,17 +43,24 @@ export class PlayerComponent {
   /**
    * Which clip and frame a player is showing right now.
    *
-   * The walk cycle is stepped by progress through the current tile rather than
-   * by wall-clock time, so the stride stays in sync with the movement however
-   * fast the simulation happens to be running.
+   * Two different clocks, on purpose. The walk cycle is stepped by progress
+   * through the current tile, so the stride stays in sync with the movement
+   * however fast the simulation is running. Everything else loops on the action
+   * timer, because a dance has no distance to be in step with.
    */
   private clipFor(player: Player) {
     const walking = player.isMoving && player.path.length > 0 && player.pathIndex < player.path.length
-    // Sitting is a pose, not a timed action, so it holds until the player walks
-    // away.
-    const animation = walking ? 'walk' : player.action === 'sitting' ? 'sit' : 'idle'
-    const progress = walking ? Math.min(player.moveTimer / player.moveDelay, 1) : 0
-    return { animation, frame: walking ? Math.floor(progress * WALK_FRAME_COUNT) : 0 }
+    if (walking) {
+      const progress = Math.min(player.moveTimer / player.moveDelay, 1)
+      return { animation: 'walk', frame: Math.floor(progress * WALK_FRAME_COUNT) }
+    }
+
+    const animation = ACTION_CLIPS[player.action] ?? 'idle'
+    const frames = getAnimationFrameCount(animation)
+    return {
+      animation,
+      frame: frames > 1 ? Math.floor(player.actionTimer / LOOP_FRAME_MS) % frames : 0
+    }
   }
 
   public getCharacterDirection(player: Player): string {

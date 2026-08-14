@@ -26,7 +26,7 @@ import {
   repeatY,
   sit,
   sleep,
-  standAround,
+  standBeside,
   usedInPlace,
 } from './authoring'
 import { WALL_HEIGHT } from './iso'
@@ -186,12 +186,13 @@ export const CATALOG: AssetSpec[] = [
     facing: 'south',
     footprint: { width: 2, height: 1 },
     behaviour: behaviour.seating(),
+    // One spot, not two. The old pair put two people head-to-toe along the
+    // long axis of a single bed - invisible while the game ignored lay spots.
+    // The lay pose puts the head at -X of its origin, which is why the hips
+    // land just short of the headboard.
     interactions: [
-      lay([
-        { tile: [0, 0], point: [-0.45, 0.39, 0], facing: 'south' },
-        { tile: [1, 0], point: [0.45, 0.39, 0], facing: 'south' },
-      ]),
-      sleep([{ tile: [0, 0], point: [-0.45, 0.39, 0], facing: 'south' }]),
+      lay([{ tile: [0, 0], point: [0.02, 0.4, 0], facing: 'south' }]),
+      sleep([{ tile: [0, 0], point: [0.02, 0.4, 0], facing: 'south' }]),
     ],
     materials: {
       frame: { colour: WOOD_DARK },
@@ -213,9 +214,9 @@ export const CATALOG: AssetSpec[] = [
     facing: 'south',
     footprint: { width: 2, height: 2 },
     behaviour: behaviour.surface(),
-    // Standing spots around the table; the player stays on the floor, so the
-    // attachment point is at floor level on their own tile.
-    interactions: [standAround(2, 2)],
+    // Spots on the free tiles around the table, not on its own: those are the
+    // ones it blocks.
+    interactions: [standBeside(2, 2)],
     materials: {
       top: { colour: WOOD_WARM },
       leg: { colour: WOOD_DARK },
@@ -247,7 +248,7 @@ export const CATALOG: AssetSpec[] = [
     facing: 'east',
     footprint: { width: 2, height: 1 },
     behaviour: behaviour.surface(),
-    interactions: [standAround(2, 1)],
+    interactions: [standBeside(2, 1)],
     materials: {
       top: { colour: WOOD_WARM },
       carcass: { colour: WOOD_DARK },
@@ -286,7 +287,7 @@ export const CATALOG: AssetSpec[] = [
     footprint: { width: 2, height: 1 },
     // Waist high, so unlike a bookshelf it does not hide what is behind it.
     behaviour: behaviour.storage({ height: 1, blocksVision: false }),
-    interactions: [usedInPlace()],
+    interactions: [standBeside(2, 1, 3000)],
     materials: {
       carcass: { colour: WOOD_DARK },
       top: { colour: WOOD_WARM },
@@ -357,7 +358,14 @@ export const CATALOG: AssetSpec[] = [
     footprint: { width: 2, height: 2 },
     outline: { enabled: false },
     behaviour: behaviour.decal({ shape: 'circle' }),
-    interactions: [dance([{ tile: [0, 0], point: [0.5, 0.05, 0.5], facing: 'south' }])],
+    interactions: [
+      dance([
+        { tile: [0, 0], point: [-0.5, 0.05, -0.5], facing: 'south' },
+        { tile: [1, 0], point: [0.5, 0.05, -0.5], facing: 'south' },
+        { tile: [0, 1], point: [-0.5, 0.05, 0.5], facing: 'north' },
+        { tile: [1, 1], point: [0.5, 0.05, 0.5], facing: 'north' },
+      ]),
+    ],
     materials: {
       border: { colour: '#4a7a72' },
       field: { colour: '#6fa79c' },
@@ -446,7 +454,7 @@ export const CATALOG: AssetSpec[] = [
     facing: 'south',
     footprint: { width: 1, height: 1 },
     behaviour: behaviour.device({ height: 2, shape: 'circle' }),
-    interactions: [usedInPlace(2000)],
+    interactions: [standBeside(1, 1, 2000)],
     materials: {
       base: { colour: METAL },
       pole: { colour: METAL_DARK },
@@ -468,7 +476,7 @@ export const CATALOG: AssetSpec[] = [
     // categorised 'wall', which put it in the picker's wall filter next to
     // things that actually hang.
     behaviour: behaviour.storage(),
-    interactions: [usedInPlace()],
+    interactions: [standBeside(1, 1, 3000)],
     materials: {
       case: { colour: WOOD_DARK },
       interior: { colour: '#6b432a' },

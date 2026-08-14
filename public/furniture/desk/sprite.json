@@ -60,6 +60,38 @@
           "spots": [
             {
               "x": 0,
+              "y": -1,
+              "direction": "east",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "front"
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "direction": "west",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "behind"
+            },
+            {
+              "x": 1,
+              "y": -1,
+              "direction": "east",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "front"
+            },
+            {
+              "x": 1,
+              "y": 1,
+              "direction": "west",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "behind"
+            },
+            {
+              "x": -1,
               "y": 0,
               "direction": "south",
               "offsetX": 0,
@@ -67,12 +99,12 @@
               "layer": "front"
             },
             {
-              "x": 1,
+              "x": 2,
               "y": 0,
-              "direction": "south",
+              "direction": "north",
               "offsetX": 0,
               "offsetY": 0,
-              "layer": "front"
+              "layer": "behind"
             }
           ]
         }
@@ -103,8 +135,40 @@
           "duration": 5000,
           "spots": [
             {
-              "x": 0,
+              "x": -1,
               "y": 1,
+              "direction": "south",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "front"
+            },
+            {
+              "x": 1,
+              "y": 1,
+              "direction": "north",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "behind"
+            },
+            {
+              "x": -1,
+              "y": 0,
+              "direction": "south",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "front"
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "direction": "north",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "behind"
+            },
+            {
+              "x": 0,
+              "y": 2,
               "direction": "west",
               "offsetX": 0,
               "offsetY": 0,
@@ -112,11 +176,11 @@
             },
             {
               "x": 0,
-              "y": 0,
-              "direction": "west",
+              "y": -1,
+              "direction": "east",
               "offsetX": 0,
               "offsetY": 0,
-              "layer": "behind"
+              "layer": "front"
             }
           ]
         }
@@ -148,6 +212,38 @@
           "spots": [
             {
               "x": 1,
+              "y": 1,
+              "direction": "west",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "behind"
+            },
+            {
+              "x": 1,
+              "y": -1,
+              "direction": "east",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "front"
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "direction": "west",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "behind"
+            },
+            {
+              "x": 0,
+              "y": -1,
+              "direction": "east",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "front"
+            },
+            {
+              "x": 2,
               "y": 0,
               "direction": "north",
               "offsetX": 0,
@@ -155,12 +251,12 @@
               "layer": "behind"
             },
             {
-              "x": 0,
+              "x": -1,
               "y": 0,
-              "direction": "north",
+              "direction": "south",
               "offsetX": 0,
               "offsetY": 0,
-              "layer": "behind"
+              "layer": "front"
             }
           ]
         }
@@ -191,8 +287,40 @@
           "duration": 5000,
           "spots": [
             {
-              "x": 0,
+              "x": 1,
               "y": 0,
+              "direction": "north",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "behind"
+            },
+            {
+              "x": -1,
+              "y": 0,
+              "direction": "south",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "front"
+            },
+            {
+              "x": 1,
+              "y": 1,
+              "direction": "north",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "behind"
+            },
+            {
+              "x": -1,
+              "y": 1,
+              "direction": "south",
+              "offsetX": 0,
+              "offsetY": 0,
+              "layer": "front"
+            },
+            {
+              "x": 0,
+              "y": -1,
               "direction": "east",
               "offsetX": 0,
               "offsetY": 0,
@@ -200,11 +328,11 @@
             },
             {
               "x": 0,
-              "y": 1,
-              "direction": "east",
+              "y": 2,
+              "direction": "west",
               "offsetX": 0,
               "offsetY": 0,
-              "layer": "front"
+              "layer": "behind"
             }
           ]
         }

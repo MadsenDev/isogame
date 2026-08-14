@@ -24,11 +24,40 @@ export interface Player {
   moveDelay: number
   path: Array<{ x: number; y: number }>
   pathIndex: number
-  action: 'idle' | 'sitting' | 'dancing' | 'waving'
+  action: PlayerAction
   actionTimer: number
+  /**
+   * How long the action lasts, from the furniture's own data.
+   *
+   * 0 means "until they walk away", which is what sitting and lying are. The
+   * loop used to expire every action after a hardcoded three seconds, which is
+   * neither what the catalogue says nor what a chair should do.
+   */
+  actionDuration: number
+  /**
+   * What the player meant to do when they set off, if they clicked an object.
+   *
+   * Arriving somewhere is not the same as intending to use what is there:
+   * without this, walking past a desk on the way to a chair would stop and use
+   * the desk. Cleared on arrival.
+   */
+  intent: PlayerIntent | null
   lastDirection: string
   /** Hair, outfit and colours. Every player has one; only ours is editable. */
   appearance: Appearance
+}
+
+/**
+ * One per interaction type the Sprite Factory can emit, plus the two the
+ * context menu offers. A type the game cannot draw is a spot nothing can reach.
+ */
+export type PlayerAction = 'idle' | 'sitting' | 'laying' | 'using' | 'dancing' | 'waving'
+
+export interface PlayerIntent {
+  /** Interaction type to perform on arrival. */
+  type: string
+  /** The piece it belongs to, so a moved or deleted one is simply forgotten. */
+  furnitureId: string
 }
 
 export interface Furniture {
@@ -217,8 +246,20 @@ export type GameAction =
   | { type: 'SET_PLACEMENT_DIRECTION'; payload: FurnitureDirection }
   | { type: 'ADD_PLAYER'; payload: Player }
   | { type: 'SET_CURRENT_PLAYER'; payload: number }
-  | { type: 'MOVE_PLAYER'; payload: { playerId: number; x: number; y: number; path: Array<{ x: number; y: number }> } }
-  | { type: 'SET_PLAYER_ACTION'; payload: { playerId: number; action: Player['action'] } }
+  | {
+      type: 'MOVE_PLAYER'
+      payload: {
+        playerId: number
+        x: number
+        y: number
+        path: Array<{ x: number; y: number }>
+        intent?: PlayerIntent | null
+      }
+    }
+  | {
+      type: 'SET_PLAYER_ACTION'
+      payload: { playerId: number; action: PlayerAction; durationMs?: number }
+    }
   | { type: 'SET_PLAYER_APPEARANCE'; payload: { playerId: number; appearance: Appearance } }
   | { type: 'ADD_CHAT_MESSAGE'; payload: ChatMessage }
   | { type: 'SET_SHOW_CHAT'; payload: boolean }
@@ -616,11 +657,21 @@ function gameReducer(state: GameState, action: GameAction): GameState {
           player.id === action.payload.playerId
             ? { 
                 ...player, 
-                targetX: action.payload.x, 
-                targetY: action.payload.y, 
+                targetX: action.payload.x,
+                targetY: action.payload.y,
                 isMoving: true,
                 path: action.payload.path || [],
-                pathIndex: 0
+                pathIndex: 0,
+                // Setting off ends whatever you were doing. Left set, the old
+                // action keeps resolving to the spot behind it, so someone
+                // walking away from a chair drags its seat offset and its
+                // facing along for the first few steps.
+                action: 'idle',
+                actionTimer: 0,
+                actionDuration: 0,
+                // A new destination replaces any previous intent, so a walk
+                // ordered mid-errand cancels the errand.
+                intent: action.payload.intent ?? null
               }
             : player
         )
@@ -631,7 +682,12 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         ...state,
         players: state.players.map(player =>
           player.id === action.payload.playerId
-            ? { ...player, action: action.payload.action, actionTimer: 0 }
+            ? {
+                ...player,
+                action: action.payload.action,
+                actionTimer: 0,
+                actionDuration: action.payload.durationMs ?? 0
+              }
             : player
         )
       }
@@ -1131,6 +1187,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
           pathIndex: 0,
           action: 'idle',
           actionTimer: 0,
+          actionDuration: 0,
+          intent: null,
           lastDirection: 'south',
           appearance: id === 0 ? appearance : appearanceForSeed(id, outfits, hairStyles)
         }

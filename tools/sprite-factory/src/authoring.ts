@@ -118,30 +118,47 @@ export function usedFrom(list: SpotShorthand[], durationMs = 3000): InteractionS
 }
 
 /**
- * "Stand on my tile and use me" - the lamp/bookshelf case.
+ * "Stand on my own tile and use me" - only correct for wall and ceiling items.
  *
- * The attachment point is the model origin at floor level, because the player
- * does not move: they are already standing where they need to be.
+ * Those do not block the floor beneath them, so the tile under a wall lamp is
+ * somewhere a player can actually be. A piece standing *on* that floor needs
+ * `standBeside` instead.
  */
 export function usedInPlace(durationMs = 3000): InteractionSpec {
   return usedFrom([{ tile: [0, 0], point: [0, 0, 0], facing: 'south' }], durationMs)
 }
 
-/** The four standing spots around a `width` x `height` piece, facing inward. */
-export function standAround(width: number, height: number, durationMs = 5000): InteractionSpec {
+/**
+ * Standing spots on the free tiles all the way around a piece, facing it.
+ *
+ * Deliberately *outside* the footprint. The obvious version puts the spots on
+ * the piece's own tiles, which reads fine until the game actually uses them and
+ * a player walks into the middle of a table to reach it - those tiles are
+ * exactly the ones the piece blocks. Tiles outside the footprint are ordinary
+ * floor, so they need no special case in pathfinding either.
+ *
+ * The tile indices are negative and past the edge on purpose; `rotateTile`
+ * carries them round with everything else.
+ */
+export function standBeside(width: number, height: number, durationMs = 5000): InteractionSpec {
   const list: SpotShorthand[] = []
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      // Only the tiles on the near and far edges; a player cannot stand in the
-      // middle of a table.
-      if (y !== 0 && y !== height - 1) continue
-      list.push({
-        tile: [x, y],
-        point: [x - (width - 1) / 2, 0, y - (height - 1) / 2],
-        facing: y === 0 ? 'south' : 'north',
-      })
-    }
+  const centreX = (width - 1) / 2
+  const centreY = (height - 1) / 2
+
+  // The point is the spot's own tile centre at floor level: the player does not
+  // climb onto anything, they just stand next to it.
+  const at = (x: number, y: number, facing: Direction) =>
+    list.push({ tile: [x, y], point: [x - centreX, 0, y - centreY], facing })
+
+  for (let x = 0; x < width; x++) {
+    at(x, -1, 'east')
+    at(x, height, 'west')
   }
+  for (let y = 0; y < height; y++) {
+    at(-1, y, 'south')
+    at(width, y, 'north')
+  }
+
   return usedFrom(list, durationMs)
 }
 

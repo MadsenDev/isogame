@@ -35,6 +35,14 @@ export interface Pose {
   knee: number
   /** Drops the whole body, so a sitter's hips meet the seat. */
   crouch: number
+  /**
+   * Tips the whole assembly about +Z, in degrees. 90 lays the body on its back.
+   *
+   * Applied after the pose is built rather than as another joint, because
+   * lying down is not something a joint does - it is the difference between
+   * the body's frame and the world's.
+   */
+  recline: number
 }
 
 export const NEUTRAL_POSE: Pose = {
@@ -46,6 +54,7 @@ export const NEUTRAL_POSE: Pose = {
   lean: 0,
   knee: 0,
   crouch: 0,
+  recline: 0,
 }
 
 export interface CharacterProportions {
@@ -573,7 +582,32 @@ export function buildCharacterParts(pose: Pose, options: BuildOptions = {}): Pri
     parts.push({ ...part, layer: HAIR_LAYER })
   }
 
-  return parts
+  return pose.recline ? parts.map((part) => recline(part, pose.recline, p)) : parts
+}
+
+/**
+ * Tip one part about +Z, and rest the body on the surface it is lying on.
+ *
+ * Every joint in the rig swings about +Z, so reclining composes with a swing by
+ * plain addition on that one axis - which is the whole reason lying down can be
+ * a transform of an ordinary pose rather than a second rig.
+ *
+ * The lift is half the torso depth: after the turn, what was the body's front
+ * points up, so its back is half a torso below the origin and would otherwise
+ * be buried in the mattress.
+ */
+function recline(part: PrimitiveSpec, degrees: number, p: CharacterProportions): PrimitiveSpec {
+  const radians = degrees * DEG
+  const cos = Math.cos(radians)
+  const sin = Math.sin(radians)
+  const [x, y, z] = part.position ?? [0, 0, 0]
+  const [rx, ry, rz] = part.rotation ?? [0, 0, 0]
+
+  return {
+    ...part,
+    position: [x * cos - y * sin, x * sin + y * cos + p.torsoDepth / 2, z],
+    rotation: [rx, ry, rz + degrees],
+  }
 }
 
 /** A walk cycle: legs and arms swing in opposition, with a bob at mid-stride. */
@@ -619,6 +653,75 @@ export function sitPose(proportions: CharacterProportions = DEFAULT_PROPORTIONS)
   }
 }
 
+/**
+ * Lying down: reclined onto the back, hips at the model origin.
+ *
+ * Anchored the same way sitting is - hips at y = 0 - so the game places someone
+ * on a bed with the mattress offset the furniture pipeline measured, exactly as
+ * it places a sitter on a seat. The head ends up along -X, which is why a bed's
+ * lay spots put the headboard on that side.
+ */
+export function layPose(proportions: CharacterProportions = DEFAULT_PROPORTIONS): Pose {
+  return {
+    ...NEUTRAL_POSE,
+    crouch: proportions.legLength,
+    recline: 90,
+    // Not perfectly straight: a body with both legs and both arms in exactly
+    // the same place reads as one limb from the side.
+    leftLeg: 7,
+    rightLeg: -5,
+    knee: 6,
+    leftArm: 14,
+    rightArm: -10,
+  }
+}
+
+/** Reaching for something: one arm out, weight forward. Drawn for `use` spots. */
+export function reachPose(): Pose {
+  return {
+    ...NEUTRAL_POSE,
+    rightArm: 68,
+    leftArm: -8,
+    lean: 7,
+    leftLeg: -4,
+    rightLeg: 4,
+  }
+}
+
+export const DANCE_FRAMES = 4
+
+/**
+ * A four-frame loop: arms alternate overhead, with a bob and a rock on the
+ * beat. The in-between frames put both arms mid-height so the switch reads as
+ * one motion rather than as a jump.
+ */
+export function dancePose(frame: number): Pose {
+  const beat = frame % DANCE_FRAMES
+  const swap = beat === 0 ? 1 : beat === 2 ? -1 : 0
+
+  return {
+    ...NEUTRAL_POSE,
+    leftArm: swap === 0 ? 62 : swap > 0 ? 162 : -18,
+    rightArm: swap === 0 ? 62 : swap > 0 ? -18 : 162,
+    leftLeg: swap * 11,
+    rightLeg: swap * -11,
+    lean: swap * 5,
+    bob: swap === 0 ? 0 : 0.035,
+  }
+}
+
+export const WAVE_FRAMES = 2
+
+/** Two frames of one raised arm, which at this size is a wave. */
+export function wavePose(frame: number): Pose {
+  return {
+    ...NEUTRAL_POSE,
+    rightArm: frame % 2 === 0 ? 148 : 172,
+    leftArm: -6,
+    lean: -2,
+  }
+}
+
 export interface CharacterSpec {
   id: string
   name: string
@@ -653,10 +756,21 @@ export const GENERATION_PALETTE: CharacterPalette = {
   eyes: '#3d5f52',
 }
 
+/**
+ * Every clip the game can ask for.
+ *
+ * One per interaction type the furniture pipeline can emit, so nothing the
+ * catalogue declares is left with no way to draw it - `lay` used to fall back
+ * to `sit`, which put people on beds in a chair pose.
+ */
 export const DEFAULT_ANIMATIONS: Record<string, Pose[]> = {
   idle: [idlePose()],
   walk: Array.from({ length: WALK_FRAMES }, (_, frame) => walkPose(frame, WALK_FRAMES)),
   sit: [sitPose()],
+  lay: [layPose()],
+  use: [reachPose()],
+  dance: Array.from({ length: DANCE_FRAMES }, (_, frame) => dancePose(frame)),
+  wave: Array.from({ length: WAVE_FRAMES }, (_, frame) => wavePose(frame)),
 }
 
 export const DEFAULT_CHARACTER: CharacterSpec = {

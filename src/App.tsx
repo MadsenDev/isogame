@@ -46,7 +46,7 @@ const TOOLS: Tool[] = [
     label: 'Walk',
     icon: '🚶',
     engineTool: 'move',
-    hint: 'Click the floor to walk. Walk onto a chair to sit.'
+    hint: 'Click the floor to walk, a chair or bed to rest on it, a desk or lamp to use it.'
   },
   {
     id: 'build',

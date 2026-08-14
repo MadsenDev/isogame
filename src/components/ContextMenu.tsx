@@ -1,14 +1,26 @@
 import React, { useEffect } from 'react'
-import { useGame, Player } from '../context/GameContext'
+import { useGame, PlayerAction } from '../context/GameContext'
+
+/**
+ * How long each emote runs before the player goes back to standing.
+ *
+ * Furniture carries its own durations, generated alongside the sprite; these
+ * are the two actions that belong to a person rather than to an object, so
+ * their length is decided here.
+ */
+const EMOTE_MS: Partial<Record<PlayerAction, number>> = {
+  dancing: 8000,
+  waving: 2400
+}
 
 const ContextMenu: React.FC = () => {
   const { state, dispatch } = useGame()
 
-  const handleAction = (action: Player['action']) => {
+  const handleAction = (action: PlayerAction) => {
     if (state.contextMenuTarget) {
       dispatch({
         type: 'SET_PLAYER_ACTION',
-        payload: { playerId: state.contextMenuTarget.id, action }
+        payload: { playerId: state.contextMenuTarget.id, action, durationMs: EMOTE_MS[action] }
       })
       dispatch({
         type: 'ADD_CHAT_MESSAGE',
