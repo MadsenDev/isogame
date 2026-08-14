@@ -1,7 +1,7 @@
 {
   "generator": {
     "version": 1,
-    "renderedAt": "2026-08-13T20:44:32.565Z",
+    "renderedAt": "2026-08-13T21:21:17.957Z",
     "config": {
       "supersample": 4,
       "padding": 2,
@@ -114,10 +114,10 @@
         "west": {
           "file": "west.png",
           "index": 1,
-          "width": 1,
-          "height": 1,
-          "anchorX": 19,
-          "anchorY": 51,
+          "width": 34,
+          "height": 49,
+          "anchorX": 17,
+          "anchorY": 42,
           "footprint": {
             "width": 1,
             "height": 1
@@ -150,10 +150,10 @@
         "north": {
           "file": "north.png",
           "index": 2,
-          "width": 1,
-          "height": 1,
-          "anchorX": 19,
-          "anchorY": 51,
+          "width": 34,
+          "height": 49,
+          "anchorX": 17,
+          "anchorY": 42,
           "footprint": {
             "width": 1,
             "height": 1
@@ -186,10 +186,10 @@
         "east": {
           "file": "east.png",
           "index": 3,
-          "width": 1,
-          "height": 1,
-          "anchorX": 19,
-          "anchorY": 51,
+          "width": 34,
+          "height": 55,
+          "anchorX": 17,
+          "anchorY": 48,
           "footprint": {
             "width": 1,
             "height": 1
@@ -222,7 +222,7 @@
       },
       "sheet": {
         "file": "sheet.png",
-        "width": 40,
+        "width": 139,
         "height": 55,
         "frames": [
           {
@@ -244,10 +244,10 @@
             "index": 1,
             "x": 35,
             "y": 0,
-            "width": 1,
-            "height": 1,
-            "anchorX": 19,
-            "anchorY": 51,
+            "width": 34,
+            "height": 49,
+            "anchorX": 17,
+            "anchorY": 42,
             "footprint": {
               "width": 1,
               "height": 1
@@ -256,12 +256,12 @@
           {
             "direction": "north",
             "index": 2,
-            "x": 37,
+            "x": 70,
             "y": 0,
-            "width": 1,
-            "height": 1,
-            "anchorX": 19,
-            "anchorY": 51,
+            "width": 34,
+            "height": 49,
+            "anchorX": 17,
+            "anchorY": 42,
             "footprint": {
               "width": 1,
               "height": 1
@@ -270,12 +270,12 @@
           {
             "direction": "east",
             "index": 3,
-            "x": 39,
+            "x": 105,
             "y": 0,
-            "width": 1,
-            "height": 1,
-            "anchorX": 19,
-            "anchorY": 51,
+            "width": 34,
+            "height": 55,
+            "anchorX": 17,
+            "anchorY": 48,
             "footprint": {
               "width": 1,
               "height": 1
@@ -371,10 +371,10 @@
         "south": {
           "file": "south.png",
           "index": 1,
-          "width": 86,
-          "height": 55,
-          "anchorX": 58,
-          "anchorY": 25,
+          "width": 87,
+          "height": 73,
+          "anchorX": 59,
+          "anchorY": 43,
           "footprint": {
             "width": 1,
             "height": 2
@@ -415,10 +415,10 @@
         "west": {
           "file": "west.png",
           "index": 2,
-          "width": 86,
-          "height": 54,
-          "anchorX": 26,
-          "anchorY": 25,
+          "width": 87,
+          "height": 66,
+          "anchorX": 27,
+          "anchorY": 37,
           "footprint": {
             "width": 2,
             "height": 1
@@ -459,10 +459,10 @@
         "north": {
           "file": "north.png",
           "index": 3,
-          "width": 86,
-          "height": 54,
+          "width": 87,
+          "height": 66,
           "anchorX": 60,
-          "anchorY": 25,
+          "anchorY": 37,
           "footprint": {
             "width": 1,
             "height": 2
@@ -503,7 +503,7 @@
       },
       "sheet": {
         "file": "sheet.png",
-        "width": 348,
+        "width": 351,
         "height": 73,
         "frames": [
           {
@@ -525,10 +525,10 @@
             "index": 1,
             "x": 88,
             "y": 0,
-            "width": 86,
-            "height": 55,
-            "anchorX": 58,
-            "anchorY": 25,
+            "width": 87,
+            "height": 73,
+            "anchorX": 59,
+            "anchorY": 43,
             "footprint": {
               "width": 1,
               "height": 2
@@ -537,12 +537,12 @@
           {
             "direction": "west",
             "index": 2,
-            "x": 175,
+            "x": 176,
             "y": 0,
-            "width": 86,
-            "height": 54,
-            "anchorX": 26,
-            "anchorY": 25,
+            "width": 87,
+            "height": 66,
+            "anchorX": 27,
+            "anchorY": 37,
             "footprint": {
               "width": 2,
               "height": 1
@@ -551,12 +551,12 @@
           {
             "direction": "north",
             "index": 3,
-            "x": 262,
+            "x": 264,
             "y": 0,
-            "width": 86,
-            "height": 54,
+            "width": 87,
+            "height": 66,
             "anchorX": 60,
-            "anchorY": 25,
+            "anchorY": 37,
             "footprint": {
               "width": 1,
               "height": 2
@@ -671,9 +671,9 @@
         "west": {
           "file": "west.png",
           "index": 1,
-          "width": 84,
-          "height": 52,
-          "anchorX": 57,
+          "width": 91,
+          "height": 63,
+          "anchorX": 62,
           "anchorY": 33,
           "footprint": {
             "width": 1,
@@ -730,9 +730,9 @@
         "north": {
           "file": "north.png",
           "index": 2,
-          "width": 84,
-          "height": 52,
-          "anchorX": 27,
+          "width": 91,
+          "height": 63,
+          "anchorX": 29,
           "anchorY": 33,
           "footprint": {
             "width": 2,
@@ -789,10 +789,10 @@
         "east": {
           "file": "east.png",
           "index": 3,
-          "width": 84,
-          "height": 50,
-          "anchorX": 59,
-          "anchorY": 30,
+          "width": 91,
+          "height": 68,
+          "anchorX": 61,
+          "anchorY": 38,
           "footprint": {
             "width": 1,
             "height": 2
@@ -848,7 +848,7 @@
       },
       "sheet": {
         "file": "sheet.png",
-        "width": 346,
+        "width": 367,
         "height": 68,
         "frames": [
           {
@@ -870,9 +870,9 @@
             "index": 1,
             "x": 92,
             "y": 0,
-            "width": 84,
-            "height": 52,
-            "anchorX": 57,
+            "width": 91,
+            "height": 63,
+            "anchorX": 62,
             "anchorY": 33,
             "footprint": {
               "width": 1,
@@ -882,11 +882,11 @@
           {
             "direction": "north",
             "index": 2,
-            "x": 177,
+            "x": 184,
             "y": 0,
-            "width": 84,
-            "height": 52,
-            "anchorX": 27,
+            "width": 91,
+            "height": 63,
+            "anchorX": 29,
             "anchorY": 33,
             "footprint": {
               "width": 2,
@@ -896,12 +896,12 @@
           {
             "direction": "east",
             "index": 3,
-            "x": 262,
+            "x": 276,
             "y": 0,
-            "width": 84,
-            "height": 50,
-            "anchorX": 59,
-            "anchorY": 30,
+            "width": 91,
+            "height": 68,
+            "anchorX": 61,
+            "anchorY": 38,
             "footprint": {
               "width": 1,
               "height": 2
@@ -1011,7 +1011,7 @@
           "file": "west.png",
           "index": 1,
           "width": 116,
-          "height": 63,
+          "height": 82,
           "anchorX": 58,
           "anchorY": 40,
           "footprint": {
@@ -1071,7 +1071,7 @@
           "file": "north.png",
           "index": 2,
           "width": 116,
-          "height": 63,
+          "height": 82,
           "anchorX": 58,
           "anchorY": 40,
           "footprint": {
@@ -1131,7 +1131,7 @@
           "file": "east.png",
           "index": 3,
           "width": 116,
-          "height": 63,
+          "height": 82,
           "anchorX": 58,
           "anchorY": 40,
           "footprint": {
@@ -1213,7 +1213,7 @@
             "x": 117,
             "y": 0,
             "width": 116,
-            "height": 63,
+            "height": 82,
             "anchorX": 58,
             "anchorY": 40,
             "footprint": {
@@ -1227,7 +1227,7 @@
             "x": 234,
             "y": 0,
             "width": 116,
-            "height": 63,
+            "height": 82,
             "anchorX": 58,
             "anchorY": 40,
             "footprint": {
@@ -1241,7 +1241,7 @@
             "x": 351,
             "y": 0,
             "width": 116,
-            "height": 63,
+            "height": 82,
             "anchorX": 58,
             "anchorY": 40,
             "footprint": {
@@ -1595,10 +1595,10 @@
         "west": {
           "file": "west.png",
           "index": 1,
-          "width": 28,
-          "height": 29,
-          "anchorX": 11,
-          "anchorY": 37,
+          "width": 33,
+          "height": 47,
+          "anchorX": 16,
+          "anchorY": 43,
           "footprint": {
             "width": 1,
             "height": 1
@@ -1615,10 +1615,10 @@
         "north": {
           "file": "north.png",
           "index": 2,
-          "width": 22,
-          "height": 31,
-          "anchorX": 11,
-          "anchorY": 39,
+          "width": 26,
+          "height": 47,
+          "anchorX": 13,
+          "anchorY": 43,
           "footprint": {
             "width": 1,
             "height": 1
@@ -1635,10 +1635,10 @@
         "east": {
           "file": "east.png",
           "index": 3,
-          "width": 28,
-          "height": 26,
+          "width": 33,
+          "height": 47,
           "anchorX": 17,
-          "anchorY": 34,
+          "anchorY": 43,
           "footprint": {
             "width": 1,
             "height": 1
@@ -1655,7 +1655,7 @@
       },
       "sheet": {
         "file": "sheet.png",
-        "width": 107,
+        "width": 121,
         "height": 47,
         "frames": [
           {
@@ -1677,10 +1677,10 @@
             "index": 1,
             "x": 27,
             "y": 0,
-            "width": 28,
-            "height": 29,
-            "anchorX": 11,
-            "anchorY": 37,
+            "width": 33,
+            "height": 47,
+            "anchorX": 16,
+            "anchorY": 43,
             "footprint": {
               "width": 1,
               "height": 1
@@ -1689,12 +1689,12 @@
           {
             "direction": "north",
             "index": 2,
-            "x": 56,
+            "x": 61,
             "y": 0,
-            "width": 22,
-            "height": 31,
-            "anchorX": 11,
-            "anchorY": 39,
+            "width": 26,
+            "height": 47,
+            "anchorX": 13,
+            "anchorY": 43,
             "footprint": {
               "width": 1,
               "height": 1
@@ -1703,12 +1703,12 @@
           {
             "direction": "east",
             "index": 3,
-            "x": 79,
+            "x": 88,
             "y": 0,
-            "width": 28,
-            "height": 26,
+            "width": 33,
+            "height": 47,
             "anchorX": 17,
-            "anchorY": 34,
+            "anchorY": 43,
             "footprint": {
               "width": 1,
               "height": 1
@@ -2002,7 +2002,8 @@
         "#cbaf90",
         "#f0ede6",
         "#c19e69",
-        "#bf8865"
+        "#bf8865",
+        "#b07a42"
       ],
       "directions": {
         "south": {

@@ -99,7 +99,7 @@
       "file": "west.png",
       "index": 1,
       "width": 116,
-      "height": 63,
+      "height": 82,
       "anchorX": 58,
       "anchorY": 40,
       "footprint": {
@@ -159,7 +159,7 @@
       "file": "north.png",
       "index": 2,
       "width": 116,
-      "height": 63,
+      "height": 82,
       "anchorX": 58,
       "anchorY": 40,
       "footprint": {
@@ -219,7 +219,7 @@
       "file": "east.png",
       "index": 3,
       "width": 116,
-      "height": 63,
+      "height": 82,
       "anchorX": 58,
       "anchorY": 40,
       "footprint": {
@@ -301,7 +301,7 @@
         "x": 117,
         "y": 0,
         "width": 116,
-        "height": 63,
+        "height": 82,
         "anchorX": 58,
         "anchorY": 40,
         "footprint": {
@@ -315,7 +315,7 @@
         "x": 234,
         "y": 0,
         "width": 116,
-        "height": 63,
+        "height": 82,
         "anchorX": 58,
         "anchorY": 40,
         "footprint": {
@@ -329,7 +329,7 @@
         "x": 351,
         "y": 0,
         "width": 116,
-        "height": 63,
+        "height": 82,
         "anchorX": 58,
         "anchorY": 40,
         "footprint": {

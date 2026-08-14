@@ -188,13 +188,35 @@ The sitting pose deliberately places the **hips at y = 0**. The game positions a
 sitter using the seat offset the furniture pipeline measured, so the model origin
 lands on the seat surface and the shins hang below it.
 
-Output lands in `public/character/<id>/<animation>/<direction>/frame_NNN.png`
+**Layers.** A character is exported as two stacks, not one: a body per outfit
+and a head of hair per style. Hair parts are tagged `layer: 'hair'`, and
+`isolateLayer` renders only those while the rest of the model still writes depth
+- so a ponytail is hidden behind the head from the front, exactly as it would be
+in a full render, without the body being in the image.
+
+That is what keeps the catalogue *additive*. Five outfits and seven hair styles
+are twelve renders, not thirty-five, and a new hair style costs one render
+regardless of how many outfits exist. The game draws both layers at the anchor
+they share.
+
+**Colour is not baked in.** Everything is generated with one reference palette -
+`GENERATION_PALETTE` - and the manifest publishes the exact four-shade ramp each
+slot was rendered with. The game maps those onto a ramp derived from whatever
+colour a player picked, so any colour is free while shape costs a render.
+
+The reference palette exists to be *told apart*, not to look good, and
+`assertSlotsAreDistinct` fails the export if two slots share a shade. Watch out
+for very dark bases: the darkest ramp entry sits 0.24 below the base in
+lightness, so anything below that clamps to black and collides with every other
+near-black slot.
+
+Output lands in `public/character/{body,hair}/<variant>/<animation>/<direction>/frame_NNN.png`
 with metadata in `src/data/characterSprites.generated.json`.
 
 ```bash
 npm run sprites                      # furniture and characters
-npm run sprites -- --characters-only # just the character
-npm run sprites -- --no-characters   # skip it
+npm run sprites -- --characters-only # just the characters
+npm run sprites -- --no-characters   # skip them
 ```
 
 Proportions are in tile units, so a 1.7-unit guest stands ~77px against a 64px

@@ -8,6 +8,7 @@ import ContextMenu from './components/ContextMenu'
 import { RoomManager } from './components/RoomManager'
 import { RoomCustomization } from './components/RoomCustomization'
 import { FurnitureSelector } from './components/FurnitureSelector'
+import { AvatarCustomizer } from './components/AvatarCustomizer'
 import { GameProvider, useGame } from './context/GameContext'
 import { subscribeView, view } from './utils/viewController'
 
@@ -27,7 +28,7 @@ function App() {
  * on top of the dock. Here the bar picks a mode and one contextual panel shows
  * whatever that mode needs.
  */
-type ToolId = 'move' | 'build' | 'style' | 'rooms'
+type ToolId = 'move' | 'build' | 'style' | 'look' | 'rooms'
 
 interface Tool {
   id: ToolId
@@ -62,6 +63,14 @@ const TOOLS: Tool[] = [
     engineTool: 'room',
     panelTitle: 'Room styling',
     hint: 'Paint floor tiles and adjust the room.'
+  },
+  {
+    id: 'look',
+    label: 'Look',
+    icon: '🧑',
+    engineTool: 'move',
+    panelTitle: 'Appearance',
+    hint: 'Change your hair, clothes and colours.'
   },
   {
     id: 'rooms',
@@ -134,6 +143,7 @@ function AppShell() {
             <div className="iso-panel__body">
               {activeTool === 'build' && <FurnitureSelector />}
               {activeTool === 'style' && <RoomCustomization />}
+              {activeTool === 'look' && <AvatarCustomizer />}
               {activeTool === 'rooms' && roomManager && (
                 <RoomManager
                   rooms={state.rooms}

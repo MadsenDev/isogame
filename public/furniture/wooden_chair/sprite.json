@@ -73,10 +73,10 @@
     "west": {
       "file": "west.png",
       "index": 1,
-      "width": 1,
-      "height": 1,
-      "anchorX": 19,
-      "anchorY": 51,
+      "width": 34,
+      "height": 49,
+      "anchorX": 17,
+      "anchorY": 42,
       "footprint": {
         "width": 1,
         "height": 1
@@ -109,10 +109,10 @@
     "north": {
       "file": "north.png",
       "index": 2,
-      "width": 1,
-      "height": 1,
-      "anchorX": 19,
-      "anchorY": 51,
+      "width": 34,
+      "height": 49,
+      "anchorX": 17,
+      "anchorY": 42,
       "footprint": {
         "width": 1,
         "height": 1
@@ -145,10 +145,10 @@
     "east": {
       "file": "east.png",
       "index": 3,
-      "width": 1,
-      "height": 1,
-      "anchorX": 19,
-      "anchorY": 51,
+      "width": 34,
+      "height": 55,
+      "anchorX": 17,
+      "anchorY": 48,
       "footprint": {
         "width": 1,
         "height": 1
@@ -181,7 +181,7 @@
   },
   "sheet": {
     "file": "sheet.png",
-    "width": 40,
+    "width": 139,
     "height": 55,
     "frames": [
       {
@@ -203,10 +203,10 @@
         "index": 1,
         "x": 35,
         "y": 0,
-        "width": 1,
-        "height": 1,
-        "anchorX": 19,
-        "anchorY": 51,
+        "width": 34,
+        "height": 49,
+        "anchorX": 17,
+        "anchorY": 42,
         "footprint": {
           "width": 1,
           "height": 1
@@ -215,12 +215,12 @@
       {
         "direction": "north",
         "index": 2,
-        "x": 37,
+        "x": 70,
         "y": 0,
-        "width": 1,
-        "height": 1,
-        "anchorX": 19,
-        "anchorY": 51,
+        "width": 34,
+        "height": 49,
+        "anchorX": 17,
+        "anchorY": 42,
         "footprint": {
           "width": 1,
           "height": 1
@@ -229,12 +229,12 @@
       {
         "direction": "east",
         "index": 3,
-        "x": 39,
+        "x": 105,
         "y": 0,
-        "width": 1,
-        "height": 1,
-        "anchorX": 19,
-        "anchorY": 51,
+        "width": 34,
+        "height": 55,
+        "anchorX": 17,
+        "anchorY": 48,
         "footprint": {
           "width": 1,
           "height": 1

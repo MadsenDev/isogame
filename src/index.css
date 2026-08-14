@@ -403,6 +403,102 @@
     color: var(--iso-text-muted);
   }
 
+  /* Avatar customiser. */
+  .iso-avatar { display: flex; flex-direction: column; gap: 12px; }
+
+  .iso-avatar__stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 0;
+    background: var(--iso-surface-soft);
+    border: 2px solid var(--iso-border);
+  }
+
+  .iso-avatar__stage .iso-icon-button {
+    border: 0;
+    font-size: 1.2rem;
+    line-height: 1;
+  }
+
+  /* The preview is pixel art at an integer scale; let nothing smooth it. */
+  .iso-avatar__canvas {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+
+  .iso-avatar__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+
+  .iso-avatar__section { display: flex; flex-direction: column; gap: 6px; }
+
+  /* Styles are a closed set to choose from, not a filter to skim: show them
+     all at once rather than hiding half of them off the right edge. */
+  .iso-avatar__section .iso-chips {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    padding-bottom: 0;
+  }
+
+  .iso-avatar__section h3 {
+    margin: 0;
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--iso-text-muted);
+  }
+
+  .iso-colour { display: flex; align-items: center; gap: 8px; }
+
+  .iso-colour__label {
+    flex: 0 0 58px;
+    font-size: 0.72rem;
+    color: var(--iso-text-muted);
+  }
+
+  .iso-colour__swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .iso-colour__chip {
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    border: 2px solid var(--iso-border);
+    cursor: pointer;
+  }
+
+  .iso-colour__chip:hover { border-color: var(--iso-border-strong); }
+  .iso-colour__chip.is-active { border-color: var(--iso-primary); }
+
+  /* The native colour input is unstylable, so it hides behind a chip-sized
+     label that matches the swatches beside it. */
+  .iso-colour__custom {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--iso-border);
+    color: var(--iso-text-muted);
+    font-size: 0.7rem;
+    line-height: 1;
+    cursor: pointer;
+    overflow: hidden;
+  }
+
+  .iso-colour__custom:hover { border-color: var(--iso-border-strong); color: var(--iso-text); }
+
+  .iso-colour__custom input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
   .iso-zoom__level {
     min-width: 52px;
     justify-content: center;

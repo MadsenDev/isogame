@@ -104,9 +104,9 @@
     "west": {
       "file": "west.png",
       "index": 1,
-      "width": 84,
-      "height": 52,
-      "anchorX": 57,
+      "width": 91,
+      "height": 63,
+      "anchorX": 62,
       "anchorY": 33,
       "footprint": {
         "width": 1,
@@ -163,9 +163,9 @@
     "north": {
       "file": "north.png",
       "index": 2,
-      "width": 84,
-      "height": 52,
-      "anchorX": 27,
+      "width": 91,
+      "height": 63,
+      "anchorX": 29,
       "anchorY": 33,
       "footprint": {
         "width": 2,
@@ -222,10 +222,10 @@
     "east": {
       "file": "east.png",
       "index": 3,
-      "width": 84,
-      "height": 50,
-      "anchorX": 59,
-      "anchorY": 30,
+      "width": 91,
+      "height": 68,
+      "anchorX": 61,
+      "anchorY": 38,
       "footprint": {
         "width": 1,
         "height": 2
@@ -281,7 +281,7 @@
   },
   "sheet": {
     "file": "sheet.png",
-    "width": 346,
+    "width": 367,
     "height": 68,
     "frames": [
       {
@@ -303,9 +303,9 @@
         "index": 1,
         "x": 92,
         "y": 0,
-        "width": 84,
-        "height": 52,
-        "anchorX": 57,
+        "width": 91,
+        "height": 63,
+        "anchorX": 62,
         "anchorY": 33,
         "footprint": {
           "width": 1,
@@ -315,11 +315,11 @@
       {
         "direction": "north",
         "index": 2,
-        "x": 177,
+        "x": 184,
         "y": 0,
-        "width": 84,
-        "height": 52,
-        "anchorX": 27,
+        "width": 91,
+        "height": 63,
+        "anchorX": 29,
         "anchorY": 33,
         "footprint": {
           "width": 2,
@@ -329,12 +329,12 @@
       {
         "direction": "east",
         "index": 3,
-        "x": 262,
+        "x": 276,
         "y": 0,
-        "width": 84,
-        "height": 50,
-        "anchorX": 59,
-        "anchorY": 30,
+        "width": 91,
+        "height": 68,
+        "anchorX": 61,
+        "anchorY": 38,
         "footprint": {
           "width": 1,
           "height": 2

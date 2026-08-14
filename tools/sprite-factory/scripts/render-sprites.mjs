@@ -341,41 +341,44 @@ async function main() {
     }
 
     // Characters: rendered from poses, so they get their own layout of
-    // animation/direction/frame rather than the furniture one.
+    // animation/direction/frame rather than the furniture one. Bodies and hair
+    // are separate layers the game stacks, so the two catalogues add rather
+    // than multiply.
     if (!options.model && !options.only && !options.skipCharacters) {
-      console.log('\nRendering character...')
-      const character = await page.evaluate(async (config) => {
-        const result = await window.spriteFactory.renderCharacter(undefined, config)
+      console.log('\nRendering characters...')
+      const characters = await page.evaluate(async (config) => {
+        const result = await window.spriteFactory.renderCharacterSet(undefined, config)
         return JSON.parse(JSON.stringify(result))
       }, options.config)
 
-      // Scoped to this character's own directory: public/character also holds
-      // hand-made art that this pipeline does not own.
-      await rm(join(CHARACTER_DIR, character.metadata.id), { recursive: true, force: true })
+      // Scoped to the directories this pipeline owns: public/character may hold
+      // art it did not generate.
+      for (const owned of ['body', 'hair']) {
+        await rm(join(CHARACTER_DIR, owned), { recursive: true, force: true })
+      }
       await mkdir(CHARACTER_DIR, { recursive: true })
 
-      for (const file of character.files) {
+      for (const file of characters.files) {
         const target = join(CHARACTER_DIR, file.path)
         await mkdir(dirname(target), { recursive: true })
         await writeFile(target, decodeDataUrl(file.dataUrl))
       }
 
-      const characterManifest = {
-        basePath: '/character',
-        characters: { [character.metadata.id]: character.metadata },
-      }
+      const characterManifest = { basePath: '/character', ...characters.metadata }
       await writeFile(
         join(CHARACTER_DIR, 'manifest.json'),
         `${JSON.stringify(characterManifest, null, 2)}\n`
       )
       await writeFile(GAME_CHARACTERS, `${JSON.stringify(characterManifest, null, 2)}\n`)
 
-      const animations = Object.entries(character.metadata.animations)
-        .map(([name, a]) => `${name} x${a.frameCount}`)
-        .join(', ')
+      const describe = (layer) =>
+        `${layer.id}${Object.keys(layer.animations).length === 0 ? ' (no geometry)' : ''}`
+      console.log(`  outfits    ${characters.metadata.bodies.map(describe).join(', ')}`)
+      console.log(`  hair       ${characters.metadata.hair.map(describe).join(', ')}`)
       console.log(
-        `  ${character.metadata.id.padEnd(16)} ${character.metadata.directions.length} directions, ` +
-          `${animations}, ${character.metadata.palette.length} colours, ${character.files.length} frames`
+        `  ${characters.metadata.directions.length} directions, ` +
+          `${Object.keys(characters.metadata.slots).length} recolourable slots, ` +
+          `${characters.files.length} images`
       )
     }
 
