@@ -117,7 +117,23 @@ export const DEFAULT_HAIR = sprites.hair.find(style => style.id === 'short')?.id
  * cycle by progress through a tile, so a hardcoded count that disagreed with
  * the generator would silently drop or repeat a stride.
  */
-export const WALK_FRAME_COUNT = sprites.bodies[0]?.animations.walk?.frameCount ?? 1
+export const WALK_FRAME_COUNT = getAnimationFrameCount('walk')
+
+/**
+ * How many frames a clip has.
+ *
+ * Read from the manifest rather than written down here: the game drives the
+ * loop itself, so a hardcoded count that disagreed with the generator would
+ * silently drop or repeat a frame.
+ */
+export function getAnimationFrameCount(animation: string): number {
+  return sprites.bodies[0]?.animations[animation]?.frameCount ?? 1
+}
+
+/** Whether the generator produced this clip at all. */
+export function hasAnimation(animation: string): boolean {
+  return Boolean(sprites.bodies[0]?.animations[animation])
+}
 
 function findLayer(layers: CharacterLayer[], id: string): CharacterLayer | null {
   return layers.find(layer => layer.id === id) ?? layers[0] ?? null

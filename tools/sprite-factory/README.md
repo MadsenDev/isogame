@@ -99,6 +99,22 @@ west   sit tile=(0,0) faces=west  offset=(1,-19)  layer=behind
 facing north or west shows its back to the camera, so the sitter is occluded by
 it; facing south or east, the sitter is in front.
 
+**On it, or beside it.** Two different kinds of spot, and getting them mixed up
+is invisible until the game starts consuming them:
+
+| Helper | Spot tile | Player |
+| --- | --- | --- |
+| `sit`, `lay`, `sleep`, `dance` | on the piece's own footprint | ends up *on* the piece, at the projected offset |
+| `standBeside(w, h)` | the free tiles *around* the footprint | stands on ordinary floor, at that tile's centre |
+| `usedInPlace()` | the piece's own tile | only correct for wall and ceiling items, which do not block the floor |
+
+A piece standing on the floor blocks its own tiles, so `usedInPlace` on one
+describes a spot nobody can reach. `standBeside` puts the spots outside the
+footprint, where they need no pathfinding special case at all.
+
+`durationMs` is how long the action lasts, and the game honours it. Zero means
+"until the player walks away", which is what sitting and lying are.
+
 ## Placement
 
 | Placement | Frames | Authored |
@@ -112,28 +128,33 @@ a wall in; four would ship two frames facing into masonry.
 
 ## Adding an asset
 
-Edit `src/catalog.ts`:
+Edit `src/catalog.ts`, using the helpers in `src/authoring.ts`:
 
 ```ts
 {
-  id: 'side_table',                        // must match the game's furniture id
-  name: 'Side Table',
-  facing: 'south',                         // which way it points as authored
-  footprint: { width: 1, height: 1 },
-  behaviour: {
-    category: 'functional',
-    walkable: false, stackable: true, rotatable: true,
-    collision: { blocksMovement: true, blocksVision: false, height: 1, shape: 'rectangle' },
-  },
+  id: 'writing_desk',
+  name: 'Writing Desk',
+  facing: 'east',                          // front is the long side
+  footprint: { width: 2, height: 1 },
+  behaviour: behaviour.surface(),          // functional, stackable, blocks its tiles
+  interactions: [standBeside(2, 1)],       // used from the free tiles around it
   materials: { top: { colour: '#c08b52' }, leg: { colour: '#875531' } },
   parts: [
-    { type: 'box', size: [0.7, 0.1, 0.7], position: [0, 0.5, 0], material: 'top' },
-    { type: 'box', size: [0.08, 0.5, 0.08], position: [0.28, 0.25, 0.28], material: 'leg' },
+    { type: 'box', size: [1.88, 0.09, 0.84], position: [0, 0.68, 0], material: 'top' },
+    ...legs({ thickness: 0.09, height: 0.63, dx: 0.85, dz: 0.35, material: 'leg' }),
   ],
 }
 ```
 
 Then `npm run sprites`.
+
+The helpers exist because the boilerplate used to be most of the entry — the
+same eight-line behaviour block, the same interaction shape and four
+near-identical legs, restated per piece, with the three interesting lines buried
+in the middle of it. `behaviour.*` is named for what a piece *is*, so a rug is
+walkable because it is a rug rather than because someone remembered the flag.
+`legs`, `mirrorX`, `mirrorZ` and `repeatY` cover the geometry that is repetition
+rather than design.
 
 ## Model files
 
@@ -178,7 +199,21 @@ and anchored exactly like the chair they sit on.
 walkPose(frame, frameCount)   // legs and arms in opposition, bob per footfall
 idlePose()
 sitPose()                     // hips at the model origin, so the seat offset lands them right
+layPose()                     // reclined onto the back, anchored the same way
+reachPose()                   // for `use` spots: one arm out, weight forward
+dancePose(frame)              // four frames, arms alternating overhead
+wavePose(frame)               // two frames
 ```
+
+There is one clip per interaction type the furniture pipeline can emit, which is
+deliberate: a `lay` spot with no lay pose falls back to `sit`, and that is how
+beds ended up seating people on the mattress.
+
+`recline` is the odd one out. Every joint swings about +Z, so tipping the whole
+assembly is *also* a rotation about +Z - which means lying down composes with an
+ordinary pose by plain addition on one axis, rather than needing a second rig.
+The lift that goes with it is half the torso depth: after the turn the body's
+front points up, so without it the back would be buried in the mattress.
 
 Limbs rotate about a pivot rather than their own centre, and legs are two
 segments so the knee can bend - a single-box leg makes a sitting character stick

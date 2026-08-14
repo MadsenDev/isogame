@@ -38,6 +38,10 @@ for us.** See [`tools/sprite-factory`](../tools/sprite-factory).
 - **Customisable characters.** Hair styles and outfits as separate render
   layers, plus per-slot recolouring from one generated palette, so shape costs a
   render and colour costs nothing.
+- **Every interaction type is live.** Sitting, lying, using and dancing each
+  have their own pose and run for the duration the catalogue declares. Clicking
+  a piece routes the player to a spot beside it; arriving somewhere only acts
+  when the spot is the destination.
 
 ## Next
 
@@ -78,11 +82,13 @@ really have.
 
 ### 3. Interaction depth
 
-The pieces carry the data - `sit`, `lay`, `sleep`, `use`, `dance` spots with
-generated attachment points - but the game only acts on `sit`. Beds have lay and
-sleep spots nothing reads; the `use` spots on desks, dressers and lamps are
-inert. This is the largest gap between what the pipeline emits and what the game
-consumes.
+Done: the game now acts on every interaction type the pipeline emits.
+
+What is left is *reactions*. An interaction currently changes the player's pose
+and nothing else - using a lamp does not light it, using a bookshelf does not
+open it. Furniture has no state, so there is nothing for a `use` to toggle. That
+is the next real step, and it wants a per-piece state field in the persisted
+document plus a second sprite variant for the pieces that have an on and an off.
 
 ## Known bugs and rough edges
 
@@ -93,6 +99,10 @@ Found while wiring up the pipeline, not yet fixed:
   a 2x2 round rug and several 2x1 pieces in the catalogue.
 - **`tileset.jpg` is now only a fallback.** Floors use generated sprites; the
   skewed-tilesheet path remains until they load.
+- **`src/services/PlayerService.ts` and `src/types/Player.ts` are dead.**
+  Nothing imports them, and they carry a second `PlayerAction` union that no
+  longer matches the real one in `GameContext`. Left alone rather than deleted
+  in passing, but they are a trap for anyone who imports the wrong `Player`.
 
 ## Moving persistence to a server
 

@@ -64,6 +64,42 @@ export interface ResolvedInteraction {
   furniture: Furniture
   spot: FurniturePosition
   type: string
+  /** Milliseconds the action lasts. 0 means until the player walks away. */
+  duration: number
+}
+
+/**
+ * The interactions of a piece in the orientation it is actually placed in.
+ *
+ * The per-direction sprite carries spots that were rotated with the model, so
+ * they win over the definition's defaults; falling back to the definition keeps
+ * older generated data working.
+ */
+const interactionsOf = (piece: Furniture) => {
+  const sprite = piece.definition.sprites?.[piece.direction ?? piece.definition.defaultDirection ?? '']
+  return sprite?.interactions ?? piece.definition.interactions ?? []
+}
+
+/** Tiles a piece occupies in the orientation it is placed in. */
+export const getFootprint = (piece: Furniture): { width: number; height: number } => {
+  const sprite = piece.definition.sprites?.[piece.direction ?? piece.definition.defaultDirection ?? '']
+  return sprite?.footprint ?? { width: piece.definition.width, height: piece.definition.height }
+}
+
+export const occupiesTile = (piece: Furniture, x: number, y: number): boolean => {
+  const footprint = getFootprint(piece)
+  return (
+    x >= piece.x && x < piece.x + footprint.width && y >= piece.y && y < piece.y + footprint.height
+  )
+}
+
+/** The piece drawn on a tile, topmost first. */
+export const findFurnitureAt = (furniture: Furniture[], x: number, y: number): Furniture | null => {
+  // Later pieces are drawn over earlier ones, so a click hits the last match.
+  for (let index = furniture.length - 1; index >= 0; index--) {
+    if (occupiesTile(furniture[index], x, y)) return furniture[index]
+  }
+  return null
 }
 
 /**
@@ -79,19 +115,40 @@ export const findInteractionSpot = (
   types: string[]
 ): ResolvedInteraction | null => {
   for (const piece of furniture) {
-    const sprite = piece.definition.sprites?.[piece.direction ?? piece.definition.defaultDirection ?? '']
-    const interactions = sprite?.interactions ?? piece.definition.interactions
-
-    for (const interaction of interactions ?? []) {
+    for (const interaction of interactionsOf(piece)) {
       if (!types.includes(interaction.type)) continue
 
       for (const spot of interaction.positions) {
         if (piece.x + spot.x === tileX && piece.y + spot.y === tileY) {
-          return { furniture: piece, spot, type: interaction.type }
+          return { furniture: piece, spot, type: interaction.type, duration: interaction.duration ?? 0 }
         }
       }
     }
   }
 
   return null
+}
+
+/** Every spot of the given types on one piece, in world tile coordinates. */
+export const listInteractionSpots = (
+  piece: Furniture,
+  types: string[]
+): Array<ResolvedInteraction & { tileX: number; tileY: number }> => {
+  const found: Array<ResolvedInteraction & { tileX: number; tileY: number }> = []
+
+  for (const interaction of interactionsOf(piece)) {
+    if (!types.includes(interaction.type)) continue
+    for (const spot of interaction.positions) {
+      found.push({
+        furniture: piece,
+        spot,
+        type: interaction.type,
+        duration: interaction.duration ?? 0,
+        tileX: piece.x + spot.x,
+        tileY: piece.y + spot.y
+      })
+    }
+  }
+
+  return found
 }

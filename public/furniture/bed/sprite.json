@@ -63,16 +63,8 @@
               "x": 0,
               "y": 0,
               "direction": "south",
-              "offsetX": 2,
-              "offsetY": -14,
-              "layer": "front"
-            },
-            {
-              "x": 1,
-              "y": 0,
-              "direction": "south",
-              "offsetX": -2,
-              "offsetY": -16,
+              "offsetX": 17,
+              "offsetY": -7,
               "layer": "front"
             }
           ]
@@ -86,8 +78,8 @@
               "x": 0,
               "y": 0,
               "direction": "south",
-              "offsetX": 2,
-              "offsetY": -14,
+              "offsetX": 17,
+              "offsetY": -7,
               "layer": "front"
             }
           ]
@@ -122,16 +114,8 @@
               "x": 0,
               "y": 1,
               "direction": "west",
-              "offsetX": 2,
-              "offsetY": -16,
-              "layer": "behind"
-            },
-            {
-              "x": 0,
-              "y": 0,
-              "direction": "west",
-              "offsetX": -2,
-              "offsetY": -14,
+              "offsetX": 17,
+              "offsetY": -24,
               "layer": "behind"
             }
           ]
@@ -145,8 +129,8 @@
               "x": 0,
               "y": 1,
               "direction": "west",
-              "offsetX": 2,
-              "offsetY": -16,
+              "offsetX": 17,
+              "offsetY": -24,
               "layer": "behind"
             }
           ]
@@ -181,16 +165,8 @@
               "x": 1,
               "y": 0,
               "direction": "north",
-              "offsetX": -2,
-              "offsetY": -16,
-              "layer": "behind"
-            },
-            {
-              "x": 0,
-              "y": 0,
-              "direction": "north",
-              "offsetX": 2,
-              "offsetY": -14,
+              "offsetX": -17,
+              "offsetY": -24,
               "layer": "behind"
             }
           ]
@@ -204,8 +180,8 @@
               "x": 1,
               "y": 0,
               "direction": "north",
-              "offsetX": -2,
-              "offsetY": -16,
+              "offsetX": -17,
+              "offsetY": -24,
               "layer": "behind"
             }
           ]
@@ -240,16 +216,8 @@
               "x": 0,
               "y": 0,
               "direction": "east",
-              "offsetX": -2,
-              "offsetY": -14,
-              "layer": "front"
-            },
-            {
-              "x": 0,
-              "y": 1,
-              "direction": "east",
-              "offsetX": 2,
-              "offsetY": -16,
+              "offsetX": -17,
+              "offsetY": -7,
               "layer": "front"
             }
           ]
@@ -263,8 +231,8 @@
               "x": 0,
               "y": 0,
               "direction": "east",
-              "offsetX": -2,
-              "offsetY": -14,
+              "offsetX": -17,
+              "offsetY": -7,
               "layer": "front"
             }
           ]
