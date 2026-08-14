@@ -67,14 +67,7 @@
             }
           ]
         }
-      ],
-      "shadow": {
-        "file": "south-shadow.png",
-        "width": 153,
-        "height": 78,
-        "anchorX": 60,
-        "anchorY": 15
-      }
+      ]
     },
     "west": {
       "file": "west.png",
@@ -111,14 +104,7 @@
             }
           ]
         }
-      ],
-      "shadow": {
-        "file": "west-shadow.png",
-        "width": 153,
-        "height": 78,
-        "anchorX": 92,
-        "anchorY": 15
-      }
+      ]
     },
     "north": {
       "file": "north.png",
@@ -155,14 +141,7 @@
             }
           ]
         }
-      ],
-      "shadow": {
-        "file": "north-shadow.png",
-        "width": 153,
-        "height": 78,
-        "anchorX": 60,
-        "anchorY": 15
-      }
+      ]
     },
     "east": {
       "file": "east.png",
@@ -199,14 +178,7 @@
             }
           ]
         }
-      ],
-      "shadow": {
-        "file": "east-shadow.png",
-        "width": 153,
-        "height": 78,
-        "anchorX": 92,
-        "anchorY": 15
-      }
+      ]
     }
   },
   "sheet": {

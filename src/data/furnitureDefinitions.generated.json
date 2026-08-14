@@ -2975,14 +2975,6 @@
             ]
           }
         ],
-        "shadow": {
-          "file": "south-shadow.png",
-          "width": 153,
-          "height": 78,
-          "anchorX": 60,
-          "anchorY": 15,
-          "url": "/furniture/rug/south-shadow.png"
-        },
         "url": "/furniture/rug/south.png"
       },
       "west": {
@@ -3021,14 +3013,6 @@
             ]
           }
         ],
-        "shadow": {
-          "file": "west-shadow.png",
-          "width": 153,
-          "height": 78,
-          "anchorX": 92,
-          "anchorY": 15,
-          "url": "/furniture/rug/west-shadow.png"
-        },
         "url": "/furniture/rug/west.png"
       },
       "north": {
@@ -3067,14 +3051,6 @@
             ]
           }
         ],
-        "shadow": {
-          "file": "north-shadow.png",
-          "width": 153,
-          "height": 78,
-          "anchorX": 60,
-          "anchorY": 15,
-          "url": "/furniture/rug/north-shadow.png"
-        },
         "url": "/furniture/rug/north.png"
       },
       "east": {
@@ -3113,14 +3089,6 @@
             ]
           }
         ],
-        "shadow": {
-          "file": "east-shadow.png",
-          "width": 153,
-          "height": 78,
-          "anchorX": 92,
-          "anchorY": 15,
-          "url": "/furniture/rug/east-shadow.png"
-        },
         "url": "/furniture/rug/east.png"
       }
     },
@@ -3244,14 +3212,6 @@
             ]
           }
         ],
-        "shadow": {
-          "file": "south-shadow.png",
-          "width": 87,
-          "height": 44,
-          "anchorX": 43,
-          "anchorY": 6,
-          "url": "/furniture/round_rug/south-shadow.png"
-        },
         "url": "/furniture/round_rug/south.png"
       },
       "west": {
@@ -3306,14 +3266,6 @@
             ]
           }
         ],
-        "shadow": {
-          "file": "west-shadow.png",
-          "width": 87,
-          "height": 44,
-          "anchorX": 43,
-          "anchorY": 6,
-          "url": "/furniture/round_rug/west-shadow.png"
-        },
         "url": "/furniture/round_rug/west.png"
       },
       "north": {
@@ -3368,14 +3320,6 @@
             ]
           }
         ],
-        "shadow": {
-          "file": "north-shadow.png",
-          "width": 87,
-          "height": 44,
-          "anchorX": 43,
-          "anchorY": 6,
-          "url": "/furniture/round_rug/north-shadow.png"
-        },
         "url": "/furniture/round_rug/north.png"
       },
       "east": {
@@ -3430,14 +3374,6 @@
             ]
           }
         ],
-        "shadow": {
-          "file": "east-shadow.png",
-          "width": 87,
-          "height": 44,
-          "anchorX": 43,
-          "anchorY": 6,
-          "url": "/furniture/round_rug/east-shadow.png"
-        },
         "url": "/furniture/round_rug/east.png"
       }
     },

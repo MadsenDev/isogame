@@ -57,6 +57,22 @@ const MOUNTED_INTERACTIONS = ['sit', 'lay', 'sleep']
  */
 const ARRIVAL_INTERACTIONS = ['sit', 'lay', 'sleep', 'dance']
 
+/**
+ * Something flat that lives on the floor and is walked over: a rug.
+ *
+ * Tested by its physical properties rather than by its catalogue category, so
+ * anything else authored flat and walkable behaves the same without having to
+ * be remembered here.
+ */
+function isFloorDecal(piece: Furniture): boolean {
+  const definition = piece.definition
+  return (
+    (definition.placement ?? 'floor') === 'floor' &&
+    definition.walkable &&
+    definition.collision.height === 0
+  )
+}
+
 export class GameEngine {
   private canvas: HTMLCanvasElement
   private ctx: CanvasRenderingContext2D
@@ -156,11 +172,17 @@ export class GameEngine {
    * using the `layer` the sprite pipeline worked out per orientation: furniture
    * facing north or west shows its back to the camera, so the occupant belongs
    * underneath it.
+   *
+   * `rank` comes first, and exists for one case: flat things you stand on.
+   * Sorting a rug by its front-most tile - correct for anything solid - draws a
+   * 2x2 rug at depth `x + y + 2`, which is *after* someone standing on its back
+   * tile, so the rug paints over their legs. Nothing with no height can occlude
+   * anything, so decals get their own pass underneath everything else.
    */
   private drawSortedScene() {
     if (!this.state.currentRoom) return
 
-    const drawables: Array<{ depth: number; order: number; draw: () => void }> = []
+    const drawables: Array<{ rank?: number; depth: number; order: number; draw: () => void }> = []
 
     // Walls sort half a tile behind the tile they enclose, which is where they
     // physically are. That is what lets a guest walk behind an interior wall
@@ -214,6 +236,7 @@ export class GameEngine {
       const footprint = this.getFurnitureFootprint(furniture)
 
       drawables.push({
+        rank: isFloorDecal(furniture) ? 0 : 1,
         depth: furniture.x + furniture.y + (footprint.width - 1) + (footprint.height - 1),
         order: 0,
         draw: () => this.furnitureComponent.drawFurniture(furniture)
@@ -263,7 +286,10 @@ export class GameEngine {
     })
 
     drawables
-      .sort((a, b) => a.depth - b.depth || a.order - b.order)
+      .sort(
+        (a, b) =>
+          (a.rank ?? 1) - (b.rank ?? 1) || a.depth - b.depth || a.order - b.order
+      )
       .forEach(drawable => drawable.draw())
   }
 
