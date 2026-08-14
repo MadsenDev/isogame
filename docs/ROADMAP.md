@@ -147,6 +147,14 @@ conflict policy for two people editing one room.
   source pixels one screen pixel wide and others two. Zoom snaps to whole
   multiples, and the canvas backing store matches its CSS size so the browser
   never resamples the finished frame either.
+- **Placement is four planes, not one grid.** Ceiling, wall, floor-decal and
+  floor. Only pieces sharing a plane can clash, which is what lets a rug go
+  under a table and stops a ceiling lamp reserving the tile beneath it. A plain
+  rectangle overlap - which is what it was - makes every one of those a
+  conflict.
+- **A rug is not a stacking surface.** Stacking means "rests on this piece's
+  top, raised by its height"; a rug has no height to raise anything by. Things
+  share a tile with a rug because they are on different planes.
 - **`layer` is decided by facing, not by centroid.** Furniture facing north or
   west shows its back to the camera, so its occupant is drawn underneath it.
   Comparing against a model centroid puts the two seats of one sofa on different

@@ -27,6 +27,14 @@ export interface PersistedFurniture {
   type: string
   x: number
   y: number
+  /**
+   * Screen pixels above whatever it rests on. Absent means on the floor.
+   *
+   * Stored rather than recomputed: resolving a stack on load would mean
+   * ordering pieces bottom-up and re-deriving heights that the placement
+   * already worked out.
+   */
+  z?: number
   direction?: string
 }
 

@@ -19,6 +19,10 @@
     "width": 2,
     "height": 2
   },
+  "surface": {
+    "height": 0.685,
+    "offsetY": 27
+  },
   "tile": {
     "width": 64,
     "height": 32

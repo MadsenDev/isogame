@@ -6,7 +6,7 @@
   "behaviour": {
     "category": "flooring",
     "walkable": true,
-    "stackable": true,
+    "stackable": false,
     "rotatable": true,
     "collision": {
       "blocksMovement": false,

@@ -80,10 +80,138 @@ const interactionsOf = (piece: Furniture) => {
   return sprite?.interactions ?? piece.definition.interactions ?? []
 }
 
+/** Tiles a definition occupies in a given orientation. */
+export const getDefinitionFootprint = (
+  definition: FurnitureDefinition,
+  direction?: string
+): { width: number; height: number } => {
+  const sprite = definition.sprites?.[direction ?? definition.defaultDirection ?? '']
+  return sprite?.footprint ?? { width: definition.width, height: definition.height }
+}
+
 /** Tiles a piece occupies in the orientation it is placed in. */
 export const getFootprint = (piece: Furniture): { width: number; height: number } => {
-  const sprite = piece.definition.sprites?.[piece.direction ?? piece.definition.defaultDirection ?? '']
-  return sprite?.footprint ?? { width: piece.definition.width, height: piece.definition.height }
+  return getDefinitionFootprint(piece.definition, piece.direction)
+}
+
+/**
+ * Which plane a piece lives on.
+ *
+ * Placement used to be a plain rectangle overlap, so a ceiling lamp reserved the
+ * whole tile beneath it and a rug could not go under anything at all. These are
+ * four physically separate planes, and only pieces sharing one can be in each
+ * other's way.
+ */
+export type PlacementLayer = 'floor' | 'decal' | 'wall' | 'ceiling'
+
+export const placementLayer = (definition: FurnitureDefinition): PlacementLayer => {
+  const placement = definition.placement ?? 'floor'
+  if (placement !== 'floor') return placement
+  // Flat and walked over: a rug lies on the floor surface, under the furniture.
+  return definition.walkable && definition.collision.height === 0 ? 'decal' : 'floor'
+}
+
+export interface PlacementPlan {
+  valid: boolean
+  /**
+   * Screen pixels to raise the piece by, from whatever it is resting on.
+   * Zero for anything on the floor.
+   */
+  z: number
+  /** The piece it rests on, when stacked. */
+  support: Furniture | null
+}
+
+const INVALID: PlacementPlan = { valid: false, z: 0, support: null }
+
+interface PlacementQuery {
+  definition: FurnitureDefinition
+  direction?: string
+  x: number
+  y: number
+  roomWidth: number
+  roomHeight: number
+  floorTiles: Array<{ x: number; y: number }>
+  furniture: Furniture[]
+  players: Array<{ x: number; y: number }>
+}
+
+/**
+ * Can this piece go here, and how high does it sit?
+ *
+ * Two things share one walk over the existing furniture, because they are the
+ * same question: whatever is already on these tiles either blocks the placement
+ * or is the thing being stacked on.
+ */
+export const planPlacement = (query: PlacementQuery): PlacementPlan => {
+  const { definition, x, y } = query
+  const layer = placementLayer(definition)
+  const { width, height } = getDefinitionFootprint(definition, query.direction)
+
+  for (let dx = 0; dx < width; dx++) {
+    for (let dy = 0; dy < height; dy++) {
+      const tileX = x + dx
+      const tileY = y + dy
+      if (tileX < 0 || tileX >= query.roomWidth || tileY < 0 || tileY >= query.roomHeight) {
+        return INVALID
+      }
+      if (!query.floorTiles.some(tile => tile.x === tileX && tile.y === tileY)) return INVALID
+    }
+  }
+
+  const overlaps = (piece: Furniture) => {
+    const footprint = getFootprint(piece)
+    return !(
+      x + width <= piece.x ||
+      piece.x + footprint.width <= x ||
+      y + height <= piece.y ||
+      piece.y + footprint.height <= y
+    )
+  }
+
+  // Whether a piece covers every tile this one needs - you cannot rest a table
+  // half on a crate.
+  const contains = (piece: Furniture) => {
+    const footprint = getFootprint(piece)
+    return (
+      x >= piece.x &&
+      y >= piece.y &&
+      x + width <= piece.x + footprint.width &&
+      y + height <= piece.y + footprint.height
+    )
+  }
+
+  let support: Furniture | null = null
+
+  for (const piece of query.furniture) {
+    if (placementLayer(piece.definition) !== layer) continue
+    if (!overlaps(piece)) continue
+
+    // On any plane but the floor, sharing space is simply a clash. On the floor
+    // there is one way to share it: by standing on top.
+    if (layer !== 'floor') return INVALID
+    if (!piece.definition.stackable || !piece.definition.surface) return INVALID
+    if (!contains(piece)) return INVALID
+
+    // A stack of surfaces resolves to the highest one.
+    if (!support || piece.z > support.z) support = piece
+  }
+
+  // Only something that will actually be in a player's way cares where they
+  // are - and nothing standing on a table can be, since they cannot get there.
+  if (!support && definition.collision.blocksMovement) {
+    for (const player of query.players) {
+      const px = Math.round(player.x)
+      const py = Math.round(player.y)
+      if (px >= x && px < x + width && py >= y && py < y + height) return INVALID
+    }
+  }
+
+  return {
+    valid: true,
+    z: support ? support.z + (support.definition.surface?.offsetY ?? 0) : 0,
+    support
+  }
 }
 
 export const occupiesTile = (piece: Furniture, x: number, y: number): boolean => {

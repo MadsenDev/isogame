@@ -1,7 +1,7 @@
 {
   "generator": {
     "version": 1,
-    "renderedAt": "2026-08-14T09:46:21.788Z",
+    "renderedAt": "2026-08-14T10:10:18.637Z",
     "config": {
       "supersample": 4,
       "padding": 2,
@@ -1670,6 +1670,10 @@
         "width": 2,
         "height": 2
       },
+      "surface": {
+        "height": 0.685,
+        "offsetY": 27
+      },
       "tile": {
         "width": 64,
         "height": 32
@@ -2140,6 +2144,10 @@
         "width": 1,
         "height": 1
       },
+      "surface": {
+        "height": 0.61,
+        "offsetY": 24
+      },
       "tile": {
         "width": 64,
         "height": 32
@@ -2321,6 +2329,10 @@
       "footprint": {
         "width": 2,
         "height": 1
+      },
+      "surface": {
+        "height": 0.725,
+        "offsetY": 28
       },
       "tile": {
         "width": 64,
@@ -3147,6 +3159,10 @@
         "width": 1,
         "height": 1
       },
+      "surface": {
+        "height": 0.7,
+        "offsetY": 27
+      },
       "tile": {
         "width": 64,
         "height": 32
@@ -3314,7 +3330,7 @@
       "behaviour": {
         "category": "flooring",
         "walkable": true,
-        "stackable": true,
+        "stackable": false,
         "rotatable": true,
         "collision": {
           "blocksMovement": false,
@@ -3561,7 +3577,7 @@
       "behaviour": {
         "category": "flooring",
         "walkable": true,
-        "stackable": true,
+        "stackable": false,
         "rotatable": true,
         "collision": {
           "blocksMovement": false,

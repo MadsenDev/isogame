@@ -67,9 +67,16 @@ export const behaviour = {
   decor: (options: BehaviourOptions = {}) => make('decoration', {}, options),
   /** Lamps and appliances. */
   device: (options: BehaviourOptions = {}) => make('functional', {}, options),
-  /** Rugs: on the floor, walked over, collide with nothing. */
+  /**
+   * Rugs: on the floor, walked over, collide with nothing.
+   *
+   * Not `stackable`, despite things obviously going on top of a rug. Stacking
+   * means "rests on this piece's surface, raised by its height", and a rug has
+   * no height to raise anything by - furniture shares a tile with a rug because
+   * they are on different planes, not because it is standing on it.
+   */
   decal: (options: BehaviourOptions = {}) =>
-    make('flooring', { walkable: true, stackable: true, height: 0 }, options),
+    make('flooring', { walkable: true, height: 0 }, options),
   /**
    * Wall- and ceiling-mounted. Nothing hanging on a wall blocks the floor
    * beneath it, and it cannot be rotated freely - the wall decides.

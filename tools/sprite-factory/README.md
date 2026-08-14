@@ -126,6 +126,26 @@ footprint, where they need no pathfinding special case at all.
 Wall assets only render the two orientations an isometric room can actually show
 a wall in; four would ship two frames facing into masonry.
 
+These are *planes*, and the game treats them as such: a ceiling lamp, a wall
+print, a rug and a table can all share one tile, because only pieces on the same
+plane can be in each other's way. A floor piece that is `walkable` with a
+collision height of zero — a rug — counts as its own plane below the furniture.
+
+## Surfaces
+
+A `stackable` piece also emits where its top is, measured from the model rather
+than declared:
+
+```json
+"surface": { "height": 0.685, "offsetY": 27 }
+```
+
+`height` is in tile units, `offsetY` the same distance as a screen offset.
+Raising something is a pure +Y translation, which projects to a pure vertical
+shift, so one number serves every orientation. That is what lets the game put a
+vase *on* a table rather than in front of it, at exactly the height the table
+was modelled at.
+
 ## Adding an asset
 
 Edit `src/catalog.ts`, using the helpers in `src/authoring.ts`:
